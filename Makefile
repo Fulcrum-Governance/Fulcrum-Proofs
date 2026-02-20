@@ -21,7 +21,7 @@ contracts-check:
 	$(PYTHON) contracts/sync/check_version_manifest.py
 
 orchestrator-contract-check:
-	$(PYTHON) skills/scripts/validate_orchestration_contract.py
+	CHECK_ORCHESTRATION_OUTPUTS=1 $(PYTHON) skills/scripts/validate_orchestration_contract.py
 
 orchestrator-run:
 	$(PYTHON) scripts/orchestrator_run.py

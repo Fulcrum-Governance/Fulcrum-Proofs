@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -25,15 +26,18 @@ def main() -> int:
         print("execution_order is empty", file=sys.stderr)
         return 1
 
+    check_outputs = os.getenv("CHECK_ORCHESTRATION_OUTPUTS", "0") == "1"
+
     for idx, item in enumerate(execution, start=1):
         if "role" not in item:
             print(f"execution_order[{idx}] missing role", file=sys.stderr)
             return 1
-        for out in item.get("outputs", []):
-            p = ROOT / out
-            if not p.exists():
-                print(f"missing required output: {out}", file=sys.stderr)
-                return 1
+        if check_outputs:
+            for out in item.get("outputs", []):
+                p = ROOT / out
+                if not p.exists():
+                    print(f"missing required output: {out}", file=sys.stderr)
+                    return 1
 
         for s in item.get("schemas", []):
             p = ROOT / s
@@ -41,7 +45,8 @@ def main() -> int:
                 print(f"missing schema file: {s}", file=sys.stderr)
                 return 1
 
-    print(f"orchestration contract validation passed ({len(execution)} stages)")
+    mode = "schema+outputs" if check_outputs else "schema-only"
+    print(f"orchestration contract validation passed ({len(execution)} stages, {mode})")
     return 0
 
 
