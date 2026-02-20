@@ -52,23 +52,35 @@ for env in ci bench-nightly investor-evidence; do
 done
 
 echo "[2/3] Applying branch protection for $BRANCH"
+PAYLOAD="$(mktemp)"
+cat > "$PAYLOAD" <<JSON
+{
+  "required_status_checks": {
+    "strict": true,
+    "contexts": ["proof-gate", "model-gate", "evidence-gate"]
+  },
+  "enforce_admins": true,
+  "required_pull_request_reviews": {
+    "dismiss_stale_reviews": true,
+    "require_code_owner_reviews": true,
+    "required_approving_review_count": 1
+  },
+  "restrictions": null,
+  "required_linear_history": true,
+  "allow_force_pushes": false,
+  "allow_deletions": false,
+  "block_creations": false,
+  "required_conversation_resolution": true,
+  "lock_branch": false,
+  "allow_fork_syncing": false
+}
+JSON
+
 gh api \
   --method PUT \
   -H "Accept: application/vnd.github+json" \
   "repos/$OWNER/$REPO/branches/$BRANCH/protection" \
-  -f required_status_checks.strict=true \
-  -f required_status_checks.contexts[]="proof-gate" \
-  -f required_status_checks.contexts[]="model-gate" \
-  -f required_status_checks.contexts[]="evidence-gate" \
-  -f enforce_admins=true \
-  -f required_pull_request_reviews.required_approving_review_count=1 \
-  -F required_pull_request_reviews.dismiss_stale_reviews=true \
-  -f required_linear_history=true \
-  -f allow_force_pushes=false \
-  -f allow_deletions=false \
-  -f block_creations=false \
-  -f required_conversation_resolution=true \
-  -f lock_branch=false \
-  -f allow_fork_syncing=true >/dev/null
+  --input "$PAYLOAD" >/dev/null
+rm -f "$PAYLOAD"
 
 echo "[3/3] Branch protection applied: $OWNER/$REPO@$BRANCH"
