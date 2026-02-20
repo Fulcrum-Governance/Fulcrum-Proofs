@@ -1,0 +1,7 @@
+proto_roots:
+  - proto/fulcrum
+snapshot_files:
+  - internal/workflow/policy.go
+  - internal/policyengine/evaluator.go
+  - internal/policyengine/interceptors.go
+  - internal/eventstore/README.md

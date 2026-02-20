@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fulcrum-governance.github.io/fulcrum-proofs/schemas/fault_campaign.schema.json",
+  "title": "Fault Campaign Report",
+  "type": "object",
+  "required": [
+    "scenario",
+    "injection",
+    "revocation_window_ms",
+    "safety_violations",
+    "recovery_time_ms",
+    "within_bounds",
+    "expected_bounds",
+    "metadata"
+  ],
+  "properties": {
+    "scenario": {"type": "string"},
+    "injection": {"type": "string"},
+    "revocation_window_ms": {"type": "number", "minimum": 0},
+    "safety_violations": {"type": "integer", "minimum": 0},
+    "recovery_time_ms": {"type": "number", "minimum": 0},
+    "within_bounds": {"type": "boolean"},
+    "expected_bounds": {
+      "type": "object",
+      "required": ["max_revocation_window_ms", "max_safety_violations"],
+      "properties": {
+        "max_revocation_window_ms": {"type": "number", "minimum": 0},
+        "max_safety_violations": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["iterations", "generated_at", "mode", "seed"],
+      "properties": {
+        "iterations": {"type": "integer", "minimum": 1},
+        "generated_at": {"type": "string"},
+        "mode": {"type": "string"},
+        "seed": {"type": "integer"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

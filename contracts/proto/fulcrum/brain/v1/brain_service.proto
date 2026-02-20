@@ -1,0 +1,387 @@
+// Fulcrum Brain Service - Cognitive Layer API
+// Version: 1.0.0
+// Last Modified: 2026-01-03
+// Breaking Changes: N/A (initial release)
+//
+// This service exposes Fulcrum's cognitive capabilities:
+// - Semantic Judge: LLM-based intent evaluation (<50ms P99)
+// - Oracle: Predictive cost modeling (unique differentiator)
+// - Immune System: Automated policy generation from incidents
+
+syntax = "proto3";
+
+package fulcrum.brain.v1;
+
+option go_package = "github.com/fulcrum-io/fulcrum/pkg/brain/v1";
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "fulcrum/policy/v1/policy_service.proto";
+
+// ============================================================================
+// SEMANTIC JUDGE SERVICE
+// LLM-based policy evaluation with intent detection
+// Target: <50ms P99 latency, >95% accuracy
+// ============================================================================
+
+service SemanticJudgeService {
+  // Evaluate a policy condition using LLM-based semantic analysis
+  rpc EvaluateCondition(EvaluateConditionRequest) returns (EvaluateConditionResponse) {
+    option (google.api.http) = {
+      post: "/v1/brain/semantic-judge/evaluate"
+      body: "*"
+    };
+  }
+
+  // Classify the risk level of an agent action
+  rpc ClassifyRisk(ClassifyRiskRequest) returns (ClassifyRiskResponse) {
+    option (google.api.http) = {
+      post: "/v1/brain/semantic-judge/classify-risk"
+      body: "*"
+    };
+  }
+
+  // Derive intent from a pattern signature (used by Immune System)
+  rpc DeriveIntent(DeriveIntentRequest) returns (DeriveIntentResponse) {
+    option (google.api.http) = {
+      post: "/v1/brain/semantic-judge/derive-intent"
+      body: "*"
+    };
+  }
+}
+
+// Semantic Judge Request/Response Messages
+
+message EvaluateConditionRequest {
+  string tenant_id = 1;
+  fulcrum.policy.v1.PolicyCondition condition = 2;
+  fulcrum.policy.v1.EvaluationContext context = 3;
+  // Use fallback deterministic evaluation if LLM fails
+  bool fallback_enabled = 4;
+}
+
+message EvaluateConditionResponse {
+  bool matches = 1;
+  string reason = 2;
+  // Evaluation method used
+  EvaluationMethod method = 3;
+  // Latency in milliseconds
+  int64 latency_ms = 4;
+  // Confidence score (0.0-1.0)
+  double confidence = 5;
+}
+
+enum EvaluationMethod {
+  EVALUATION_METHOD_UNSPECIFIED = 0;
+  EVALUATION_METHOD_LLM = 1;
+  EVALUATION_METHOD_DETERMINISTIC_FALLBACK = 2;
+}
+
+message ClassifyRiskRequest {
+  string tenant_id = 1;
+  string tool_name = 2;
+  string action = 3;
+  map<string, string> parameters = 4;
+  // Optional: Additional context for classification
+  string context_description = 5;
+}
+
+message ClassifyRiskResponse {
+  RiskLevel risk_level = 1;
+  string reasoning = 2;
+  repeated string risk_factors = 3;
+  double confidence = 4;
+  int64 latency_ms = 5;
+}
+
+enum RiskLevel {
+  RISK_LEVEL_UNSPECIFIED = 0;
+  RISK_LEVEL_LOW = 1;
+  RISK_LEVEL_MEDIUM = 2;
+  RISK_LEVEL_HIGH = 3;
+  RISK_LEVEL_CRITICAL = 4;
+}
+
+message DeriveIntentRequest {
+  string pattern_signature = 1;
+  repeated string indicators = 2;
+  // Optional tenant context
+  string tenant_id = 3;
+}
+
+message DeriveIntentResponse {
+  string intent = 1;
+  double confidence = 2;
+  int64 latency_ms = 3;
+}
+
+// ============================================================================
+// ORACLE SERVICE
+// Predictive cost modeling - UNIQUE DIFFERENTIATOR
+// No competitor offers statistical budget overrun prediction
+// ============================================================================
+
+service OracleService {
+  // Predict probability of budget overrun
+  rpc PredictBudgetOverrun(PredictBudgetOverrunRequest) returns (PredictBudgetOverrunResponse) {
+    option (google.api.http) = {
+      post: "/v1/brain/oracle/predict-overrun"
+      body: "*"
+    };
+  }
+
+  // Get or build prediction model for a workflow
+  rpc GetPredictionModel(GetPredictionModelRequest) returns (GetPredictionModelResponse) {
+    option (google.api.http) = {
+      get: "/v1/brain/oracle/models/{tenant_id}/{workflow_id}"
+    };
+  }
+
+  // List all prediction models for a tenant
+  rpc ListPredictionModels(ListPredictionModelsRequest) returns (ListPredictionModelsResponse) {
+    option (google.api.http) = {
+      get: "/v1/brain/oracle/models/{tenant_id}"
+    };
+  }
+}
+
+// Oracle Request/Response Messages
+
+message PredictBudgetOverrunRequest {
+  string tenant_id = 1;
+  string workflow_id = 2;
+  string budget_id = 3;
+}
+
+message PredictBudgetOverrunResponse {
+  string budget_id = 1;
+  double predicted_cost = 2;
+  double remaining_budget = 3;
+  // Probability 0.0-1.0 that budget will be exceeded
+  double overrun_probability = 4;
+  RecommendedAction recommended_action = 5;
+  // Statistical confidence in the prediction
+  double confidence = 6;
+  // Underlying prediction model info
+  PredictionModel model = 7;
+}
+
+enum RecommendedAction {
+  RECOMMENDED_ACTION_UNSPECIFIED = 0;
+  RECOMMENDED_ACTION_NONE = 1;
+  RECOMMENDED_ACTION_WARN = 2;
+  RECOMMENDED_ACTION_REDUCE_RATE = 3;
+  RECOMMENDED_ACTION_REQUEST_QUOTA = 4;
+  RECOMMENDED_ACTION_HALT = 5;
+}
+
+message PredictionModel {
+  string tenant_id = 1;
+  string workflow_id = 2;
+  double avg_cost_per_run = 3;
+  double std_dev_cost_per_run = 4;
+  int64 avg_tokens_per_run = 5;
+  double runs_per_hour = 6;
+  google.protobuf.Timestamp last_updated = 7;
+  int32 sample_size = 8;
+}
+
+message GetPredictionModelRequest {
+  string tenant_id = 1;
+  string workflow_id = 2;
+  // If true, rebuild model from fresh data
+  bool force_rebuild = 3;
+}
+
+message GetPredictionModelResponse {
+  PredictionModel model = 1;
+  bool from_cache = 2;
+}
+
+message ListPredictionModelsRequest {
+  string tenant_id = 1;
+  int32 page_size = 2;
+  string page_token = 3;
+}
+
+message ListPredictionModelsResponse {
+  repeated PredictionModel models = 1;
+  string next_page_token = 2;
+  int32 total_count = 3;
+}
+
+// ============================================================================
+// IMMUNE SYSTEM SERVICE
+// Automated policy generation from incident patterns
+// Self-healing governance that learns from attacks
+// ============================================================================
+
+service ImmuneSystemService {
+  // Report an incident for the immune system to learn from
+  rpc ReportIncident(ReportIncidentRequest) returns (ReportIncidentResponse) {
+    option (google.api.http) = {
+      post: "/v1/brain/immune-system/incidents"
+      body: "*"
+    };
+  }
+
+  // Get detected attack patterns
+  rpc GetAttackPatterns(GetAttackPatternsRequest) returns (GetAttackPatternsResponse) {
+    option (google.api.http) = {
+      get: "/v1/brain/immune-system/patterns"
+    };
+  }
+
+  // Get auto-generated policies pending approval
+  rpc GetPendingPolicies(GetPendingPoliciesRequest) returns (GetPendingPoliciesResponse) {
+    option (google.api.http) = {
+      get: "/v1/brain/immune-system/policies/pending"
+    };
+  }
+
+  // Approve or reject an auto-generated policy
+  rpc ReviewGeneratedPolicy(ReviewGeneratedPolicyRequest) returns (ReviewGeneratedPolicyResponse) {
+    option (google.api.http) = {
+      post: "/v1/brain/immune-system/policies/{policy_id}/review"
+      body: "*"
+    };
+  }
+
+  // List all incidents for a tenant
+  rpc ListIncidents(ListIncidentsRequest) returns (ListIncidentsResponse) {
+    option (google.api.http) = {
+      get: "/v1/brain/immune-system/incidents"
+    };
+  }
+}
+
+// Immune System Request/Response Messages
+
+message Incident {
+  string incident_id = 1;
+  string tenant_id = 2;
+  google.protobuf.Timestamp timestamp = 3;
+  IncidentSeverity severity = 4;
+  IncidentCategory category = 5;
+  string description = 6;
+  map<string, string> details = 7;
+}
+
+enum IncidentSeverity {
+  INCIDENT_SEVERITY_UNSPECIFIED = 0;
+  INCIDENT_SEVERITY_LOW = 1;
+  INCIDENT_SEVERITY_MEDIUM = 2;
+  INCIDENT_SEVERITY_HIGH = 3;
+  INCIDENT_SEVERITY_CRITICAL = 4;
+}
+
+enum IncidentCategory {
+  INCIDENT_CATEGORY_UNSPECIFIED = 0;
+  INCIDENT_CATEGORY_BUDGET_OVERRUN = 1;
+  INCIDENT_CATEGORY_POLICY_VIOLATION = 2;
+  INCIDENT_CATEGORY_SECURITY_BREACH = 3;
+  INCIDENT_CATEGORY_RATE_LIMIT_EXCEEDED = 4;
+  INCIDENT_CATEGORY_ANOMALY_DETECTED = 5;
+}
+
+message AttackPattern {
+  string pattern_id = 1;
+  string signature = 2;
+  int32 frequency = 3;
+  repeated string indicators = 4;
+  repeated string affected_tenants = 5;
+  google.protobuf.Timestamp first_seen = 6;
+  google.protobuf.Timestamp last_seen = 7;
+}
+
+message GeneratedPolicy {
+  fulcrum.policy.v1.Policy policy = 1;
+  AttackPattern source_pattern = 2;
+  string reasoning = 3;
+  bool approval_required = 4;
+  GeneratedPolicyStatus status = 5;
+  google.protobuf.Timestamp generated_at = 6;
+}
+
+enum GeneratedPolicyStatus {
+  GENERATED_POLICY_STATUS_UNSPECIFIED = 0;
+  GENERATED_POLICY_STATUS_PENDING = 1;
+  GENERATED_POLICY_STATUS_APPROVED = 2;
+  GENERATED_POLICY_STATUS_REJECTED = 3;
+  GENERATED_POLICY_STATUS_AUTO_ACTIVATED = 4;
+}
+
+message ReportIncidentRequest {
+  Incident incident = 1;
+}
+
+message ReportIncidentResponse {
+  string incident_id = 1;
+  // If a policy was generated from this incident
+  GeneratedPolicy generated_policy = 2;
+  // Pattern that was updated/created
+  AttackPattern pattern = 3;
+}
+
+message GetAttackPatternsRequest {
+  string tenant_id = 1;
+  int32 min_frequency = 2;
+  int32 page_size = 3;
+  string page_token = 4;
+}
+
+message GetAttackPatternsResponse {
+  repeated AttackPattern patterns = 1;
+  string next_page_token = 2;
+  int32 total_count = 3;
+}
+
+message GetPendingPoliciesRequest {
+  string tenant_id = 1;
+  int32 page_size = 2;
+  string page_token = 3;
+}
+
+message GetPendingPoliciesResponse {
+  repeated GeneratedPolicy policies = 1;
+  string next_page_token = 2;
+  int32 total_count = 3;
+}
+
+message ReviewGeneratedPolicyRequest {
+  string policy_id = 1;
+  ReviewDecision decision = 2;
+  string reviewer_id = 3;
+  string review_notes = 4;
+}
+
+enum ReviewDecision {
+  REVIEW_DECISION_UNSPECIFIED = 0;
+  REVIEW_DECISION_APPROVE = 1;
+  REVIEW_DECISION_REJECT = 2;
+  REVIEW_DECISION_MODIFY = 3;
+}
+
+message ReviewGeneratedPolicyResponse {
+  GeneratedPolicy policy = 1;
+  bool activated = 2;
+}
+
+message ListIncidentsRequest {
+  string tenant_id = 1;
+  // Filter by severity
+  IncidentSeverity min_severity = 2;
+  // Filter by category
+  IncidentCategory category = 3;
+  // Time range
+  google.protobuf.Timestamp start_time = 4;
+  google.protobuf.Timestamp end_time = 5;
+  int32 page_size = 6;
+  string page_token = 7;
+}
+
+message ListIncidentsResponse {
+  repeated Incident incidents = 1;
+  string next_page_token = 2;
+  int32 total_count = 3;
+}

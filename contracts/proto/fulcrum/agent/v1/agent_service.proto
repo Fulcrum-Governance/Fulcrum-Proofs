@@ -1,0 +1,170 @@
+// Fulcrum Protocol Buffer Definition
+// Version: 2.0.0
+// Last Modified: 2026-01-22
+// Status: Production
+// Breaking Changes Since 1.0.0: See CHANGELOG.md
+//
+
+syntax = "proto3";
+
+package fulcrum.agent.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+
+option go_package = "github.com/fulcrum-io/fulcrum/pkg/agent/v1;agentv1";
+
+service AgentService {
+  // CreateAgent creates a new agent for the authenticated tenant.
+  rpc CreateAgent(CreateAgentRequest) returns (CreateAgentResponse);
+
+  // GetAgent retrieves an agent by ID.
+  rpc GetAgent(GetAgentRequest) returns (GetAgentResponse);
+
+  // ListAgents lists all agents for the authenticated tenant.
+  rpc ListAgents(ListAgentsRequest) returns (ListAgentsResponse);
+
+  // UpdateAgent updates an existing agent.
+  rpc UpdateAgent(UpdateAgentRequest) returns (UpdateAgentResponse);
+
+  // DeleteAgent soft-deletes an agent by ID.
+  rpc DeleteAgent(DeleteAgentRequest) returns (DeleteAgentResponse);
+
+  // GetAgentMetrics retrieves metrics for a specific agent.
+  rpc GetAgentMetrics(GetAgentMetricsRequest) returns (GetAgentMetricsResponse);
+
+  // RecordAgentMetrics records metrics for an agent (internal use).
+  rpc RecordAgentMetrics(RecordAgentMetricsRequest) returns (RecordAgentMetricsResponse);
+}
+
+message Agent {
+  string id = 1;
+  string tenant_id = 2;
+  string name = 3;
+  string description = 4;
+  string model = 5;
+  string status = 6; // active, paused, error, deleted
+  string environment = 7;
+  string team = 8;
+  google.protobuf.Struct config = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+}
+
+message AgentMetrics {
+  string agent_id = 1;
+  string tenant_id = 2;
+  
+  // Request metrics
+  int32 request_count = 3;
+  int32 error_count = 4;
+  
+  // Cost metrics
+  double total_cost = 5;
+  int32 input_tokens = 6;
+  int32 output_tokens = 7;
+  
+  // Policy metrics
+  int32 violation_count = 8;
+  
+  // Performance metrics
+  double avg_latency_ms = 9;
+  double p50_latency_ms = 10;
+  double p95_latency_ms = 11;
+  double p99_latency_ms = 12;
+  
+  // Availability metrics
+  int32 uptime_seconds = 13;
+  int32 downtime_seconds = 14;
+  double uptime_percent = 15;
+  
+  // Last activity
+  google.protobuf.Timestamp last_seen_at = 16;
+  
+  // Time period
+  string period = 17; // hourly, daily, realtime
+  google.protobuf.Timestamp timestamp = 18;
+}
+
+message CreateAgentRequest {
+  string name = 1;
+  string description = 2;
+  string model = 3;
+  string environment = 4;
+  string team = 5;
+  google.protobuf.Struct config = 6;
+}
+
+message CreateAgentResponse {
+  Agent agent = 1;
+}
+
+message GetAgentRequest {
+  string id = 1;
+}
+
+message GetAgentResponse {
+  Agent agent = 1;
+}
+
+message ListAgentsRequest {
+  int32 page_size = 1;
+  string page_token = 2;
+  string status = 3; // Optional filter
+  string environment = 4; // Optional filter
+  string team = 5; // Optional filter
+}
+
+message ListAgentsResponse {
+  repeated Agent agents = 1;
+  string next_page_token = 2;
+  int32 total_count = 3;
+}
+
+message UpdateAgentRequest {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string status = 4;
+  google.protobuf.Struct config = 5;
+}
+
+message UpdateAgentResponse {
+  Agent agent = 1;
+}
+
+message DeleteAgentRequest {
+  string id = 1;
+}
+
+message DeleteAgentResponse {
+  bool success = 1;
+}
+
+message GetAgentMetricsRequest {
+  string agent_id = 1;
+  string period = 2; // hourly, daily, realtime (default: daily)
+  google.protobuf.Timestamp start_time = 3;
+  google.protobuf.Timestamp end_time = 4;
+}
+
+message GetAgentMetricsResponse {
+  repeated AgentMetrics metrics = 1;
+  AgentMetrics current = 2; // Current aggregated metrics
+}
+
+message RecordAgentMetricsRequest {
+  string agent_id = 1;
+  int32 request_count = 2;
+  int32 error_count = 3;
+  double cost = 4;
+  int32 input_tokens = 5;
+  int32 output_tokens = 6;
+  int32 violation_count = 7;
+  double latency_ms = 8;
+  bool is_available = 9;
+}
+
+message RecordAgentMetricsResponse {
+  bool success = 1;
+}

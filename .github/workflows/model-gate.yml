@@ -1,0 +1,41 @@
+name: model-gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  model-gate:
+    name: model-gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Download TLC
+        run: |
+          mkdir -p models/tla/tools
+          curl -fsSL \
+            -o models/tla/tools/tla2tools.jar \
+            https://github.com/tlaplus/tlaplus/releases/latest/download/tla2tools.jar
+
+      - name: Run TLC checks
+        run: make model-gate
+
+      - name: Upload model artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-gate-reports
+          path: |
+            models/tla/reports/**
+            models/tla/traces/**
+          if-no-files-found: warn

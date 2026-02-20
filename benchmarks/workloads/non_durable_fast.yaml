@@ -1,0 +1,7 @@
+name: non-durable-fast-path
+objective: measure latency in non-durable fast execution mode
+phases:
+  - gateway_auth
+  - policy_lookup
+  - proof_cache_validation
+  - response_emit

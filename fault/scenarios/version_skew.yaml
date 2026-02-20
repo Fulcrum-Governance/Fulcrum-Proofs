@@ -1,0 +1,9 @@
+name: version-skew
+injection: mixed_policy_version_cluster
+iterations: 500
+parameters:
+  skewed_nodes_pct: 20
+  stale_proof_ttl_ms: 1000
+expected:
+  max_revocation_window_ms: 750
+  max_safety_violations: 0

@@ -1,0 +1,23 @@
+version: 1
+run_id_prefix: bench
+env: ci
+commit: unknown
+workloads:
+  - name: durable-governed-path
+    durability_mode: durable_governed
+    samples: 5000
+    mean_ms: 1.8
+    stddev_ms: 0.5
+    error_rate: 0.002
+  - name: non-durable-fast-path
+    durability_mode: non_durable_fast
+    samples: 5000
+    mean_ms: 0.45
+    stddev_ms: 0.15
+    error_rate: 0.001
+  - name: finops-sensitivity-sweep
+    durability_mode: finops_sensitivity
+    samples: 3000
+    mean_ms: 2.4
+    stddev_ms: 0.8
+    error_rate: 0.003

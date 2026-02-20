@@ -1,0 +1,49 @@
+name: bench-nightly
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+jobs:
+  bench-nightly:
+    name: bench-nightly
+    runs-on: ubuntu-latest
+    environment: bench-nightly
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: python3 -m pip install -r requirements.txt
+
+      - name: Run nightly benchmark suite
+        run: |
+          mkdir -p benchmarks/raw
+          python3 benchmarks/harness/run_benchmarks.py \
+            --manifest benchmarks/manifests/benchmark_manifest.yaml \
+            --commit "${GITHUB_SHA}" \
+            --env "bench-nightly" \
+            --out benchmarks/raw/nightly-suite.json
+          python3 scripts/schema_check.py \
+            --schema benchmarks/reports/benchmark_suite.schema.json \
+            --input benchmarks/raw/nightly-suite.json
+          for f in benchmarks/raw/bench-*.json; do
+            python3 scripts/schema_check.py \
+              --schema benchmarks/reports/benchmark_run.schema.json \
+              --input "$f"
+          done
+
+      - name: Upload nightly artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench-nightly-reports
+          path: |
+            benchmarks/raw/*.json
+          if-no-files-found: warn

@@ -1,0 +1,44 @@
+name: evidence-gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  evidence-gate:
+    name: evidence-gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: python3 -m pip install -r requirements.txt
+
+      - name: Validate evidence matrix and contract manifest
+        run: make evidence-gate
+
+      - name: Optional citation metadata check
+        run: |
+          if [[ -f audits/post-repair/references.txt ]]; then
+            python3 scripts/reference_sanity_check.py --input audits/post-repair/references.txt
+          else
+            echo "No audits/post-repair/references.txt present; skipping citation sanity check."
+          fi
+
+      - name: Upload evidence artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidence-gate-reports
+          path: |
+            compliance/**
+            audits/post-repair/**
+          if-no-files-found: warn

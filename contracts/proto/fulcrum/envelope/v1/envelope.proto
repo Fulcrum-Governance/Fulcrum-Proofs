@@ -1,0 +1,169 @@
+// Fulcrum Protocol Buffer Definition
+// Version: 2.0.0
+// Last Modified: 2026-01-03
+// Status: Production
+// Breaking Changes Since 1.0.0: See CHANGELOG.md
+//
+
+syntax = "proto3";
+
+package fulcrum.envelope.v1;
+
+option go_package = "github.com/fulcrum-io/fulcrum/pkg/envelope/v1";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+import "fulcrum/events/v1/events.proto";
+
+// ExecutionEnvelope is Fulcrum's core abstraction.
+// Every agent execution—regardless of framework—is wrapped in an envelope.
+// Governance operates on envelopes, not raw framework executions.
+message ExecutionEnvelope {
+  // Unique identifier for this envelope
+  string envelope_id = 1;
+
+  // Tenant isolation
+  string tenant_id = 2;
+
+  // Workflow identification (optional, for multi-step workflows)
+  string workflow_id = 3;
+
+  // Execution identification (unique per run)
+  string execution_id = 4;
+
+  // Governance context - budget, policies, limits
+  GovernanceContext governance = 5;
+
+  // Framework-specific context
+  FrameworkContext framework = 6;
+
+  // Current lifecycle state
+  EnvelopeStatus status = 7;
+
+  // Accumulated events during execution
+  repeated fulcrum.events.v1.FulcrumEvent events = 8;
+
+  // Cost tracking
+  CostSummary cost = 9;
+
+  // Timestamps
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+  google.protobuf.Timestamp completed_at = 12;
+
+  // Optional parent envelope (for sub-executions)
+  string parent_envelope_id = 13;
+
+  // Metadata (key-value pairs for extensibility)
+  map<string, string> metadata = 14;
+
+  // Trace context for distributed tracing (W3C Trace Context format)
+  map<string, string> trace_context = 15;
+}
+
+// GovernanceContext defines budget and policy constraints
+message GovernanceContext {
+  // Budget constraints
+  string budget_id = 1;
+  int64 token_budget = 2;           // Max tokens allowed
+  double cost_limit_usd = 3;        // Max cost in USD
+  int64 timeout_seconds = 4;        // Max execution time
+
+  // Policy constraints
+  string policy_set_id = 5;         // Reference to policy ruleset
+  repeated string allowed_models = 6;
+  repeated string allowed_tools = 7;
+
+  // Rate limiting
+  int32 max_llm_calls = 8;
+  int32 max_tool_calls = 9;
+
+  // Compliance tags
+  repeated string compliance_tags = 10;  // e.g., "pii-handling", "hipaa"
+}
+
+// FrameworkContext captures framework-specific execution details
+message FrameworkContext {
+  // Which adapter is handling this execution
+  FrameworkType framework_type = 1;
+
+  // Reference to the native execution (opaque to Fulcrum)
+  string native_execution_ref = 2;
+
+  // Latest checkpoint ID (if checkpointing is supported)
+  string checkpoint_id = 3;
+
+  // Thread/session ID (for conversational workflows)
+  string thread_id = 4;
+
+  // Framework-specific configuration (opaque payload)
+  google.protobuf.Struct native_config = 5;
+}
+
+// FrameworkType identifies the orchestration framework
+enum FrameworkType {
+  FRAMEWORK_TYPE_UNSPECIFIED = 0;
+  FRAMEWORK_TYPE_LANGGRAPH = 1;
+  FRAMEWORK_TYPE_MICROSOFT = 2;
+  FRAMEWORK_TYPE_CREWAI = 3;
+  FRAMEWORK_TYPE_AUTOGEN = 4;
+  FRAMEWORK_TYPE_A2A_PROXY = 5;
+  FRAMEWORK_TYPE_CUSTOM = 99;
+}
+
+// EnvelopeStatus tracks execution lifecycle
+enum EnvelopeStatus {
+  ENVELOPE_STATUS_UNSPECIFIED = 0;
+  ENVELOPE_STATUS_PENDING = 1;        // Created, not yet authorized
+  ENVELOPE_STATUS_AUTHORIZED = 2;     // Passed policy check, ready to run
+  ENVELOPE_STATUS_RUNNING = 3;        // Currently executing
+  ENVELOPE_STATUS_PAUSED = 4;         // Suspended (human-in-the-loop)
+  ENVELOPE_STATUS_COMPLETED = 5;      // Successfully finished
+  ENVELOPE_STATUS_FAILED = 6;         // Error during execution
+  ENVELOPE_STATUS_TERMINATED = 7;     // Forcefully stopped
+  ENVELOPE_STATUS_BUDGET_EXCEEDED = 8; // Killed due to budget
+  ENVELOPE_STATUS_POLICY_VIOLATION = 9; // Killed due to policy
+  ENVELOPE_STATUS_TIMEOUT = 10;       // Killed due to timeout
+}
+
+// CostSummary aggregates cost information
+message CostSummary {
+  int64 total_input_tokens = 1;
+  int64 total_output_tokens = 2;
+  double total_cost_usd = 3;
+  int32 llm_call_count = 4;
+  int32 tool_call_count = 5;
+
+  // Per-model breakdown
+  repeated ModelCost model_costs = 6;
+}
+
+// ModelCost tracks cost per model
+message ModelCost {
+  string model_id = 1;
+  int64 input_tokens = 2;
+  int64 output_tokens = 3;
+  double cost_usd = 4;
+  int32 call_count = 5;
+}
+
+// Checkpoint captures execution state for recovery
+message Checkpoint {
+  string checkpoint_id = 1;
+  string envelope_id = 2;
+  google.protobuf.Timestamp created_at = 3;
+
+  // State hash for integrity verification
+  string state_hash = 4;
+
+  // Serialized state (framework-specific format)
+  bytes state_data = 5;
+  int64 state_size_bytes = 6;
+
+  // Position in execution
+  string node_id = 7;            // Current node/step
+  int32 iteration = 8;           // Loop iteration if applicable
+
+  // Cost at checkpoint time
+  CostSummary cost_snapshot = 9;
+}

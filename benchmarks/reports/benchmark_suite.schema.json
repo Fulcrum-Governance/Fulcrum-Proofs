@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fulcrum-governance.github.io/fulcrum-proofs/schemas/benchmark_suite.schema.json",
+  "title": "Benchmark Suite Report",
+  "type": "object",
+  "required": ["summary", "runs"],
+  "properties": {
+    "summary": {
+      "type": "object",
+      "required": ["run_count", "generated_at", "manifest"],
+      "properties": {
+        "run_count": {"type": "integer", "minimum": 1},
+        "generated_at": {"type": "string"},
+        "manifest": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "runs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "run_id",
+          "commit",
+          "env",
+          "workload",
+          "durability_mode",
+          "samples",
+          "p50",
+          "p95",
+          "p99",
+          "ci95",
+          "errors"
+        ],
+        "properties": {
+          "run_id": {"type": "string"},
+          "commit": {"type": "string"},
+          "env": {"type": "string"},
+          "workload": {"type": "string"},
+          "durability_mode": {
+            "type": "string",
+            "enum": ["durable_governed", "non_durable_fast", "finops_sensitivity"]
+          },
+          "samples": {"type": "integer", "minimum": 1},
+          "p50": {"type": "number", "minimum": 0},
+          "p95": {"type": "number", "minimum": 0},
+          "p99": {"type": "number", "minimum": 0},
+          "ci95": {
+            "type": "object",
+            "required": ["low", "high"],
+            "properties": {
+              "low": {"type": "number"},
+              "high": {"type": "number"}
+            },
+            "additionalProperties": false
+          },
+          "errors": {"type": "integer", "minimum": 0}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

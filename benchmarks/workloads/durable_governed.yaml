@@ -1,0 +1,8 @@
+name: durable-governed-path
+objective: measure latency in durable governed execution mode
+phases:
+  - gateway_auth
+  - policy_lookup
+  - proof_freshness_validation
+  - durable_event_publish_ack
+  - response_emit

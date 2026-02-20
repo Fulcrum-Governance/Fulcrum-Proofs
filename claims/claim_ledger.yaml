@@ -1,0 +1,38 @@
+version: 1
+updated_at: 2026-02-20
+entries:
+  - claim_id: C-004
+    type: empirical
+    status: incomplete
+    evidence_refs: []
+    notes: Hard p99 claim downgraded; awaiting reproducible benchmark artifacts.
+  - claim_id: C-005
+    type: empirical
+    status: incomplete
+    evidence_refs: []
+    notes: Kept downgraded until dedicated long-context dataset and protocol exist.
+  - claim_id: C-009
+    type: formal
+    status: incomplete
+    evidence_refs: []
+    notes: Lean package scaffolded; CI replay pending first passing run.
+  - claim_id: C-014
+    type: hybrid
+    status: incomplete
+    evidence_refs: []
+    notes: Requires Lean temporal obligations + TLA checks + fault campaign bounds.
+  - claim_id: C-015
+    type: empirical
+    status: incomplete
+    evidence_refs: []
+    notes: Clause-to-control mapping scaffolded; evidence links pending.
+  - claim_id: C-016
+    type: empirical
+    status: incomplete
+    evidence_refs: []
+    notes: Benchmark harness scaffolded; confidence intervals pending real runs.
+  - claim_id: C-017
+    type: empirical
+    status: incomplete
+    evidence_refs: []
+    notes: FinOps sensitivity workflow scaffolded; dataset and run outputs pending.

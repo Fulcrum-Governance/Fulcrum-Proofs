@@ -1,0 +1,75 @@
+// Fulcrum Protocol Buffer Definition
+// Version: 2.0.0
+// Last Modified: 2026-01-03
+// Status: Production
+// Breaking Changes Since 1.0.0: See CHANGELOG.md
+//
+
+syntax = "proto3";
+
+package fulcrum.envelope.v1;
+
+option go_package = "github.com/fulcrum-io/fulcrum/pkg/envelope/v1";
+
+import "google/api/annotations.proto";
+import "fulcrum/envelope/v1/envelope.proto";
+
+// EnvelopeService manages execution envelopes that wrap AI agent operations.
+// Each envelope tracks the lifecycle, cost, and policy compliance of an operation.
+service EnvelopeService {
+  // CreateEnvelope initializes a new execution envelope
+  rpc CreateEnvelope(CreateEnvelopeRequest) returns (CreateEnvelopeResponse) {
+    option (google.api.http) = {
+      post: "/v1/envelopes"
+      body: "*"
+    };
+  }
+
+  // GetEnvelope retrieves an envelope by ID
+  rpc GetEnvelope(GetEnvelopeRequest) returns (GetEnvelopeResponse) {
+    option (google.api.http) = {
+      get: "/v1/envelopes/{envelope_id}"
+    };
+  }
+
+  // UpdateEnvelopeStatus updates the status of an envelope
+  rpc UpdateEnvelopeStatus(UpdateEnvelopeStatusRequest) returns (UpdateEnvelopeStatusResponse) {
+    option (google.api.http) = {
+      patch: "/v1/envelopes/{envelope_id}/status"
+      body: "*"
+    };
+  }
+}
+
+message CreateEnvelopeRequest {
+  string tenant_id = 1;
+  string budget_id = 2; // Optional: specific budget to use
+  
+  // The intent/request that needs an envelope
+  string adapter_type = 3; // e.g., "custom", "langchain"
+  
+  // Metadata for policy evaluation (e.g. tool_name, model_name)
+  map<string, string> metadata = 4;
+}
+
+message CreateEnvelopeResponse {
+  ExecutionEnvelope envelope = 1;
+}
+
+message GetEnvelopeRequest {
+  string envelope_id = 1;
+}
+
+message GetEnvelopeResponse {
+  ExecutionEnvelope envelope = 1;
+}
+
+message UpdateEnvelopeStatusRequest {
+  string envelope_id = 1;
+  EnvelopeStatus status = 2;
+  string reason = 3; // Optional reason for status change
+}
+
+message UpdateEnvelopeStatusResponse {
+  ExecutionEnvelope envelope = 1;
+}

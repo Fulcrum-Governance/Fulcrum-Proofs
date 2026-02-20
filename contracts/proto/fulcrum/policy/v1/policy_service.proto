@@ -1,0 +1,566 @@
+// Fulcrum Protocol Buffer Definition
+// Version: 2.0.0
+// Last Modified: 2026-01-03
+// Status: Production
+// Breaking Changes Since 1.0.0: See CHANGELOG.md
+//
+
+syntax = "proto3";
+
+package fulcrum.policy.v1;
+
+option go_package = "github.com/fulcrum-io/fulcrum/pkg/policy/v1";
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+
+// PolicyService provides policy management and evaluation capabilities.
+// Supports creating policies, evaluating rules, and enforcing governance.
+service PolicyService {
+  // Policy CRUD operations
+  rpc CreatePolicy(CreatePolicyRequest) returns (CreatePolicyResponse) {
+    option (google.api.http) = {
+      post: "/v1/policies"
+      body: "policy"
+    };
+  }
+
+  rpc GetPolicy(GetPolicyRequest) returns (GetPolicyResponse) {
+    option (google.api.http) = {
+      get: "/v1/policies/{policy_id}"
+    };
+  }
+
+  rpc UpdatePolicy(UpdatePolicyRequest) returns (UpdatePolicyResponse) {
+    option (google.api.http) = {
+      patch: "/v1/policies/{policy.policy_id}"
+      body: "policy"
+    };
+  }
+
+  rpc DeletePolicy(DeletePolicyRequest) returns (DeletePolicyResponse) {
+    option (google.api.http) = {
+      delete: "/v1/policies/{policy_id}"
+    };
+  }
+
+  rpc ListPolicies(ListPoliciesRequest) returns (ListPoliciesResponse) {
+    option (google.api.http) = {
+      get: "/v1/policies"
+    };
+  }
+
+  // Policy evaluation
+  rpc EvaluatePolicy(EvaluatePolicyRequest) returns (EvaluatePolicyResponse) {
+    option (google.api.http) = {
+      post: "/v1/policies/evaluate"
+      body: "*"
+    };
+  }
+
+  // Batch evaluation for multiple policies
+  rpc EvaluatePolicies(EvaluatePoliciesRequest) returns (EvaluatePoliciesResponse) {
+    option (google.api.http) = {
+      post: "/v1/policies/batch-evaluate"
+      body: "*"
+    };
+  }
+
+  rpc GetEvaluationHistory(GetEvaluationHistoryRequest) returns (GetEvaluationHistoryResponse) {
+    option (google.api.http) = {
+      get: "/v1/policies/{policy_id}/evaluations"
+    };
+  }
+
+  // Approval Workflow
+  rpc ListApprovals(ListApprovalsRequest) returns (ListApprovalsResponse) {
+    option (google.api.http) = {
+      get: "/v1/approvals"
+    };
+  }
+
+  rpc UpdateApproval(UpdateApprovalRequest) returns (UpdateApprovalResponse) {
+    option (google.api.http) = {
+      patch: "/v1/approvals/{approval_id}"
+      body: "*"
+    };
+  }
+}
+
+// Policy defines governance rules for agent execution.
+message Policy {
+  // Unique policy identifier
+  string policy_id = 1;
+
+  // Tenant this policy applies to
+  string tenant_id = 2;
+
+  // Policy metadata
+  string name = 3;
+  string description = 4;
+  map<string, string> tags = 5;
+
+  // Policy rules
+  repeated PolicyRule rules = 6;
+
+  // Policy scope
+  PolicyScope scope = 7;
+
+  // Policy status
+  PolicyStatus status = 8;
+
+  // Enforcement level
+  EnforcementLevel enforcement = 9;
+
+  // Priority (higher = evaluated first)
+  int32 priority = 10;
+
+  // Timestamps
+  google.protobuf.Timestamp created_at = 11;
+  google.protobuf.Timestamp updated_at = 12;
+  google.protobuf.Timestamp effective_at = 13;  // When policy becomes active
+  google.protobuf.Timestamp expires_at = 14;    // Optional expiration
+
+  // Created by
+  string created_by = 15;
+}
+
+// PolicyRule represents a single rule within a policy.
+message PolicyRule {
+  // Rule identifier (unique within policy)
+  string rule_id = 1;
+
+  // Rule name and description
+  string name = 2;
+  string description = 3;
+
+  // Rule conditions (all must match for rule to trigger)
+  repeated PolicyCondition conditions = 4;
+
+  // Actions to take when rule matches
+  repeated PolicyAction actions = 5;
+
+  // Rule type
+  RuleType rule_type = 6;
+
+  // Rule enabled/disabled
+  bool enabled = 7;
+
+  // Priority within policy (higher = evaluated first)
+  int32 priority = 8;
+}
+
+// PolicyCondition defines when a rule should trigger.
+message PolicyCondition {
+  // Condition type determines which fields are used
+  ConditionType condition_type = 1;
+
+  // Field to evaluate (e.g., "user.role", "model.id", "tool.name")
+  string field = 2;
+
+  // Operator for comparison
+  ConditionOperator operator = 3;
+
+  // Value to compare against
+  oneof value {
+    string string_value = 4;
+    int64 int_value = 5;
+    double float_value = 6;
+    bool bool_value = 7;
+    google.protobuf.ListValue list_value = 8;
+  }
+
+  // Additional values for multi-value operators
+  repeated string values = 9;
+
+  // Nested conditions for complex logic (AND/OR)
+  repeated PolicyCondition nested_conditions = 10;
+
+  // Logical operator for nested conditions
+  LogicalOperator logical_operator = 11;
+
+  // Negate the condition
+  bool negate = 12;
+
+  // Semantic evaluation fields
+  string semantic_intent = 20;  // Human-readable intent description
+  string semantic_model = 21;   // LLM model to use (e.g., "llama3.2")
+  float semantic_confidence_threshold = 22;  // Minimum confidence to match
+}
+
+// PolicyAction defines what to do when a rule matches.
+message PolicyAction {
+  // Action type
+  ActionType action_type = 1;
+
+  // Action parameters (flexible structure)
+  map<string, string> parameters = 2;
+
+  // Message to return to user
+  string message = 3;
+
+  // Severity level
+  SeverityLevel severity = 4;
+
+  // Stop evaluation after this action
+  bool terminal = 5;
+}
+
+// PolicyScope defines where a policy applies.
+message PolicyScope {
+  // Workflows this policy applies to
+  repeated string workflow_ids = 1;
+
+  // Execution phases where policy is evaluated
+  repeated ExecutionPhase phases = 2;
+
+  // User roles this policy applies to
+  repeated string roles = 3;
+
+  // Model restrictions
+  repeated string model_ids = 4;
+
+  // Tool restrictions
+  repeated string tool_names = 5;
+
+  // Apply to all workflows (if true, workflow_ids ignored)
+  bool apply_to_all = 6;
+}
+
+// EvaluationResult represents the outcome of policy evaluation.
+message EvaluationResult {
+  // Policy evaluated
+  string policy_id = 1;
+
+  // Evaluation outcome
+  EvaluationDecision decision = 2;
+
+  // Rules that matched
+  repeated RuleMatch matched_rules = 3;
+
+  // Actions to execute
+  repeated PolicyAction actions = 4;
+
+  // Evaluation metadata
+  string message = 5;
+  map<string, string> metadata = 6;
+
+  // Evaluation timing
+  google.protobuf.Timestamp evaluated_at = 7;
+  int64 evaluation_duration_ms = 8;
+
+  // Context that was evaluated
+  EvaluationContext context = 9;
+}
+
+// RuleMatch represents a rule that matched during evaluation.
+message RuleMatch {
+  string rule_id = 1;
+  string rule_name = 2;
+  repeated string matched_conditions = 3;
+  int32 priority = 4;
+}
+
+// EvaluationContext provides data for policy evaluation.
+message EvaluationContext {
+  // Tenant and workflow
+  string tenant_id = 1;
+  string workflow_id = 2;
+  string envelope_id = 3;
+
+  // User context
+  string user_id = 4;
+  repeated string user_roles = 5;
+
+  // Execution context
+  ExecutionPhase phase = 6;
+  string model_id = 7;
+  repeated string tool_names = 8;
+
+  // Content to evaluate
+  string input_text = 9;
+  string output_text = 10;
+
+  // Additional context (flexible)
+  map<string, string> attributes = 11;
+
+  // Timestamp
+  google.protobuf.Timestamp timestamp = 12;
+}
+
+// Enums
+
+// PolicyStatus indicates policy state
+enum PolicyStatus {
+  POLICY_STATUS_UNSPECIFIED = 0;
+  POLICY_STATUS_DRAFT = 1;
+  POLICY_STATUS_ACTIVE = 2;
+  POLICY_STATUS_INACTIVE = 3;
+  POLICY_STATUS_ARCHIVED = 4;
+}
+
+// EnforcementLevel defines how strictly policy is enforced
+enum EnforcementLevel {
+  ENFORCEMENT_LEVEL_UNSPECIFIED = 0;
+  ENFORCEMENT_LEVEL_AUDIT = 1;      // Log only, don't block
+  ENFORCEMENT_LEVEL_WARN = 2;       // Warn but allow
+  ENFORCEMENT_LEVEL_BLOCK = 3;      // Block execution
+  ENFORCEMENT_LEVEL_TERMINATE = 4;  // Terminate execution immediately
+}
+
+// RuleType categorizes policy rules
+enum RuleType {
+  RULE_TYPE_UNSPECIFIED = 0;
+  RULE_TYPE_RBAC = 1;               // Role-based access control
+  RULE_TYPE_CONTENT_FILTER = 2;     // Content filtering
+  RULE_TYPE_TOOL_ALLOWLIST = 3;     // Tool access control
+  RULE_TYPE_MODEL_RESTRICTION = 4;  // Model usage restrictions
+  RULE_TYPE_RATE_LIMIT = 5;         // Rate limiting
+  RULE_TYPE_COST_CONTROL = 6;       // Cost-based controls
+  RULE_TYPE_CUSTOM = 7;             // Custom rule type
+}
+
+// ConditionType defines the type of condition
+enum ConditionType {
+  CONDITION_TYPE_UNSPECIFIED = 0;
+  CONDITION_TYPE_FIELD_MATCH = 1;      // Simple field comparison
+  CONDITION_TYPE_REGEX = 2;            // Regex pattern matching
+  CONDITION_TYPE_RANGE = 3;            // Numeric range
+  CONDITION_TYPE_IN_LIST = 4;          // Value in list
+  CONDITION_TYPE_CONTAINS = 5;         // String contains
+  CONDITION_TYPE_STARTS_WITH = 6;      // String starts with
+  CONDITION_TYPE_ENDS_WITH = 7;        // String ends with
+  CONDITION_TYPE_LOGICAL = 8;          // AND/OR of nested conditions
+  CONDITION_TYPE_STATISTICAL_SPIKE = 9; // Deviation from historical baseline
+  CONDITION_TYPE_EXTERNAL_CALL = 10;     // Fetch data from external API/DB
+  CONDITION_TYPE_SEMANTIC = 11;          // LLM-based intent evaluation
+}
+
+// ConditionOperator defines comparison operators
+enum ConditionOperator {
+  CONDITION_OPERATOR_UNSPECIFIED = 0;
+  CONDITION_OPERATOR_EQUALS = 1;
+  CONDITION_OPERATOR_NOT_EQUALS = 2;
+  CONDITION_OPERATOR_GREATER_THAN = 3;
+  CONDITION_OPERATOR_LESS_THAN = 4;
+  CONDITION_OPERATOR_GREATER_EQUAL = 5;
+  CONDITION_OPERATOR_LESS_EQUAL = 6;
+  CONDITION_OPERATOR_MATCHES = 7;       // Regex match
+  CONDITION_OPERATOR_CONTAINS = 8;      // String/list contains
+  CONDITION_OPERATOR_IN = 9;            // Value in list
+  CONDITION_OPERATOR_NOT_IN = 10;       // Value not in list
+}
+
+// LogicalOperator combines multiple conditions
+enum LogicalOperator {
+  LOGICAL_OPERATOR_UNSPECIFIED = 0;
+  LOGICAL_OPERATOR_AND = 1;
+  LOGICAL_OPERATOR_OR = 2;
+  LOGICAL_OPERATOR_NOT = 3;
+}
+
+// ActionType defines what action to take
+enum ActionType {
+  ACTION_TYPE_UNSPECIFIED = 0;
+  ACTION_TYPE_ALLOW = 1;           // Allow execution
+  ACTION_TYPE_DENY = 2;            // Block execution
+  ACTION_TYPE_WARN = 3;            // Warn but allow
+  ACTION_TYPE_MODIFY = 4;          // Modify request
+  ACTION_TYPE_REDIRECT = 5;        // Redirect to different model/tool
+  ACTION_TYPE_AUDIT = 6;           // Log for audit
+  ACTION_TYPE_THROTTLE = 7;        // Rate limit
+  ACTION_TYPE_REQUIRE_APPROVAL = 8; // Require human approval
+  ACTION_TYPE_NOTIFY = 9;           // Notify external service (Slack/Teams)
+}
+
+// SeverityLevel indicates action severity
+enum SeverityLevel {
+  SEVERITY_LEVEL_UNSPECIFIED = 0;
+  SEVERITY_LEVEL_INFO = 1;
+  SEVERITY_LEVEL_LOW = 2;
+  SEVERITY_LEVEL_MEDIUM = 3;
+  SEVERITY_LEVEL_HIGH = 4;
+  SEVERITY_LEVEL_CRITICAL = 5;
+}
+
+// ExecutionPhase defines when policy is evaluated
+enum ExecutionPhase {
+  EXECUTION_PHASE_UNSPECIFIED = 0;
+  EXECUTION_PHASE_PRE_EXECUTION = 1;   // Before execution starts
+  EXECUTION_PHASE_PRE_LLM_CALL = 2;    // Before each LLM call
+  EXECUTION_PHASE_POST_LLM_CALL = 3;   // After each LLM call
+  EXECUTION_PHASE_PRE_TOOL_CALL = 4;   // Before each tool call
+  EXECUTION_PHASE_POST_TOOL_CALL = 5;  // After each tool call
+  EXECUTION_PHASE_POST_EXECUTION = 6;  // After execution completes
+}
+
+// EvaluationDecision is the final policy decision
+enum EvaluationDecision {
+  EVALUATION_DECISION_UNSPECIFIED = 0;
+  EVALUATION_DECISION_ALLOW = 1;       // Execution allowed
+  EVALUATION_DECISION_DENY = 2;        // Execution blocked
+  EVALUATION_DECISION_WARN = 3;        // Warning issued
+  EVALUATION_DECISION_REQUIRE_APPROVAL = 4; // Needs approval
+}
+
+// Request/Response messages
+
+message CreatePolicyRequest {
+  Policy policy = 1;
+}
+
+message CreatePolicyResponse {
+  Policy policy = 1;
+}
+
+message GetPolicyRequest {
+  string policy_id = 1;
+}
+
+message GetPolicyResponse {
+  Policy policy = 1;
+}
+
+message UpdatePolicyRequest {
+  Policy policy = 1;
+  repeated string update_mask = 2;
+}
+
+message UpdatePolicyResponse {
+  Policy policy = 1;
+}
+
+message DeletePolicyRequest {
+  string policy_id = 1;
+}
+
+message DeletePolicyResponse {
+  bool success = 1;
+}
+
+message ListPoliciesRequest {
+  // Filter by tenant
+  string tenant_id = 1;
+
+  // Filter by status
+  PolicyStatus status = 2;
+
+  // Filter by rule type
+  RuleType rule_type = 3;
+
+  // Pagination
+  int32 page_size = 4;
+  string page_token = 5;
+}
+
+message ListPoliciesResponse {
+  repeated Policy policies = 1;
+  string next_page_token = 2;
+  int32 total_count = 3;
+}
+
+message EvaluatePolicyRequest {
+  // Policy to evaluate
+  string policy_id = 1;
+
+  // Context for evaluation
+  EvaluationContext context = 2;
+
+  // Dry run (don't execute actions)
+  bool dry_run = 3;
+}
+
+message EvaluatePolicyResponse {
+  EvaluationResult result = 1;
+}
+
+message EvaluatePoliciesRequest {
+  // Policies to evaluate (in priority order if empty, all active policies)
+  repeated string policy_ids = 1;
+
+  // Context for evaluation
+  EvaluationContext context = 2;
+
+  // Stop on first deny
+  bool stop_on_deny = 3;
+
+  // Dry run
+  bool dry_run = 4;
+}
+
+message EvaluatePoliciesResponse {
+  // All evaluation results
+  repeated EvaluationResult results = 1;
+
+  // Final decision (aggregate)
+  EvaluationDecision final_decision = 2;
+
+  // All actions to execute
+  repeated PolicyAction actions = 3;
+}
+
+message GetEvaluationHistoryRequest {
+  // Policy to get history for
+  string policy_id = 1;
+
+  // Time range
+  google.protobuf.Timestamp start_time = 2;
+  google.protobuf.Timestamp end_time = 3;
+
+  // Filter by decision
+  EvaluationDecision decision = 4;
+
+  // Pagination
+  int32 page_size = 5;
+  string page_token = 6;
+}
+
+message GetEvaluationHistoryResponse {
+  repeated EvaluationResult evaluations = 1;
+  string next_page_token = 2;
+  int32 total_count = 3;
+}
+
+// Approval messages
+message Approval {
+  string approval_id = 1;
+  string evaluation_id = 2;
+  string policy_id = 3;
+  string envelope_id = 4;
+  string status = 5;      // PENDING, APPROVED, REJECTED
+  string reviewer_id = 6;
+  string review_note = 7;
+  google.protobuf.Timestamp created_at = 8;
+  map<string, string> metadata = 9;
+  string policy_name = 10; // Joined field convenience
+}
+
+message ListApprovalsRequest {
+  string tenant_id = 1;
+  string status = 2; // e.g., "PENDING"
+  int32 page_size = 3; // Default: 20, Max: 100
+  string page_token = 4; // Opaque cursor for pagination
+}
+
+message ListApprovalsResponse {
+  repeated Approval approvals = 1;
+  string next_page_token = 2; // Empty if last page
+  int32 total_count = 3; // Total matching items
+}
+
+message UpdateApprovalRequest {
+  string approval_id = 1;
+  string status = 2; // APPROVED, REJECTED
+  string review_note = 3;
+  string reviewer_id = 4;
+}
+
+message UpdateApprovalResponse {
+  Approval approval = 1;
+}
+
+// PolicyList is a wrapper for a list of policies, used primarily for caching.
+message PolicyList {
+  repeated Policy policies = 1;
+}

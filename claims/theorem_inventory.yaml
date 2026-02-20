@@ -1,0 +1,24 @@
+version: 1
+updated_at: 2026-02-20
+theorems:
+  - theorem_id: THM-BUDGET-LOCAL
+    assumptions:
+      - applyAction returns some new budget only if threshold condition holds
+      - arithmetic over Nat
+    lean_module: Proofs/BasicInvariants.lean
+    dependencies: []
+    proof_status: planned
+  - theorem_id: THM-PRIVILEGE-STATIC
+    assumptions:
+      - capability sets are finite sets over capability universe
+    lean_module: Proofs/BasicInvariants.lean
+    dependencies: []
+    proof_status: planned
+  - theorem_id: THM-TEMPORAL-CONSERVATION-SPEC
+    assumptions:
+      - token freshness, policy epoch match, and revocation checks are explicit premises
+      - per-hop revalidation semantics
+    lean_module: Proofs/TemporalConservationSpec.lean
+    dependencies:
+      - THM-PRIVILEGE-STATIC
+    proof_status: planned

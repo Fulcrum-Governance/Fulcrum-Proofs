@@ -1,0 +1,69 @@
+version: 1
+updated_at: 2026-02-20
+policy:
+  allow_only_closeable_claims: true
+  c005_status: downgraded_until_dataset
+claims:
+  - claim_id: C-004
+    statement: Durable governed path latency characteristics
+    type: empirical
+    status: incomplete
+    closure_criteria:
+      - benchmark_manifest_locked
+      - raw_traces_published
+      - p50_p95_p99_with_ci95
+    owner: benchmarks
+  - claim_id: C-005
+    statement: Long-context recall quality over 10M+ token histories
+    type: empirical
+    status: incomplete
+    closure_criteria:
+      - dataset_and_protocol_defined
+      - reproducible_results_with_confidence
+      - failure_modes_reported
+    owner: research-validation
+  - claim_id: C-009
+    statement: Lean proof package is machine-replayable
+    type: formal
+    status: incomplete
+    closure_criteria:
+      - lake_build_passes
+      - theorem_inventory_complete
+      - ci_replay_artifacts_attached
+    owner: lean-proof
+  - claim_id: C-014
+    statement: Temporal authorization conservation under revocation/freshness
+    type: hybrid
+    status: incomplete
+    closure_criteria:
+      - lean_temporal_obligations_encoded
+      - tla_invariants_hold_bounded
+      - fault_campaign_bounds_published
+    owner: formal-systems
+  - claim_id: C-015
+    statement: Engineering evidence map for EU AI Act/SOX controls
+    type: empirical
+    status: incomplete
+    closure_criteria:
+      - clause_control_matrix_complete
+      - test_evidence_index_complete
+      - unmapped_clauses_zero_or_waived
+    owner: compliance
+  - claim_id: C-016
+    statement: Performance claims reproducible from published artifacts
+    type: empirical
+    status: incomplete
+    closure_criteria:
+      - reproducible_harness
+      - environment_manifest
+      - ci_nightly_runs
+    owner: benchmarks
+  - claim_id: C-017
+    statement: FinOps sensitivity study with bounded uncertainty
+    type: empirical
+    status: incomplete
+    closure_criteria:
+      - workload_distribution_defined
+      - sensitivity_sweep_completed
+      - confidence_intervals_published
+    owner: benchmarks

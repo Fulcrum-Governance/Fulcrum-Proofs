@@ -1,0 +1,417 @@
+// Fulcrum Protocol Buffer Definition
+// Version: 2.0.0
+// Last Modified: 2026-01-03
+// Status: Production
+// Breaking Changes Since 1.0.0: See CHANGELOG.md
+//
+
+syntax = "proto3";
+
+package fulcrum.cost.v1;
+
+option go_package = "github.com/fulcrum-io/fulcrum/pkg/cost/v1";
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "fulcrum/envelope/v1/envelope.proto";
+
+// CostService provides budget management and cost tracking capabilities.
+// Supports creating budgets, tracking spend, and generating cost reports.
+service CostService {
+  // Budget CRUD operations
+  rpc CreateBudget(CreateBudgetRequest) returns (CreateBudgetResponse) {
+    option (google.api.http) = {
+      post: "/v1/budgets"
+      body: "budget"
+    };
+  }
+
+  rpc GetBudget(GetBudgetRequest) returns (GetBudgetResponse) {
+    option (google.api.http) = {
+      get: "/v1/budgets/{budget_id}"
+    };
+  }
+
+  rpc UpdateBudget(UpdateBudgetRequest) returns (UpdateBudgetResponse) {
+    option (google.api.http) = {
+      patch: "/v1/budgets/{budget.budget_id}"
+      body: "budget"
+    };
+  }
+
+  rpc DeleteBudget(DeleteBudgetRequest) returns (DeleteBudgetResponse) {
+    option (google.api.http) = {
+      delete: "/v1/budgets/{budget_id}"
+    };
+  }
+
+  rpc ListBudgets(ListBudgetsRequest) returns (ListBudgetsResponse) {
+    option (google.api.http) = {
+      get: "/v1/budgets"
+    };
+  }
+
+  // Cost tracking and reporting
+  rpc GetCostSummary(GetCostSummaryRequest) returns (GetCostSummaryResponse) {
+    option (google.api.http) = {
+      get: "/v1/costs/{envelope_id}"
+    };
+  }
+
+  rpc GetSpendSummary(GetSpendSummaryRequest) returns (GetSpendSummaryResponse) {
+    option (google.api.http) = {
+      get: "/v1/spend"
+    };
+  }
+
+  rpc GetBudgetStatus(GetBudgetStatusRequest) returns (GetBudgetStatusResponse) {
+    option (google.api.http) = {
+      get: "/v1/budgets/{budget_id}/status"
+    };
+  }
+
+  // Cost prediction
+  rpc PredictCost(PredictCostRequest) returns (PredictCostResponse) {
+    option (google.api.http) = {
+      post: "/v1/costs/predict"
+      body: "*"
+    };
+  }
+}
+
+// Budget defines spend limits and notification thresholds for a tenant or workflow.
+message Budget {
+  // Unique budget identifier
+  string budget_id = 1;
+
+  // Tenant or workflow this budget applies to
+  string tenant_id = 2;
+  string workflow_id = 3;  // Optional: budget per workflow
+
+  // Budget limits
+  BudgetLimits limits = 4;
+
+  // Notification thresholds (percentage of limit)
+  repeated NotificationThreshold thresholds = 5;
+
+  // Budget period
+  BudgetPeriod period = 6;
+
+  // Current spend against this budget
+  SpendSummary current_spend = 7;
+
+  // Budget status
+  BudgetStatusType status = 8;
+
+  // Metadata
+  string name = 9;
+  string description = 10;
+  map<string, string> tags = 11;
+
+  // Timestamps
+  google.protobuf.Timestamp created_at = 12;
+  google.protobuf.Timestamp updated_at = 13;
+  google.protobuf.Timestamp reset_at = 14;  // Last budget period reset
+}
+
+// BudgetLimits defines maximum allowed spend
+message BudgetLimits {
+  // Token limits
+  int64 max_tokens = 1;              // Total tokens (input + output)
+  int64 max_input_tokens = 2;        // Input tokens only
+  int64 max_output_tokens = 3;       // Output tokens only
+
+  // Cost limits
+  double max_cost_usd = 4;           // Total cost in USD
+
+  // Call limits
+  int32 max_llm_calls = 5;
+  int32 max_tool_calls = 6;
+
+  // Time limits
+  int64 max_execution_time_seconds = 7;
+}
+
+// NotificationThreshold defines when to emit budget warnings
+message NotificationThreshold {
+  // Percentage of budget consumed (0-100)
+  float threshold_percent = 1;
+
+  // Whether notification has been sent for current period
+  bool notified = 2;
+
+  // Last notification time
+  google.protobuf.Timestamp notified_at = 3;
+}
+
+// BudgetPeriod defines the budget reset cycle
+message BudgetPeriod {
+  BudgetPeriodType period_type = 1;
+
+  // Custom period duration (for CUSTOM type)
+  int64 duration_seconds = 2;
+
+  // Period start/end (for fixed periods)
+  google.protobuf.Timestamp period_start = 3;
+  google.protobuf.Timestamp period_end = 4;
+}
+
+// BudgetPeriodType defines how often budgets reset
+enum BudgetPeriodType {
+  BUDGET_PERIOD_TYPE_UNSPECIFIED = 0;
+  BUDGET_PERIOD_TYPE_HOURLY = 1;
+  BUDGET_PERIOD_TYPE_DAILY = 2;
+  BUDGET_PERIOD_TYPE_WEEKLY = 3;
+  BUDGET_PERIOD_TYPE_MONTHLY = 4;
+  BUDGET_PERIOD_TYPE_QUARTERLY = 5;
+  BUDGET_PERIOD_TYPE_YEARLY = 6;
+  BUDGET_PERIOD_TYPE_CUSTOM = 7;     // Use duration_seconds
+  BUDGET_PERIOD_TYPE_INFINITE = 8;   // Never resets
+}
+
+// SpendSummary aggregates spend information for a budget or tenant
+message SpendSummary {
+  // Total tokens consumed
+  int64 total_tokens = 1;
+  int64 total_input_tokens = 2;
+  int64 total_output_tokens = 3;
+
+  // Total cost
+  double total_cost_usd = 4;
+
+  // Call counts
+  int32 total_llm_calls = 5;
+  int32 total_tool_calls = 6;
+
+  // Execution counts
+  int32 total_executions = 7;
+  int32 completed_executions = 8;
+  int32 failed_executions = 9;
+  int32 terminated_executions = 10;
+
+  // Time metrics
+  int64 total_execution_time_seconds = 11;
+  int64 average_execution_time_seconds = 12;
+
+  // Per-model breakdown
+  repeated fulcrum.envelope.v1.ModelCost model_costs = 13;
+
+  // Time period this summary covers
+  google.protobuf.Timestamp period_start = 14;
+  google.protobuf.Timestamp period_end = 15;
+}
+
+// BudgetStatus represents current budget consumption state
+message BudgetStatus {
+  // Budget identifier
+  string budget_id = 1;
+
+  // Current status
+  BudgetStatusType status = 2;
+
+  // Usage percentages (0-100)
+  float token_usage_percent = 3;
+  float cost_usage_percent = 4;
+  float llm_call_usage_percent = 5;
+  float tool_call_usage_percent = 6;
+
+  // Remaining budget
+  BudgetLimits remaining = 7;
+
+  // Current spend
+  SpendSummary current_spend = 8;
+
+  // Next threshold
+  NotificationThreshold next_threshold = 9;
+
+  // Last updated
+  google.protobuf.Timestamp updated_at = 10;
+}
+
+// BudgetStatusType indicates budget health
+enum BudgetStatusType {
+  BUDGET_STATUS_TYPE_UNSPECIFIED = 0;
+  BUDGET_STATUS_TYPE_OK = 1;           // Under threshold
+  BUDGET_STATUS_TYPE_WARNING = 2;      // Threshold reached (e.g., 80%)
+  BUDGET_STATUS_TYPE_CRITICAL = 3;     // Near limit (e.g., 95%)
+  BUDGET_STATUS_TYPE_EXCEEDED = 4;     // Limit reached, enforcement triggered
+  BUDGET_STATUS_TYPE_SUSPENDED = 5;    // Budget manually suspended
+}
+
+// CreateBudgetRequest creates a new budget
+message CreateBudgetRequest {
+  Budget budget = 1;
+}
+
+message CreateBudgetResponse {
+  Budget budget = 1;
+}
+
+// GetBudgetRequest retrieves a budget by ID
+message GetBudgetRequest {
+  string budget_id = 1;
+}
+
+message GetBudgetResponse {
+  Budget budget = 1;
+}
+
+// UpdateBudgetRequest modifies an existing budget
+message UpdateBudgetRequest {
+  Budget budget = 1;
+
+  // Field mask for partial updates
+  repeated string update_mask = 2;
+}
+
+message UpdateBudgetResponse {
+  Budget budget = 1;
+}
+
+// DeleteBudgetRequest removes a budget
+message DeleteBudgetRequest {
+  string budget_id = 1;
+}
+
+message DeleteBudgetResponse {
+  bool success = 1;
+}
+
+// ListBudgetsRequest retrieves budgets with filtering
+message ListBudgetsRequest {
+  // Filter by tenant
+  string tenant_id = 1;
+
+  // Filter by workflow
+  string workflow_id = 2;
+
+  // Filter by status
+  BudgetStatusType status = 3;
+
+  // Pagination
+  int32 page_size = 4;
+  string page_token = 5;
+}
+
+message ListBudgetsResponse {
+  repeated Budget budgets = 1;
+  string next_page_token = 2;
+  int32 total_count = 3;
+}
+
+// GetCostSummaryRequest retrieves cost summary for an envelope
+message GetCostSummaryRequest {
+  string envelope_id = 1;
+}
+
+message GetCostSummaryResponse {
+  fulcrum.envelope.v1.CostSummary cost_summary = 1;
+}
+
+// GetSpendSummaryRequest retrieves aggregated spend for a tenant/workflow
+message GetSpendSummaryRequest {
+  // Filter by tenant
+  string tenant_id = 1;
+
+  // Filter by workflow
+  string workflow_id = 2;
+
+  // Time range
+  google.protobuf.Timestamp start_time = 3;
+  google.protobuf.Timestamp end_time = 4;
+
+  // Grouping (e.g., by model, by day)
+  SpendGroupBy group_by = 5;
+}
+
+message GetSpendSummaryResponse {
+  SpendSummary summary = 1;
+
+  // Grouped summaries (if group_by specified)
+  repeated GroupedSpendSummary grouped_summaries = 2;
+}
+
+// SpendGroupBy defines how to group spend summaries
+enum SpendGroupBy {
+  SPEND_GROUP_BY_UNSPECIFIED = 0;
+  SPEND_GROUP_BY_MODEL = 1;
+  SPEND_GROUP_BY_DAY = 2;
+  SPEND_GROUP_BY_WEEK = 3;
+  SPEND_GROUP_BY_MONTH = 4;
+  SPEND_GROUP_BY_WORKFLOW = 5;
+}
+
+// GroupedSpendSummary represents spend grouped by a dimension
+message GroupedSpendSummary {
+  string group_key = 1;
+  SpendSummary summary = 2;
+}
+
+// GetBudgetStatusRequest retrieves current budget status
+message GetBudgetStatusRequest {
+  string budget_id = 1;
+}
+
+message GetBudgetStatusResponse {
+  BudgetStatus status = 1;
+}
+
+// PredictCostRequest estimates cost for a planned execution
+message PredictCostRequest {
+  // Tenant and workflow context
+  string tenant_id = 1;
+  string workflow_id = 2;
+
+  // Input for estimation
+  string input_text = 3;
+  int64 estimated_input_tokens = 4;
+
+  // Expected models to use
+  repeated string model_ids = 5;
+
+  // Historical data to use for prediction
+  bool use_historical_data = 6;
+  int32 lookback_days = 7;  // Days of history to analyze
+}
+
+message PredictCostResponse {
+  // Predicted cost
+  CostPrediction prediction = 1;
+
+  // Whether prediction is based on historical data
+  bool historical_based = 2;
+
+  // Sample size used for prediction
+  int32 sample_size = 3;
+}
+
+// CostPrediction estimates future execution cost
+message CostPrediction {
+  // Estimated tokens
+  int64 estimated_input_tokens = 1;
+  int64 estimated_output_tokens = 2;
+  int64 estimated_total_tokens = 3;
+
+  // Estimated cost
+  double estimated_cost_usd = 4;
+  double estimated_cost_usd_min = 5;  // Lower bound
+  double estimated_cost_usd_max = 6;  // Upper bound
+
+  // Confidence metrics
+  float confidence = 7;  // 0.0 to 1.0
+  string confidence_level = 8;  // "low", "medium", "high"
+
+  // Estimated execution time
+  int64 estimated_duration_seconds = 9;
+
+  // Per-model predictions
+  repeated ModelCostPrediction model_predictions = 10;
+}
+
+// ModelCostPrediction predicts cost for a specific model
+message ModelCostPrediction {
+  string model_id = 1;
+  int64 estimated_tokens = 2;
+  double estimated_cost_usd = 3;
+  int32 estimated_calls = 4;
+}

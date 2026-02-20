@@ -1,0 +1,204 @@
+// Fulcrum Protocol Buffer Definition
+// Version: 2.0.0
+// Last Modified: 2026-01-03
+// Status: Production
+// Breaking Changes Since 1.0.0: See CHANGELOG.md
+//
+
+syntax = "proto3";
+
+package fulcrum.events.v1;
+
+option go_package = "github.com/fulcrum-io/fulcrum/pkg/events/v1";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+
+// FulcrumEvent is the normalized event schema.
+// All adapters emit events in this format regardless of framework.
+message FulcrumEvent {
+  // Event identification
+  string event_id = 1;
+  string envelope_id = 2;
+  string tenant_id = 14;
+  string workflow_id = 15;
+  google.protobuf.Timestamp timestamp = 3;
+  
+  // Event classification
+  EventType event_type = 4;
+  EventSeverity severity = 5;
+  
+  // Token tracking (present for LLM events)
+  TokenInfo tokens = 6;
+  
+  // Checkpoint reference (present for checkpoint events)
+  CheckpointRef checkpoint = 7;
+  
+  // Error information (present for error events)
+  ErrorInfo error = 8;
+  
+  // Tool invocation details (present for tool events)
+  ToolInfo tool = 9;
+  
+  // Policy evaluation result (present for policy events)
+  PolicyResult policy = 10;
+  
+  // Budget status (present for budget events)
+  BudgetStatusEvent budget = 11;
+  
+  // Framework-specific payload (opaque to control plane)
+  google.protobuf.Struct native_payload = 12;
+  
+  // Trace context for distributed tracing
+  TraceContext trace = 13;
+}
+
+// EventType categorizes the event
+enum EventType {
+  EVENT_TYPE_UNSPECIFIED = 0;
+  
+  // Execution lifecycle
+  EVENT_TYPE_EXECUTION_STARTED = 1;
+  EVENT_TYPE_EXECUTION_COMPLETED = 2;
+  EVENT_TYPE_EXECUTION_FAILED = 3;
+  EVENT_TYPE_EXECUTION_PAUSED = 4;
+  EVENT_TYPE_EXECUTION_RESUMED = 5;
+  EVENT_TYPE_EXECUTION_TERMINATED = 6;
+  
+  // LLM interactions
+  EVENT_TYPE_LLM_CALL_STARTED = 10;
+  EVENT_TYPE_LLM_CALL_COMPLETED = 11;
+  EVENT_TYPE_LLM_CALL_FAILED = 12;
+  EVENT_TYPE_LLM_STREAMING_CHUNK = 13;
+  
+  // Tool interactions
+  EVENT_TYPE_TOOL_INVOKED = 20;
+  EVENT_TYPE_TOOL_COMPLETED = 21;
+  EVENT_TYPE_TOOL_FAILED = 22;
+  
+  // Checkpointing
+  EVENT_TYPE_CHECKPOINT_CREATED = 30;
+  EVENT_TYPE_CHECKPOINT_RESTORED = 31;
+  
+  // Budget events
+  EVENT_TYPE_BUDGET_WARNING = 40;    // 80% threshold
+  EVENT_TYPE_BUDGET_EXCEEDED = 41;
+  EVENT_TYPE_BUDGET_RESET = 42;
+  
+  // Policy events
+  EVENT_TYPE_POLICY_EVALUATED = 50;
+  EVENT_TYPE_POLICY_VIOLATION = 51;
+  EVENT_TYPE_POLICY_WARNING = 52;
+  
+  // Agent coordination (multi-agent)
+  EVENT_TYPE_AGENT_HANDOFF = 60;
+  EVENT_TYPE_AGENT_SPAWN = 61;
+  EVENT_TYPE_AGENT_JOIN = 62;
+  
+  // Custom events
+  EVENT_TYPE_CUSTOM = 99;
+}
+
+// EventSeverity for filtering and alerting
+enum EventSeverity {
+  EVENT_SEVERITY_UNSPECIFIED = 0;
+  EVENT_SEVERITY_DEBUG = 1;
+  EVENT_SEVERITY_INFO = 2;
+  EVENT_SEVERITY_WARNING = 3;
+  EVENT_SEVERITY_ERROR = 4;
+  EVENT_SEVERITY_CRITICAL = 5;
+}
+
+// TokenInfo captures LLM token consumption
+message TokenInfo {
+  string model_id = 1;
+  int64 input_tokens = 2;
+  int64 output_tokens = 3;
+  double cost_usd = 4;
+  
+  // Latency metrics
+  int64 time_to_first_token_ms = 5;
+  int64 total_latency_ms = 6;
+  
+  // For streaming responses
+  bool is_streaming = 7;
+  int32 chunk_index = 8;
+}
+
+// CheckpointRef references a checkpoint
+message CheckpointRef {
+  string checkpoint_id = 1;
+  string state_hash = 2;
+  int64 size_bytes = 3;
+}
+
+// ErrorInfo captures error details
+message ErrorInfo {
+  string code = 1;
+  string message = 2;
+  bool recoverable = 3;
+  string stack_trace = 4;
+  
+  // Retry information
+  int32 retry_count = 5;
+  bool will_retry = 6;
+}
+
+// ToolInfo captures tool invocation details
+message ToolInfo {
+  string tool_name = 1;
+  string tool_id = 2;
+  
+  // Input/output (sanitized for logging)
+  google.protobuf.Struct input = 3;
+  google.protobuf.Struct output = 4;
+  
+  // Execution metrics
+  int64 latency_ms = 5;
+  bool success = 6;
+}
+
+// PolicyResult captures policy evaluation
+message PolicyResult {
+  string policy_id = 1;
+  string rule_id = 2;
+  PolicyDecision decision = 3;
+  string reason = 4;
+  
+  // What triggered the evaluation
+  string trigger = 5;
+}
+
+enum PolicyDecision {
+  POLICY_DECISION_UNSPECIFIED = 0;
+  POLICY_DECISION_ALLOW = 1;
+  POLICY_DECISION_DENY = 2;
+  POLICY_DECISION_WARN = 3;
+}
+
+// BudgetStatusEvent captures budget state for events
+message BudgetStatusEvent {
+  string budget_id = 1;
+  
+  // Current consumption
+  int64 tokens_used = 2;
+  int64 tokens_remaining = 3;
+  double cost_used_usd = 4;
+  double cost_remaining_usd = 5;
+  
+  // Percentage used
+  double percentage_used = 6;
+  
+  // Threshold that triggered this event
+  double threshold_percentage = 7;
+}
+
+// TraceContext for distributed tracing (W3C Trace Context compatible)
+message TraceContext {
+  string trace_id = 1;
+  string span_id = 2;
+  string parent_span_id = 3;
+  
+  // Baggage for cross-service context
+  map<string, string> baggage = 4;
+}

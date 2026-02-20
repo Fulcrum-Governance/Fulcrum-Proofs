@@ -1,0 +1,9 @@
+name: stale-proof-replay
+injection: replay_stale_proof_token
+iterations: 300
+parameters:
+  replay_attempts: 1000
+  nonce_cache_ttl_ms: 300000
+expected:
+  max_revocation_window_ms: 100
+  max_safety_violations: 0

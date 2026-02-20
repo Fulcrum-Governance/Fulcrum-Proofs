@@ -1,0 +1,64 @@
+// Fulcrum Protocol Buffer Definition
+// Version: 2.0.0
+// Last Modified: 2026-01-03
+// Status: Production
+// Breaking Changes Since 1.0.0: See CHANGELOG.md
+//
+
+syntax = "proto3";
+
+package fulcrum.tenant.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/fulcrum-io/fulcrum/pkg/tenant/v1;tenantv1";
+
+service TenantService {
+  // CreateApiKey creates a new API key for the authenticated tenant.
+  rpc CreateApiKey(CreateApiKeyRequest) returns (CreateApiKeyResponse);
+
+  // ListApiKeys lists all API keys for the authenticated tenant.
+  rpc ListApiKeys(ListApiKeysRequest) returns (ListApiKeysResponse);
+
+  // RevokeApiKey revokes (deletes) an API key by ID.
+  rpc RevokeApiKey(RevokeApiKeyRequest) returns (RevokeApiKeyResponse);
+}
+
+message ApiKey {
+  string id = 1;
+  string name = 2;
+  string key_hint = 3; // e.g. "abcd...1234"
+  repeated string scopes = 4;
+  google.protobuf.Timestamp expires_at = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp last_used_at = 7;
+}
+
+message CreateApiKeyRequest {
+  string name = 1;
+  repeated string scopes = 2;
+  int64 expires_in_seconds = 3; // Optional: TTL. If 0, never expires.
+}
+
+message CreateApiKeyResponse {
+  ApiKey key = 1;
+  string key_secret = 2; // The raw key secret. ONLY returned here.
+}
+
+message ListApiKeysRequest {
+  int32 page_size = 1;
+  string page_token = 2;
+}
+
+message ListApiKeysResponse {
+  repeated ApiKey keys = 1;
+  string next_page_token = 2;
+}
+
+message RevokeApiKeyRequest {
+  string key_id = 1;
+}
+
+message RevokeApiKeyResponse {
+  bool success = 1;
+}

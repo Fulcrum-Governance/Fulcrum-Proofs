@@ -1,0 +1,10 @@
+name: revocation-delay
+injection: delayed_revocation_broadcast
+iterations: 500
+parameters:
+  propagation_delay_ms: 250
+  clock_skew_ms: 50
+  version_skew: 1
+expected:
+  max_revocation_window_ms: 500
+  max_safety_violations: 0

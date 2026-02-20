@@ -1,0 +1,35 @@
+# Build artifacts
+*.out
+*.log
+*.aux
+*.toc
+*.pdf
+
+# Lean build
+proofs/lean/.lake/
+proofs/lean/build/
+
+# TLA+ artifacts
+models/tla/traces/*.out
+models/tla/traces/*.trace
+models/tla/reports/*.log
+models/tla/tools/tla2tools.jar
+
+# Bench/fault generated outputs
+benchmarks/reports/*.tmp.json
+fault/reports/*.tmp.json
+benchmarks/raw/*.json
+fault/raw/*.json
+proofs/lean/reports/*
+!benchmarks/raw/.gitkeep
+!fault/raw/.gitkeep
+!proofs/lean/reports/.gitkeep
+
+# Python cache
+__pycache__/
+*.pyc
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/

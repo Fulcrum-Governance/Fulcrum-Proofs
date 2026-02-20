@@ -1,0 +1,41 @@
+name: audit-gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      strict:
+        description: Run strict acceptance policy
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  audit-gate:
+    name: audit-gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: python3 -m pip install -r requirements.txt
+
+      - name: Set strict mode
+        run: |
+          STRICT=0
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.strict }}" == "true" ]]; then
+            STRICT=1
+          fi
+          echo "STRICT_AUDIT_GATE=$STRICT" >> "$GITHUB_ENV"
+          echo "audit strict mode: $STRICT"
+
+      - name: Run audit gate
+        run: make audit-gate

@@ -1,0 +1,11 @@
+version: 1
+controls:
+  - control_id: CTRL-GATE-FAILCLOSED
+    objective: Ensure invalid context fails closed before action execution.
+    mapped_claims: [C-014, C-015]
+  - control_id: CTRL-AUDIT-IMMUTABLE
+    objective: Preserve immutable execution envelopes and audit lineage.
+    mapped_claims: [C-015]
+  - control_id: CTRL-BUDGET-AUTHZ
+    objective: Enforce budget and privilege conservation pre-execution.
+    mapped_claims: [C-009, C-014, C-015]

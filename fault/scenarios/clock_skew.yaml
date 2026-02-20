@@ -1,0 +1,9 @@
+name: clock-skew
+injection: skewed_token_freshness_validation
+iterations: 500
+parameters:
+  skew_ms_range: [-300, 300]
+  token_ttl_ms: 60000
+expected:
+  max_revocation_window_ms: 400
+  max_safety_violations: 0

@@ -1,0 +1,23 @@
+[
+  {
+    "control_id": "CTRL-GATE-FAILCLOSED",
+    "regulation_clause": "EU AI Act Art. 9 (risk management)",
+    "test_id": "TST-GATE-001",
+    "evidence_artifact": "audits/post-repair/gate-fail-closed-evidence.md",
+    "result": "incomplete"
+  },
+  {
+    "control_id": "CTRL-AUDIT-IMMUTABLE",
+    "regulation_clause": "EU AI Act Art. 12 (logging and record-keeping)",
+    "test_id": "TST-AUDIT-003",
+    "evidence_artifact": "audits/post-repair/immutable-audit-evidence.md",
+    "result": "incomplete"
+  },
+  {
+    "control_id": "CTRL-BUDGET-AUTHZ",
+    "regulation_clause": "SOX Section 302 (internal controls)",
+    "test_id": "TST-BUDGET-010",
+    "evidence_artifact": "audits/post-repair/budget-authz-evidence.md",
+    "result": "incomplete"
+  }
+]

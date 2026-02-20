@@ -1,0 +1,375 @@
+// Fulcrum Protocol Buffer Definition
+// Version: 2.0.0
+// Last Modified: 2026-01-03
+// Status: Production
+// Breaking Changes Since 1.0.0: See CHANGELOG.md
+//
+
+syntax = "proto3";
+
+package fulcrum.checkpoint.v1;
+
+option go_package = "github.com/fulcrum-io/fulcrum/pkg/checkpoint/v1";
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+
+// CheckpointService provides checkpoint persistence and retrieval capabilities.
+// Supports versioning, metadata indexing, and cross-execution context management.
+service CheckpointService {
+  // Checkpoint CRUD operations
+  rpc SaveCheckpoint(SaveCheckpointRequest) returns (SaveCheckpointResponse) {
+    option (google.api.http) = {
+      post: "/v1/checkpoints"
+      body: "*"
+    };
+  }
+
+  rpc GetCheckpoint(GetCheckpointRequest) returns (GetCheckpointResponse) {
+    option (google.api.http) = {
+      get: "/v1/checkpoints/{checkpoint_id}"
+    };
+  }
+
+  rpc ListCheckpoints(ListCheckpointsRequest) returns (ListCheckpointsResponse) {
+    option (google.api.http) = {
+      get: "/v1/checkpoints"
+    };
+  }
+
+  rpc DeleteCheckpoint(DeleteCheckpointRequest) returns (DeleteCheckpointResponse) {
+    option (google.api.http) = {
+      delete: "/v1/checkpoints/{checkpoint_id}"
+    };
+  }
+
+  // Version management
+  rpc ListCheckpointVersions(ListCheckpointVersionsRequest) returns (ListCheckpointVersionsResponse) {
+    option (google.api.http) = {
+      get: "/v1/checkpoints/{execution_id}/versions"
+    };
+  }
+
+  rpc GetCheckpointVersion(GetCheckpointVersionRequest) returns (GetCheckpointVersionResponse) {
+    option (google.api.http) = {
+      get: "/v1/checkpoints/{execution_id}/versions/{version}"
+    };
+  }
+
+  // Query operations
+  rpc QueryCheckpoints(QueryCheckpointsRequest) returns (QueryCheckpointsResponse) {
+    option (google.api.http) = {
+      post: "/v1/checkpoints:query"
+      body: "*"
+    };
+  }
+
+  // Context operations
+  rpc GetExecutionContext(GetExecutionContextRequest) returns (GetExecutionContextResponse) {
+    option (google.api.http) = {
+      get: "/v1/executions/{execution_id}/context"
+    };
+  }
+
+  rpc UpdateExecutionContext(UpdateExecutionContextRequest) returns (UpdateExecutionContextResponse) {
+    option (google.api.http) = {
+      put: "/v1/executions/{execution_id}/context"
+      body: "*"
+    };
+  }
+}
+
+// ===== Checkpoint Messages =====
+
+// Checkpoint represents a saved execution state
+message Checkpoint {
+  // Unique checkpoint identifier
+  string checkpoint_id = 1;
+
+  // Execution identification
+  string envelope_id = 2;
+  string execution_id = 3;
+  string tenant_id = 4;
+
+  // Versioning
+  int32 version = 5;
+  string parent_version = 6; // For version chains
+
+  // Metadata
+  CheckpointMetadata metadata = 7;
+
+  // Checkpoint data (framework-specific state)
+  google.protobuf.Struct data = 8;
+
+  // Timestamps
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp expires_at = 10;
+
+  // Size and performance metrics
+  int64 size_bytes = 11;
+  int64 save_duration_ms = 12;
+}
+
+// CheckpointMetadata contains indexable metadata
+message CheckpointMetadata {
+  // Checkpoint type (manual, auto, pre-terminate, etc.)
+  CheckpointType type = 1;
+
+  // Framework information
+  string framework_type = 2;
+  string framework_version = 3;
+
+  // Execution state at checkpoint time
+  string execution_status = 4;
+  int64 step_count = 5;
+  string current_node = 6;
+
+  // Cost snapshot at checkpoint time
+  double cost_snapshot_usd = 7;
+  int64 tokens_consumed = 8;
+
+  // Tags for querying
+  map<string, string> tags = 9;
+
+  // User-provided description
+  string description = 10;
+
+  // Compression info
+  bool compressed = 11;
+  string compression_algorithm = 12;
+}
+
+// CheckpointType categorizes checkpoint creation
+enum CheckpointType {
+  CHECKPOINT_TYPE_UNSPECIFIED = 0;
+  CHECKPOINT_TYPE_MANUAL = 1;      // User-triggered
+  CHECKPOINT_TYPE_AUTO = 2;        // Auto-save interval
+  CHECKPOINT_TYPE_PRE_TERMINATE = 3; // Before termination
+  CHECKPOINT_TYPE_ERROR = 4;       // On error for debugging
+  CHECKPOINT_TYPE_MILESTONE = 5;   // At important execution points
+}
+
+// CheckpointVersion represents a specific version in the history
+message CheckpointVersion {
+  string checkpoint_id = 1;
+  int32 version = 2;
+  string parent_version = 3;
+  google.protobuf.Timestamp created_at = 4;
+  CheckpointMetadata metadata = 5;
+  int64 size_bytes = 6;
+}
+
+// ===== Request/Response Messages =====
+
+// SaveCheckpoint
+message SaveCheckpointRequest {
+  Checkpoint checkpoint = 1;
+  
+  // Options
+  bool auto_version = 2; // Automatically increment version
+  int32 max_versions = 3; // Max versions to keep (0 = unlimited)
+}
+
+message SaveCheckpointResponse {
+  string checkpoint_id = 1;
+  int32 version = 2;
+  google.protobuf.Timestamp created_at = 3;
+}
+
+// GetCheckpoint
+message GetCheckpointRequest {
+  string checkpoint_id = 1;
+  
+  // Optional: Get specific version (default: latest)
+  int32 version = 2;
+}
+
+message GetCheckpointResponse {
+  Checkpoint checkpoint = 1;
+}
+
+// ListCheckpoints
+message ListCheckpointsRequest {
+  // Filtering
+  string tenant_id = 1;
+  string envelope_id = 2;
+  string execution_id = 3;
+  
+  // Pagination
+  int32 page_size = 4;
+  string page_token = 5;
+  
+  // Sorting
+  string order_by = 6; // e.g., "created_at desc"
+}
+
+message ListCheckpointsResponse {
+  repeated Checkpoint checkpoints = 1;
+  string next_page_token = 2;
+  int32 total_count = 3;
+}
+
+// DeleteCheckpoint
+message DeleteCheckpointRequest {
+  string checkpoint_id = 1;
+  
+  // Options
+  bool soft_delete = 2; // Mark as deleted but keep data
+  bool delete_all_versions = 3; // Delete entire version chain
+}
+
+message DeleteCheckpointResponse {
+  bool success = 1;
+  int32 versions_deleted = 2;
+}
+
+// ListCheckpointVersions
+message ListCheckpointVersionsRequest {
+  string execution_id = 1;
+  
+  // Pagination
+  int32 page_size = 2;
+  string page_token = 3;
+}
+
+message ListCheckpointVersionsResponse {
+  repeated CheckpointVersion versions = 1;
+  string next_page_token = 2;
+  int32 total_count = 3;
+}
+
+// GetCheckpointVersion
+message GetCheckpointVersionRequest {
+  string execution_id = 1;
+  int32 version = 2;
+}
+
+message GetCheckpointVersionResponse {
+  Checkpoint checkpoint = 1;
+}
+
+// QueryCheckpoints
+message QueryCheckpointsRequest {
+  // Query filters
+  CheckpointQuery query = 1;
+  
+  // Pagination
+  int32 page_size = 2;
+  string page_token = 3;
+  
+  // Sorting
+  string order_by = 4;
+}
+
+message QueryCheckpointsResponse {
+  repeated Checkpoint checkpoints = 1;
+  string next_page_token = 2;
+  int32 total_count = 3;
+}
+
+// CheckpointQuery defines checkpoint query filters
+message CheckpointQuery {
+  // Basic filters
+  repeated string tenant_ids = 1;
+  repeated string envelope_ids = 2;
+  repeated string execution_ids = 3;
+  
+  // Type filter
+  repeated CheckpointType types = 4;
+  
+  // Time range
+  google.protobuf.Timestamp created_after = 5;
+  google.protobuf.Timestamp created_before = 6;
+  
+  // Framework filter
+  repeated string framework_types = 7;
+  
+  // Tag filters (AND logic)
+  map<string, string> tags = 8;
+  
+  // Cost range
+  double min_cost_usd = 9;
+  double max_cost_usd = 10;
+  
+  // Size range
+  int64 min_size_bytes = 11;
+  int64 max_size_bytes = 12;
+}
+
+// ===== Context Management Messages =====
+
+// ExecutionContext represents cross-execution shared state
+message ExecutionContext {
+  string execution_id = 1;
+  string tenant_id = 2;
+  string workflow_id = 3;
+  
+  // Context scope
+  ContextScope scope = 4;
+  
+  // Context data
+  google.protobuf.Struct data = 5;
+  
+  // Inheritance
+  string parent_execution_id = 6;
+  repeated string inherited_keys = 7;
+  
+  // Versioning for conflict resolution
+  int64 version = 8;
+  google.protobuf.Timestamp updated_at = 9;
+}
+
+// ContextScope defines context visibility
+enum ContextScope {
+  CONTEXT_SCOPE_UNSPECIFIED = 0;
+  CONTEXT_SCOPE_EXECUTION = 1;  // Visible to this execution only
+  CONTEXT_SCOPE_WORKFLOW = 2;   // Visible to all executions in workflow
+  CONTEXT_SCOPE_TENANT = 3;     // Visible to all executions for tenant
+}
+
+// GetExecutionContext
+message GetExecutionContextRequest {
+  string execution_id = 1;
+  
+  // Optional: Get specific keys only
+  repeated string keys = 2;
+  
+  // Include inherited context
+  bool include_inherited = 3;
+}
+
+message GetExecutionContextResponse {
+  ExecutionContext context = 1;
+}
+
+// UpdateExecutionContext
+message UpdateExecutionContextRequest {
+  string execution_id = 1;
+  
+  // Updates to apply (merge into existing context)
+  google.protobuf.Struct updates = 2;
+  
+  // Keys to delete
+  repeated string delete_keys = 3;
+  
+  // Conflict resolution
+  int64 expected_version = 4; // For optimistic locking
+  MergeStrategy merge_strategy = 5;
+}
+
+message UpdateExecutionContextResponse {
+  ExecutionContext context = 1;
+  bool conflict_detected = 2;
+  string conflict_resolution = 3;
+}
+
+// MergeStrategy defines how to handle concurrent updates
+enum MergeStrategy {
+  MERGE_STRATEGY_UNSPECIFIED = 0;
+  MERGE_STRATEGY_LAST_WRITE_WINS = 1;
+  MERGE_STRATEGY_FAIL_ON_CONFLICT = 2;
+  MERGE_STRATEGY_MERGE_RECURSIVE = 3;
+  MERGE_STRATEGY_CUSTOM = 4;
+}
+

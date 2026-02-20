@@ -1,0 +1,37 @@
+version: 1
+program: fulcrum-proofs-proof-closure
+execution_order:
+  - role: research-validation-curator
+    outputs:
+      - audits/post-repair/research-validation-report.md
+  - role: lean-proof-engineer
+    outputs:
+      - proofs/lean/reports/lake-build.log
+      - proofs/lean/reports/theorem-inventory.txt
+      - proofs/lean/reports/dependency-map.txt
+  - role: tla-model-checker
+    outputs:
+      - models/tla/reports/tlc-gateway-safety.log
+  - role: benchmark-validator
+    outputs:
+      - benchmarks/raw/nightly-suite.json
+    schemas:
+      - benchmarks/reports/benchmark_suite.schema.json
+  - role: fault-campaign-analyst
+    outputs:
+      - fault/raw/revocation_delay.json
+      - fault/raw/version_skew.json
+      - fault/raw/stale_replay.json
+      - fault/raw/clock_skew.json
+    schemas:
+      - fault/reports/fault_campaign.schema.json
+  - role: compliance-evidence-mapper
+    outputs:
+      - compliance/mappings/eu_ai_act_sox_matrix.json
+      - compliance/reports/evidence-gap-report.md
+    schemas:
+      - compliance/mappings/control_matrix.schema.json
+closure_policy:
+  no_open_critical_high: true
+  non_empirical_must_be_proven: true
+  empirical_must_be_reproducible: true

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fulcrum-governance.github.io/fulcrum-proofs/schemas/re-audit.schema.json",
+  "title": "Final Re-Audit Record",
+  "type": "object",
+  "required": ["finding_id", "severity", "status", "evidence_refs", "residual_risk"],
+  "properties": {
+    "finding_id": {"type": "string"},
+    "severity": {"type": "string", "enum": ["Critical", "High", "Medium", "Low"]},
+    "status": {"type": "string", "enum": ["open", "partially_fixed", "fixed", "closed"]},
+    "evidence_refs": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "residual_risk": {"type": "string"}
+  },
+  "additionalProperties": false
+}

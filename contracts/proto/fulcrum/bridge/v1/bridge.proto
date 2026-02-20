@@ -1,0 +1,323 @@
+// Fulcrum Protocol Buffer Definition
+// Version: 2.0.0
+// Last Modified: 2026-01-03
+// Status: Production
+// Breaking Changes Since 1.0.0: See CHANGELOG.md
+//
+
+// Protocol Buffers definition for Python-Go bridge communication
+// See: ADR-007 (Python-Go Bridge Architecture)
+
+syntax = "proto3";
+
+package fulcrum.bridge.v1;
+
+option go_package = "github.com/fulcrum-io/fulcrum/pkg/bridge/v1";
+
+// ExecutionRequest initiates a LangGraph StateGraph execution
+message ExecutionRequest {
+  // Unique identifier for this execution envelope
+  string envelope_id = 1;
+
+  // Pickled LangGraph StateGraph definition
+  // Format: Python pickle protocol 5
+  bytes state_graph = 2;
+
+  // Configuration for LangGraph execution
+  // Examples: temperature, max_tokens, recursion_limit
+  map<string, string> config = 3;
+
+  // Enable callback event streaming
+  // If false, only completion/error events are sent
+  bool enable_callbacks = 4;
+
+  // Initial state for execution
+  // Format: JSON-encoded state dict
+  bytes initial_state = 5;
+}
+
+// ExecutionResponse acknowledges execution start
+message ExecutionResponse {
+  // Execution identifier (same as envelope_id)
+  string execution_id = 1;
+
+  // Python process ID handling this execution
+  int32 pid = 2;
+
+  // Bridge protocol version
+  string version = 3;
+}
+
+// CallbackEvent streams execution events from Python to Go
+message CallbackEvent {
+  // Envelope identifier
+  string envelope_id = 1;
+
+  // Event timestamp (Unix nanoseconds)
+  int64 timestamp_ns = 2;
+
+  // Event payload (one of)
+  oneof event {
+    LLMStartEvent llm_start = 3;
+    LLMEndEvent llm_end = 4;
+    LLMErrorEvent llm_error = 5;
+    ToolStartEvent tool_start = 6;
+    ToolEndEvent tool_end = 7;
+    ToolErrorEvent tool_error = 8;
+    ChainStartEvent chain_start = 9;
+    ChainEndEvent chain_end = 10;
+    StreamingChunkEvent streaming_chunk = 11;
+    ErrorEvent error = 12;
+    CompleteEvent complete = 13;
+  }
+}
+
+// LLMStartEvent signals LLM call initiation
+message LLMStartEvent {
+  // Model identifier (e.g., "gpt-4", "claude-3-opus")
+  string model_id = 1;
+
+  // Prompt text (truncated to 1000 chars for events)
+  string prompt_preview = 2;
+
+  // Call parameters
+  map<string, string> parameters = 3;
+}
+
+// LLMEndEvent signals LLM call completion
+message LLMEndEvent {
+  // Model identifier
+  string model_id = 1;
+
+  // Token usage
+  int64 input_tokens = 2;
+  int64 output_tokens = 3;
+
+  // Response latency in milliseconds
+  int64 latency_ms = 4;
+
+  // Cost in USD (if available)
+  double cost_usd = 5;
+
+  // Completion text preview (truncated to 1000 chars)
+  string completion_preview = 6;
+}
+
+// LLMErrorEvent signals LLM call failure
+message LLMErrorEvent {
+  // Model identifier
+  string model_id = 1;
+
+  // Error message
+  string error_message = 2;
+
+  // Error type (e.g., "RateLimitError", "TimeoutError")
+  string error_type = 3;
+
+  // Whether error is recoverable
+  bool recoverable = 4;
+}
+
+// ToolStartEvent signals tool invocation
+message ToolStartEvent {
+  // Tool name
+  string tool_name = 1;
+
+  // Tool input (JSON-encoded)
+  bytes input_data = 2;
+
+  // Tool call identifier
+  string tool_call_id = 3;
+}
+
+// ToolEndEvent signals tool completion
+message ToolEndEvent {
+  // Tool name
+  string tool_name = 1;
+
+  // Tool output (JSON-encoded)
+  bytes output_data = 2;
+
+  // Tool call identifier
+  string tool_call_id = 3;
+
+  // Execution latency in milliseconds
+  int64 latency_ms = 4;
+}
+
+// ToolErrorEvent signals tool failure
+message ToolErrorEvent {
+  // Tool name
+  string tool_name = 1;
+
+  // Tool call identifier
+  string tool_call_id = 2;
+
+  // Error message
+  string error_message = 3;
+
+  // Whether error is recoverable
+  bool recoverable = 4;
+}
+
+// ChainStartEvent signals StateGraph node start
+message ChainStartEvent {
+  // Node name in StateGraph
+  string node_name = 1;
+
+  // Node identifier
+  string node_id = 2;
+
+  // Input state (JSON-encoded, optional)
+  bytes input_state = 3;
+}
+
+// ChainEndEvent signals StateGraph node completion
+message ChainEndEvent {
+  // Node name in StateGraph
+  string node_name = 1;
+
+  // Node identifier
+  string node_id = 2;
+
+  // Output state (JSON-encoded, optional)
+  bytes output_state = 3;
+}
+
+// StreamingChunkEvent provides streaming token updates
+message StreamingChunkEvent {
+  // Model identifier
+  string model_id = 1;
+
+  // Token chunk text
+  string chunk = 2;
+
+  // Chunk index in stream
+  int32 chunk_index = 3;
+
+  // Whether this is the final chunk
+  bool is_final = 4;
+}
+
+// ErrorEvent signals execution failure
+message ErrorEvent {
+  // Error message
+  string message = 1;
+
+  // Python stack trace
+  string stack_trace = 2;
+
+  // Error type (e.g., "ValueError", "RuntimeError")
+  string error_type = 3;
+
+  // Whether error is recoverable
+  bool recoverable = 4;
+
+  // Exit code (if process crashed)
+  int32 exit_code = 5;
+}
+
+// CompleteEvent signals successful execution completion
+message CompleteEvent {
+  // Execution result (pickled Python object)
+  bytes result = 1;
+
+  // Final StateGraph checkpoint (pickled)
+  bytes checkpoint = 2;
+
+  // Total execution time in milliseconds
+  int64 total_time_ms = 3;
+
+  // Final state (JSON-encoded, optional)
+  bytes final_state = 4;
+}
+
+// TerminateRequest requests execution termination
+message TerminateRequest {
+  // Envelope identifier to terminate
+  string envelope_id = 1;
+
+  // Termination reason
+  string reason = 2;
+
+  // Force kill if graceful shutdown fails
+  bool force = 3;
+
+  // Timeout for graceful shutdown (milliseconds)
+  int64 timeout_ms = 4;
+}
+
+// TerminateResponse confirms termination
+message TerminateResponse {
+  // Whether termination succeeded
+  bool success = 1;
+
+  // Termination message
+  string message = 2;
+
+  // Final state before termination (if captured)
+  bytes final_state = 3;
+}
+
+// CheckpointRequest requests current execution state
+message CheckpointRequest {
+  // Envelope identifier
+  string envelope_id = 1;
+
+  // Include full state in response
+  bool include_state = 2;
+}
+
+// CheckpointResponse returns execution checkpoint
+message CheckpointResponse {
+  // Checkpoint data (pickled StateGraph checkpoint)
+  bytes checkpoint = 1;
+
+  // State hash for deduplication
+  string state_hash = 2;
+
+  // Current cost summary
+  CostSnapshot cost = 3;
+
+  // Current state (JSON-encoded, if requested)
+  bytes state = 4;
+}
+
+// CostSnapshot captures execution cost at checkpoint time
+message CostSnapshot {
+  // Total input tokens consumed
+  int64 total_input_tokens = 1;
+
+  // Total output tokens consumed
+  int64 total_output_tokens = 2;
+
+  // Total cost in USD
+  double total_cost_usd = 3;
+
+  // Number of LLM calls
+  int32 llm_call_count = 4;
+
+  // Number of tool calls
+  int32 tool_call_count = 5;
+}
+
+// HealthCheckRequest pings Python process
+message HealthCheckRequest {
+  // Process ID to check (0 for any process)
+  int32 pid = 1;
+}
+
+// HealthCheckResponse returns process health
+message HealthCheckResponse {
+  // Whether process is healthy
+  bool healthy = 1;
+
+  // Process ID
+  int32 pid = 2;
+
+  // Uptime in seconds
+  int64 uptime_seconds = 3;
+
+  // Memory usage in bytes
+  int64 memory_bytes = 4;
+}
