@@ -1,5 +1,7 @@
 .PHONY: sync-contracts contracts-check proof-gate model-gate bench-gate bench-nightly fault-gate evidence-gate audit-gate
 
+SHELL := /bin/bash
+
 PYTHON ?= python3
 BENCH_MANIFEST ?= benchmarks/manifests/benchmark_manifest.yaml
 BENCH_SCHEMA ?= benchmarks/reports/benchmark_run.schema.json
