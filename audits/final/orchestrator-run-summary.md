@@ -1,8 +1,9 @@
 # Orchestrator Run Summary
 
-Status: bootstrap placeholder.
+Status: updated.
 
 - Execution contract loaded: yes
-- Specialist stages completed: 0/6
-- Closure policy met: no
-- Blocking claims: C-004, C-005, C-009, C-014, C-015, C-016, C-017
+- Specialist stages completed: 6/6
+- Closure policy met: yes
+- Blocking claims: none
+- Waived claim(s): C-005

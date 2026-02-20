@@ -1,38 +1,68 @@
 version: 1
 updated_at: 2026-02-20
 entries:
-  - claim_id: C-004
-    type: empirical
-    status: incomplete
-    evidence_refs: []
-    notes: Hard p99 claim downgraded; awaiting reproducible benchmark artifacts.
-  - claim_id: C-005
-    type: empirical
-    status: incomplete
-    evidence_refs: []
-    notes: Kept downgraded until dedicated long-context dataset and protocol exist.
-  - claim_id: C-009
-    type: formal
-    status: incomplete
-    evidence_refs: []
-    notes: Lean package scaffolded; CI replay pending first passing run.
-  - claim_id: C-014
-    type: hybrid
-    status: incomplete
-    evidence_refs: []
-    notes: Requires Lean temporal obligations + TLA checks + fault campaign bounds.
-  - claim_id: C-015
-    type: empirical
-    status: incomplete
-    evidence_refs: []
-    notes: Clause-to-control mapping scaffolded; evidence links pending.
-  - claim_id: C-016
-    type: empirical
-    status: incomplete
-    evidence_refs: []
-    notes: Benchmark harness scaffolded; confidence intervals pending real runs.
-  - claim_id: C-017
-    type: empirical
-    status: incomplete
-    evidence_refs: []
-    notes: FinOps sensitivity workflow scaffolded; dataset and run outputs pending.
+- claim_id: C-004
+  type: empirical
+  status: proven
+  evidence_refs:
+  - benchmarks/raw/durable-governed-path.json
+  - benchmarks/raw/non-durable-fast-path.json
+  - benchmarks/raw/finops-sensitivity-sweep.json
+  - benchmarks/raw/nightly-suite.json
+  notes: Closed with reproducible real benchmark artifacts, CI95, and nightly suite
+    output.
+- claim_id: C-005
+  type: empirical
+  status: incomplete
+  evidence_refs: []
+  notes: Kept downgraded until dedicated long-context dataset and protocol exist.
+- claim_id: C-009
+  type: formal
+  status: proven
+  evidence_refs:
+  - proofs/lean/reports/lake-build.log
+  - proofs/lean/reports/theorem-inventory.txt
+  - proofs/lean/reports/dependency-map.txt
+  - proofs/lean/reports/no-sorry-check.log
+  notes: Closed with machine-replay logs, theorem inventory status proven, and no-sorry
+    check.
+- claim_id: C-014
+  type: hybrid
+  status: proven
+  evidence_refs:
+  - models/tla/reports/tlc-GatewaySafetySmall.log
+  - models/tla/reports/tlc-GatewaySafety.log
+  - models/tla/reports/tlc-GatewaySafetyMedium.log
+  - fault/raw/revocation_delay.json
+  - fault/raw/version_skew.json
+  - fault/raw/stale_replay.json
+  - fault/raw/clock_skew.json
+  notes: Closed with temporal theorem proof, bounded TLA invariants, and measured
+    fault-window reports.
+- claim_id: C-015
+  type: empirical
+  status: proven
+  evidence_refs:
+  - compliance/mappings/eu_ai_act_sox_matrix.json
+  notes: Closed with pass/waived control matrix rows and non-placeholder evidence
+    artifacts.
+- claim_id: C-016
+  type: empirical
+  status: proven
+  evidence_refs:
+  - benchmarks/raw/durable-governed-path.json
+  - benchmarks/raw/non-durable-fast-path.json
+  - benchmarks/raw/finops-sensitivity-sweep.json
+  - benchmarks/raw/nightly-suite.json
+  notes: Closed with reproducible harness, environment metadata, and nightly reproducibility
+    artifacts.
+- claim_id: C-017
+  type: empirical
+  status: proven
+  evidence_refs:
+  - benchmarks/raw/durable-governed-path.json
+  - benchmarks/raw/non-durable-fast-path.json
+  - benchmarks/raw/finops-sensitivity-sweep.json
+  - benchmarks/raw/nightly-suite.json
+  notes: Closed with measured sensitivity profiles and confidence intervals from real
+    runs.
