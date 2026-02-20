@@ -1,33 +1,82 @@
 ------------------------------ MODULE GatewaySafety ------------------------------
-EXTENDS Naturals, FiniteSets, TLC
+EXTENDS Naturals, FiniteSets, Sequences, TLC
 
-CONSTANT CapA, CapReq
+CONSTANTS Nodes, CapA, CapReq, MaxEpochSkew, MaxPropagationDelay, MaxEpochValue
 
-VARIABLES tokenFresh, policyEpochOk, revoked, allow
+VARIABLES policyEpoch, nodeEpoch, tokenEpoch, revoked, tokenFresh, nonceFresh, replaySeen, propagationDelay, clockSkew, allow
+
+Vars == <<policyEpoch, nodeEpoch, tokenEpoch, revoked, tokenFresh, nonceFresh, replaySeen, propagationDelay, clockSkew, allow>>
+
+NodeEpochType(pe) == [Nodes -> 0..(pe + MaxEpochSkew)]
+ClockSkewType == [Nodes -> 0..MaxEpochSkew]
+
+AllNodesAtOrAbove(e, ne) == \A n \in Nodes : ne[n] >= e
+
+GateAllow(tokenEpochValue, ne, revokedValue, tokenFreshValue, nonceFreshValue, replaySeenValue, delayValue) ==
+  /\ CapReq \subseteq CapA
+  /\ tokenFreshValue
+  /\ nonceFreshValue
+  /\ ~revokedValue
+  /\ ~replaySeenValue
+  /\ delayValue <= MaxPropagationDelay
+  /\ AllNodesAtOrAbove(tokenEpochValue, ne)
 
 Init ==
-  /\ tokenFresh = TRUE
-  /\ policyEpochOk = TRUE
+  /\ policyEpoch = 0
+  /\ nodeEpoch = [n \in Nodes |-> 0]
+  /\ tokenEpoch = 0
   /\ revoked = FALSE
-  /\ allow = (CapReq \subseteq CapA)
+  /\ tokenFresh = TRUE
+  /\ nonceFresh = TRUE
+  /\ replaySeen = FALSE
+  /\ propagationDelay = 0
+  /\ clockSkew = [n \in Nodes |-> 0]
+  /\ allow = GateAllow(tokenEpoch, nodeEpoch, revoked, tokenFresh, nonceFresh, replaySeen, propagationDelay)
 
 Step ==
-  /\ tokenFresh' \in BOOLEAN
-  /\ policyEpochOk' \in BOOLEAN
-  /\ revoked' \in BOOLEAN
-  /\ allow' = (CapReq \subseteq CapA)
-             /\ tokenFresh'
-             /\ policyEpochOk'
-             /\ ~revoked'
+  \E pe \in 0..MaxEpochValue:
+    \E ne \in NodeEpochType(pe):
+      \E te \in 0..pe:
+        \E rv \in BOOLEAN:
+          \E tf \in BOOLEAN:
+            \E nf \in BOOLEAN:
+              \E rs \in BOOLEAN:
+                \E pd \in 0..MaxPropagationDelay:
+                  \E cs \in ClockSkewType:
+                    /\ policyEpoch' = pe
+                    /\ nodeEpoch' = ne
+                    /\ tokenEpoch' = te
+                    /\ revoked' = rv
+                    /\ tokenFresh' = tf
+                    /\ nonceFresh' = nf
+                    /\ replaySeen' = rs
+                    /\ propagationDelay' = pd
+                    /\ clockSkew' = cs
+                    /\ allow' = GateAllow(tokenEpoch', nodeEpoch', revoked', tokenFresh', nonceFresh', replaySeen', propagationDelay')
 
 Next == Step
 
-Spec == Init /\ [][Next]_<<tokenFresh, policyEpochOk, revoked, allow>>
+Spec == Init /\ [][Next]_Vars
 
 NoUnauthorizedCapability ==
   allow => (CapReq \subseteq CapA)
 
 FailClosedOnInvalidContext ==
-  (~tokenFresh \/ ~policyEpochOk \/ revoked) => ~allow
+  (~tokenFresh \/ ~nonceFresh \/ revoked \/ replaySeen) => ~allow
+
+BoundedEpochSkew ==
+  \A n \in Nodes : nodeEpoch[n] <= policyEpoch + MaxEpochSkew
+
+ReplayDenied ==
+  replaySeen => ~allow
+
+RevocationFailClosed ==
+  revoked => ~allow
+
+FreshnessRequired ==
+  ~tokenFresh => ~allow
+
+NonceRequired ==
+  ~nonceFresh => ~allow
 
 =============================================================================

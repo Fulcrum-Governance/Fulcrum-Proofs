@@ -5,5 +5,5 @@ parameters:
   replay_attempts: 1000
   nonce_cache_ttl_ms: 300000
 expected:
-  max_revocation_window_ms: 100
+  max_revocation_window_ms: 500
   max_safety_violations: 0

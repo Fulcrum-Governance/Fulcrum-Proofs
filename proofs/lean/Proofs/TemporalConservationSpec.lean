@@ -38,4 +38,44 @@ theorem deny_when_revoked (g : GateInput) :
   have hNotRevoked : g.revoked = false := hAllow.2.2.2.2.2.2
   exact Bool.noConfusion (Eq.trans hRevoked hNotRevoked)
 
+structure TransitionAssumptions where
+  perHopRevalidation : Prop
+  monotonicPolicyEpoch : Prop
+  revocationEnforced : Prop
+
+def Step (g g' : GateInput) : Prop :=
+  g'.cReq = g.cReq
+  /\ g.cA ⊆ g'.cA
+  /\ g.currentPolicyVersion <= g'.currentPolicyVersion
+  /\ (g.revoked = true -> g'.revoked = true)
+
+theorem thm_temporal_conservation_spec
+  (g g' : GateInput)
+  (assumptions : TransitionAssumptions)
+  (hPerHop : assumptions.perHopRevalidation)
+  (hEpoch : assumptions.monotonicPolicyEpoch)
+  (hRev : assumptions.revocationEnforced)
+  (hStep : Step g g')
+  (hAllow : allow g) :
+  g'.cReq ⊆ g'.cA := by
+  let _ := hPerHop
+  let _ := hEpoch
+  let _ := hRev
+  rcases hStep with ⟨hReqEq, hMonotoneCap, _hEpochMonotone, _hRevSticky⟩
+  intro x hxReqNew
+  have hxReqOld : x ∈ g.cReq := by
+    simpa [hReqEq] using hxReqNew
+  have hxCapOld : x ∈ g.cA := hAllow.1 hxReqOld
+  exact hMonotoneCap hxCapOld
+
+theorem thm_temporal_revocation_fail_closed
+  (g g' : GateInput)
+  (hStep : Step g g')
+  (hRevoked : g.revoked = true) :
+  allow g' -> False := by
+  intro hAllow
+  have hStickyRevoked : g'.revoked = true := hStep.2.2.2 hRevoked
+  have hNotRevoked : g'.revoked = false := hAllow.2.2.2.2.2.2
+  exact Bool.noConfusion (Eq.trans hStickyRevoked hNotRevoked)
+
 end Fulcrum

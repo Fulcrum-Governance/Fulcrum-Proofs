@@ -2,22 +2,75 @@ version: 1
 run_id_prefix: bench
 env: ci
 commit: unknown
+mode: real
+source_repo: /Users/td/ConceptDev/Projects/Fulcrum
+credentials_file: /tmp/fulcrum-load-test-credentials.sh
+host: localhost:50051
+repeats: 5
 workloads:
   - name: durable-governed-path
     durability_mode: durable_governed
-    samples: 5000
-    mean_ms: 1.8
-    stddev_ms: 0.5
-    error_rate: 0.002
+    runner: ghz
+    method: fulcrum.eventstore.v1.EventStoreService/PublishEvent
+    request:
+      event:
+        execution_id: "${RUN_ID}"
+        envelope_id: "${RUN_ID}"
+        tenant_id: "${TENANT_ID}"
+        workflow_id: "proofs-durable"
+        event_type: "execution_started"
+        timestamp: "${TIMESTAMP}"
+        payload:
+          fields:
+            mode:
+              stringValue: "durable"
+        labels:
+          durability_mode: "durable_governed"
+    total: 30
+    concurrency: 1
+    rps: 3
   - name: non-durable-fast-path
     durability_mode: non_durable_fast
-    samples: 5000
-    mean_ms: 0.45
-    stddev_ms: 0.15
-    error_rate: 0.001
+    runner: ghz
+    method: fulcrum.policy.v1.PolicyService/EvaluatePolicy
+    request:
+      context:
+        tenant_id: "${TENANT_ID}"
+        workflow_id: "proofs-fast"
+        model_id: "gpt-4o-mini"
+        attributes:
+          durability_mode: "non_durable_fast"
+    total: 30
+    concurrency: 1
+    rps: 3
   - name: finops-sensitivity-sweep
     durability_mode: finops_sensitivity
-    samples: 3000
-    mean_ms: 2.4
-    stddev_ms: 0.8
-    error_rate: 0.003
+    runner: ghz
+    method: fulcrum.policy.v1.PolicyService/EvaluatePolicy
+    request:
+      context:
+        tenant_id: "${TENANT_ID}"
+        workflow_id: "proofs-finops"
+        model_id: "gpt-4o-mini"
+        attributes:
+          durability_mode: "finops_sensitivity"
+          token_class: "base"
+    total: 20
+    concurrency: 1
+    rps: 2
+    sensitivity_profiles:
+      - name: light
+        rps: 1
+        total: 20
+        timeout_ms: 5000
+        estimated_unit_cost_usd: 0.02
+      - name: medium
+        rps: 2
+        total: 20
+        timeout_ms: 7000
+        estimated_unit_cost_usd: 0.06
+      - name: heavy
+        rps: 3
+        total: 20
+        timeout_ms: 9000
+        estimated_unit_cost_usd: 0.10

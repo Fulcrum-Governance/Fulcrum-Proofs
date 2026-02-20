@@ -11,12 +11,15 @@ execution_order:
       - proofs/lean/reports/dependency-map.txt
   - role: tla-model-checker
     outputs:
-      - models/tla/reports/tlc-gateway-safety.log
+      - models/tla/reports/tlc-GatewaySafetySmall.log
+      - models/tla/reports/tlc-GatewaySafety.log
+      - models/tla/reports/tlc-GatewaySafetyMedium.log
   - role: benchmark-validator
     outputs:
       - benchmarks/raw/nightly-suite.json
     schemas:
       - benchmarks/reports/benchmark_suite.schema.json
+      - benchmarks/reports/benchmark_run.schema.json
   - role: fault-campaign-analyst
     outputs:
       - fault/raw/revocation_delay.json

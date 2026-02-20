@@ -48,4 +48,14 @@ theorem subset_iff_diff_empty (cReq cA : Caps) :
     have : x in (Set.empty : Caps) := by simpa [h] using hxDiff
     simpa using this
 
+theorem thm_budget_local
+  (b : AgentBudget) (a : FinancialAction) (newB : AgentBudget)
+  (hExec : applyAction b a = some newB) :
+  newB.currentSpent <= newB.aggregateLimit := by
+  exact budget_safety_guarantee b a newB hExec
+
+theorem thm_privilege_static (cReq cA : Caps) :
+  Set.Subset cReq cA <-> cReq \ cA = (Set.empty : Caps) := by
+  exact subset_iff_diff_empty cReq cA
+
 end Fulcrum

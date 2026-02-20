@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
+import json
 import sys
 from pathlib import Path
 
 import yaml
+from jsonschema import validate
 
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACT = ROOT / "skills/references/orchestration-contract.yaml"
+SCHEMA = ROOT / "skills/references/orchestration-contract.schema.json"
 
 
 def main() -> int:
-    if not CONTRACT.exists():
+    if not CONTRACT.exists() or not SCHEMA.exists():
         print("missing orchestration contract", file=sys.stderr)
         return 1
 
     doc = yaml.safe_load(CONTRACT.read_text(encoding="utf-8")) or {}
-    required_top = ["version", "program", "execution_order", "closure_policy"]
-    missing = [k for k in required_top if k not in doc]
-    if missing:
-        print(f"orchestration contract missing keys: {', '.join(missing)}", file=sys.stderr)
-        return 1
+    schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
+    validate(instance=doc, schema=schema)
 
     execution = doc.get("execution_order", [])
     if not execution:
@@ -33,6 +33,12 @@ def main() -> int:
             p = ROOT / out
             if not p.exists():
                 print(f"missing required output: {out}", file=sys.stderr)
+                return 1
+
+        for s in item.get("schemas", []):
+            p = ROOT / s
+            if not p.exists():
+                print(f"missing schema file: {s}", file=sys.stderr)
                 return 1
 
     print(f"orchestration contract validation passed ({len(execution)} stages)")
