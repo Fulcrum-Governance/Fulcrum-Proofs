@@ -7,7 +7,7 @@ claims:
   - claim_id: C-004
     statement: Durable governed path latency characteristics
     type: empirical
-    status: incomplete
+    status: proven
     closure_criteria:
       - benchmark_manifest_locked
       - raw_traces_published
@@ -25,7 +25,7 @@ claims:
   - claim_id: C-009
     statement: Lean proof package is machine-replayable
     type: formal
-    status: incomplete
+    status: proven
     closure_criteria:
       - lake_build_passes
       - theorem_inventory_complete
@@ -34,7 +34,7 @@ claims:
   - claim_id: C-014
     statement: Temporal authorization conservation under revocation/freshness
     type: hybrid
-    status: incomplete
+    status: proven
     closure_criteria:
       - lean_temporal_obligations_encoded
       - tla_invariants_hold_bounded
@@ -43,7 +43,7 @@ claims:
   - claim_id: C-015
     statement: Engineering evidence map for EU AI Act/SOX controls
     type: empirical
-    status: incomplete
+    status: proven
     closure_criteria:
       - clause_control_matrix_complete
       - test_evidence_index_complete
@@ -52,7 +52,7 @@ claims:
   - claim_id: C-016
     statement: Performance claims reproducible from published artifacts
     type: empirical
-    status: incomplete
+    status: proven
     closure_criteria:
       - reproducible_harness
       - environment_manifest
@@ -61,7 +61,7 @@ claims:
   - claim_id: C-017
     statement: FinOps sensitivity study with bounded uncertainty
     type: empirical
-    status: incomplete
+    status: proven
     closure_criteria:
       - workload_distribution_defined
       - sensitivity_sweep_completed

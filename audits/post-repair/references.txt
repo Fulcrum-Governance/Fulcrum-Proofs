@@ -1,0 +1,4 @@
+[1] Lean 4 language and toolchain, Lean project documentation (2026). https://lean-lang.org/
+[2] TLA+ tools repository, tla2tools and TLC model checker. GitHub: tlaplus/tlaplus (2026).
+[3] Grafana k6 documentation (2026). https://grafana.com/docs/k6/latest/
+[4] ACM Artifact Review and Badging Policy (2026). https://www.acm.org/publications/policies/artifact-review-and-badging-current

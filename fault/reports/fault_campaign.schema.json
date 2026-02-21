@@ -6,6 +6,10 @@
   "required": [
     "scenario",
     "injection",
+    "data_source",
+    "fulcrum_commit",
+    "scenario_hash",
+    "evidence_class",
     "revocation_window_ms",
     "safety_violations",
     "recovery_time_ms",
@@ -16,6 +20,10 @@
   "properties": {
     "scenario": {"type": "string"},
     "injection": {"type": "string"},
+    "data_source": {"type": "string", "enum": ["real", "simulated"]},
+    "fulcrum_commit": {"type": "string"},
+    "scenario_hash": {"type": "string"},
+    "evidence_class": {"type": "string", "enum": ["measured", "simulated"]},
     "revocation_window_ms": {"type": "number", "minimum": 0},
     "safety_violations": {"type": "integer", "minimum": 0},
     "recovery_time_ms": {"type": "number", "minimum": 0},

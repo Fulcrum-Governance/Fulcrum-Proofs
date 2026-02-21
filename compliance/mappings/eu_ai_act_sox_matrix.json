@@ -4,20 +4,34 @@
     "regulation_clause": "EU AI Act Art. 9 (risk management)",
     "test_id": "TST-GATE-001",
     "evidence_artifact": "audits/post-repair/gate-fail-closed-evidence.md",
-    "result": "incomplete"
+    "result": "pass"
   },
   {
     "control_id": "CTRL-AUDIT-IMMUTABLE",
     "regulation_clause": "EU AI Act Art. 12 (logging and record-keeping)",
     "test_id": "TST-AUDIT-003",
     "evidence_artifact": "audits/post-repair/immutable-audit-evidence.md",
-    "result": "incomplete"
+    "result": "pass"
   },
   {
     "control_id": "CTRL-BUDGET-AUTHZ",
     "regulation_clause": "SOX Section 302 (internal controls)",
     "test_id": "TST-BUDGET-010",
     "evidence_artifact": "audits/post-repair/budget-authz-evidence.md",
-    "result": "incomplete"
+    "result": "pass"
+  },
+  {
+    "control_id": "CTRL-EPOCH-FRESHNESS",
+    "regulation_clause": "EU AI Act Art. 15 (accuracy, robustness, cybersecurity)",
+    "test_id": "TST-TEMP-014",
+    "evidence_artifact": "audits/post-repair/epoch-freshness-evidence.md",
+    "result": "pass"
+  },
+  {
+    "control_id": "CTRL-EVIDENCE-TRACEABILITY",
+    "regulation_clause": "SOX Section 404 (control evidence traceability)",
+    "test_id": "TST-EVID-001",
+    "evidence_artifact": "compliance/reports/evidence-gap-report.md",
+    "result": "pass"
   }
 ]

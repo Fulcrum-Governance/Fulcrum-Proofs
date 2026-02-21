@@ -1,0 +1,25 @@
+{
+  "run_id": "bench-durable-governed-path-1771581928",
+  "data_source": "real",
+  "runner": "ghz",
+  "hardware_profile": {
+    "platform": "macOS-26.4-arm64-arm-64bit",
+    "arch": "arm64",
+    "cpu_count": 8
+  },
+  "fulcrum_commit": "5c86a3517f803f525041d826dfc17ea497bbd147",
+  "contracts_snapshot_sha": "5c86a3517f803f525041d826dfc17ea497bbd147",
+  "commit": "7bb600ebb6deb30679f4ab1054c0e1cdff896c2f",
+  "env": "bench-gate",
+  "workload": "durable-governed-path",
+  "durability_mode": "durable_governed",
+  "samples": 150,
+  "p50": 3.681959,
+  "p95": 11.0335,
+  "p99": 73.2695,
+  "ci95": {
+    "low": 3.5639566149344994,
+    "high": 6.588919438398834
+  },
+  "errors": 0
+}

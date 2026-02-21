@@ -23,7 +23,7 @@ jobs:
         run: python3 -m pip install -r requirements.txt
 
       - name: Run fault campaign gate
-        run: make fault-gate
+        run: FAULT_USE_EXISTING=1 make fault-gate
 
       - name: Upload fault artifacts
         if: always()

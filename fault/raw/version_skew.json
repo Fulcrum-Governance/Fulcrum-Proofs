@@ -1,0 +1,22 @@
+{
+  "scenario": "version-skew",
+  "injection": "mixed_policy_version_cluster",
+  "data_source": "real",
+  "fulcrum_commit": "5c86a3517f803f525041d826dfc17ea497bbd147",
+  "scenario_hash": "045727e026f3149c9cbccb3cca0c31eb32ca4a2d9d1f233d82e6a69a359027dd",
+  "evidence_class": "measured",
+  "revocation_window_ms": 372.626,
+  "safety_violations": 0,
+  "recovery_time_ms": 7.27,
+  "within_bounds": true,
+  "expected_bounds": {
+    "max_revocation_window_ms": 750.0,
+    "max_safety_violations": 0
+  },
+  "metadata": {
+    "iterations": 500,
+    "generated_at": "2026-02-20T10:19:10Z",
+    "mode": "real-ghz",
+    "seed": 0
+  }
+}

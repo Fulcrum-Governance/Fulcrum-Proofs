@@ -1,0 +1,84 @@
+{
+  "summary": {
+    "run_count": 3,
+    "generated_at": "2026-02-20T10:16:46Z",
+    "manifest": "benchmarks/manifests/benchmark_manifest.yaml"
+  },
+  "runs": [
+    {
+      "run_id": "bench-durable-governed-path-1771582271",
+      "data_source": "real",
+      "runner": "ghz",
+      "hardware_profile": {
+        "platform": "macOS-26.4-arm64-arm-64bit",
+        "arch": "arm64",
+        "cpu_count": 8
+      },
+      "fulcrum_commit": "5c86a3517f803f525041d826dfc17ea497bbd147",
+      "contracts_snapshot_sha": "5c86a3517f803f525041d826dfc17ea497bbd147",
+      "commit": "7bb600ebb6deb30679f4ab1054c0e1cdff896c2f",
+      "env": "bench-nightly",
+      "workload": "durable-governed-path",
+      "durability_mode": "durable_governed",
+      "samples": 150,
+      "p50": 1.604292,
+      "p95": 12.85875,
+      "p99": 255.907333,
+      "ci95": {
+        "low": 3.054872246932903,
+        "high": 15.699866113067099
+      },
+      "errors": 0
+    },
+    {
+      "run_id": "bench-non-durable-fast-path-1771582321",
+      "data_source": "real",
+      "runner": "ghz",
+      "hardware_profile": {
+        "platform": "macOS-26.4-arm64-arm-64bit",
+        "arch": "arm64",
+        "cpu_count": 8
+      },
+      "fulcrum_commit": "5c86a3517f803f525041d826dfc17ea497bbd147",
+      "contracts_snapshot_sha": "5c86a3517f803f525041d826dfc17ea497bbd147",
+      "commit": "7bb600ebb6deb30679f4ab1054c0e1cdff896c2f",
+      "env": "bench-nightly",
+      "workload": "non-durable-fast-path",
+      "durability_mode": "non_durable_fast",
+      "samples": 150,
+      "p50": 2.052375,
+      "p95": 17.689833,
+      "p99": 338.037291,
+      "ci95": {
+        "low": 3.7299053164483302,
+        "high": 19.071490830218334
+      },
+      "errors": 0
+    },
+    {
+      "run_id": "bench-finops-sensitivity-sweep-1771582371",
+      "data_source": "real",
+      "runner": "ghz",
+      "hardware_profile": {
+        "platform": "macOS-26.4-arm64-arm-64bit",
+        "arch": "arm64",
+        "cpu_count": 8
+      },
+      "fulcrum_commit": "5c86a3517f803f525041d826dfc17ea497bbd147",
+      "contracts_snapshot_sha": "5c86a3517f803f525041d826dfc17ea497bbd147",
+      "commit": "7bb600ebb6deb30679f4ab1054c0e1cdff896c2f",
+      "env": "bench-nightly",
+      "workload": "finops-sensitivity-sweep",
+      "durability_mode": "finops_sensitivity",
+      "samples": 100,
+      "p50": 2.261416,
+      "p95": 24.214083,
+      "p99": 221.99275,
+      "ci95": {
+        "low": 1.2534923925771153,
+        "high": 22.546314247422885
+      },
+      "errors": 0
+    }
+  ]
+}

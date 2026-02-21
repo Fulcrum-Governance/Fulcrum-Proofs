@@ -18,12 +18,13 @@ models/tla/tools/tla2tools.jar
 # Bench/fault generated outputs
 benchmarks/reports/*.tmp.json
 fault/reports/*.tmp.json
-benchmarks/raw/*.json
-fault/raw/*.json
 proofs/lean/reports/*
 !benchmarks/raw/.gitkeep
 !fault/raw/.gitkeep
 !proofs/lean/reports/.gitkeep
+benchmarks/raw/bench-*.json
+benchmarks/raw/raw-*.json
+fault/raw/*.raw.json
 
 # Python cache
 __pycache__/

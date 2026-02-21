@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fulcrum-governance.github.io/fulcrum-proofs/schemas/orchestration-contract.schema.json",
+  "title": "Proof Orchestration Contract",
+  "type": "object",
+  "required": ["version", "program", "execution_order", "closure_policy"],
+  "properties": {
+    "version": {"type": "integer", "minimum": 1},
+    "program": {"type": "string"},
+    "execution_order": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["role", "outputs"],
+        "properties": {
+          "role": {"type": "string"},
+          "outputs": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+          "schemas": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": false
+      }
+    },
+    "closure_policy": {
+      "type": "object",
+      "required": [
+        "no_open_critical_high",
+        "non_empirical_must_be_proven",
+        "empirical_must_be_reproducible"
+      ],
+      "properties": {
+        "no_open_critical_high": {"type": "boolean"},
+        "non_empirical_must_be_proven": {"type": "boolean"},
+        "empirical_must_be_reproducible": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

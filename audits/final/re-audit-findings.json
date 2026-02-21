@@ -1,0 +1,75 @@
+[
+  {
+    "finding_id": "F-C004",
+    "severity": "High",
+    "status": "closed",
+    "evidence_refs": [
+      "benchmarks/raw/durable-governed-path.json",
+      "benchmarks/raw/nightly-suite.json"
+    ],
+    "residual_risk": "Latency tails remain workload-sensitive; bounded by published CI95 artifacts."
+  },
+  {
+    "finding_id": "F-C009",
+    "severity": "High",
+    "status": "closed",
+    "evidence_refs": [
+      "proofs/lean/reports/lake-build.log",
+      "proofs/lean/reports/no-sorry-check.log",
+      "claims/theorem_inventory.yaml"
+    ],
+    "residual_risk": "Proof scope is bounded to explicit assumptions encoded in theorem inventory."
+  },
+  {
+    "finding_id": "F-C014",
+    "severity": "Critical",
+    "status": "closed",
+    "evidence_refs": [
+      "models/tla/reports/tlc-GatewaySafety.log",
+      "models/tla/reports/tlc-GatewaySafetyMedium.log",
+      "fault/raw/stale_replay.json",
+      "fault/raw/version_skew.json"
+    ],
+    "residual_risk": "Distributed guarantees are bounded to TLC configs and fault campaign parameter ranges."
+  },
+  {
+    "finding_id": "F-C015",
+    "severity": "High",
+    "status": "closed",
+    "evidence_refs": [
+      "compliance/mappings/eu_ai_act_sox_matrix.json",
+      "compliance/reports/evidence-gap-report.md"
+    ],
+    "residual_risk": "Matrix remains engineering evidence only; not legal certification."
+  },
+  {
+    "finding_id": "F-C016",
+    "severity": "High",
+    "status": "closed",
+    "evidence_refs": [
+      "benchmarks/raw/non-durable-fast-path.json",
+      "benchmarks/raw/nightly-suite.json"
+    ],
+    "residual_risk": "Cross-host reproducibility depends on manifest parity and environment controls."
+  },
+  {
+    "finding_id": "F-C017",
+    "severity": "High",
+    "status": "closed",
+    "evidence_refs": [
+      "benchmarks/raw/finops-sensitivity-sweep.json",
+      "benchmarks/raw/raw-bench-finops-sensitivity-sweep-1771582030-sensitivity-details.json"
+    ],
+    "residual_risk": "Cost sensitivity bounds may shift under materially different request mixes."
+  },
+  {
+    "finding_id": "F-C005",
+    "severity": "Medium",
+    "status": "open",
+    "evidence_refs": [
+      "claims/waivers.yaml",
+      "audits/final/c005-waiver-limitation.md"
+    ],
+    "residual_risk": "10M+ long-context recall remains unproven pending dataset/protocol closure."
+  }
+]

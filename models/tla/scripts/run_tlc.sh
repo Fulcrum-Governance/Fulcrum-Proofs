@@ -24,8 +24,24 @@ fi
 java -version >/dev/null 2>&1 || { echo "java not found" >&2; exit 1; }
 
 pushd "$SPEC_DIR" >/dev/null
-java -cp "$TLC_JAR" tlc2.TLC -cleanup -deadlock -config "$CFG_DIR/GatewaySafety.cfg" GatewaySafety \
-  | tee "$REPORT_DIR/tlc-gateway-safety.log"
+cfgs=(
+  "$CFG_DIR/GatewaySafetySmall.cfg"
+  "$CFG_DIR/GatewaySafety.cfg"
+  "$CFG_DIR/GatewaySafetyMedium.cfg"
+)
+
+for cfg in "${cfgs[@]}"; do
+  if [[ ! -f "$cfg" ]]; then
+    echo "Missing config: $cfg" >&2
+    exit 1
+  fi
+
+  cfg_name="$(basename "$cfg" .cfg)"
+  log_file="$REPORT_DIR/tlc-${cfg_name}.log"
+  echo "[model-gate] running TLC with $cfg_name"
+  java -cp "$TLC_JAR" tlc2.TLC -cleanup -deadlock -config "$cfg" GatewaySafety \
+    | tee "$log_file"
+done
 popd >/dev/null
 
 echo "TLC model check complete"

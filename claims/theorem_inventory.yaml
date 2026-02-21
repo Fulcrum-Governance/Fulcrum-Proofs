@@ -3,22 +3,26 @@ updated_at: 2026-02-20
 theorems:
   - theorem_id: THM-BUDGET-LOCAL
     assumptions:
-      - applyAction returns some new budget only if threshold condition holds
-      - arithmetic over Nat
+      - A-BUDGET-001: applyAction returns some new budget only if threshold condition holds
+      - A-BUDGET-002: arithmetic over Nat
     lean_module: Proofs/BasicInvariants.lean
     dependencies: []
-    proof_status: planned
+    proof_status: proven
   - theorem_id: THM-PRIVILEGE-STATIC
     assumptions:
-      - capability sets are finite sets over capability universe
+      - A-PRIV-001: capability sets are sets over the capability universe
     lean_module: Proofs/BasicInvariants.lean
     dependencies: []
-    proof_status: planned
+    proof_status: proven
   - theorem_id: THM-TEMPORAL-CONSERVATION-SPEC
     assumptions:
-      - token freshness, policy epoch match, and revocation checks are explicit premises
-      - per-hop revalidation semantics
+      - A-TEMP-001: request capability set is stable across a transition
+      - A-TEMP-002: available capability set is monotonic across a transition
+      - A-TEMP-003: per-hop revalidation semantics hold
+      - A-TEMP-004: policy epoch monotonicity holds
+      - A-TEMP-005: revocation stickiness holds
     lean_module: Proofs/TemporalConservationSpec.lean
     dependencies:
       - THM-PRIVILEGE-STATIC
-    proof_status: planned
+      - THM-BUDGET-LOCAL
+    proof_status: proven

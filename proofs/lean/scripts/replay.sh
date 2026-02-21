@@ -13,7 +13,15 @@ if ! command -v lake >/dev/null 2>&1; then
   exit 1
 fi
 
+if ! command -v rg >/dev/null 2>&1; then
+  echo "rg not found; install ripgrep." >&2
+  exit 1
+fi
+
 pushd "$LEAN_DIR" >/dev/null
+
+echo "[proof-gate] checking for forbidden placeholders"
+"$LEAN_DIR/scripts/check_no_sorry.sh" | tee "$REPORT_DIR/no-sorry-check.log"
 
 echo "[proof-gate] running lake build"
 lake build | tee "$REPORT_DIR/lake-build.log"
@@ -30,6 +38,21 @@ $(rg -n "^import " Proofs.lean || true)
 Module imports:
 $(rg -n "^import " Proofs/*.lean || true)
 MAP
+
+required=(
+  "thm_budget_local"
+  "thm_privilege_static"
+  "thm_temporal_conservation_spec"
+)
+
+for t in "${required[@]}"; do
+  if ! rg -n "theorem\\s+$t\\b" Proofs >/dev/null; then
+    echo "missing required theorem: $t" >&2
+    exit 1
+  fi
+done
+
+printf "%s\n" "${required[@]}" > "$REPORT_DIR/required-theorems.txt"
 
 popd >/dev/null
 

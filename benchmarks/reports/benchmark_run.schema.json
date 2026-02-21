@@ -5,6 +5,11 @@
   "type": "object",
   "required": [
     "run_id",
+    "data_source",
+    "runner",
+    "hardware_profile",
+    "fulcrum_commit",
+    "contracts_snapshot_sha",
     "commit",
     "env",
     "workload",
@@ -18,6 +23,20 @@
   ],
   "properties": {
     "run_id": {"type": "string"},
+    "data_source": {"type": "string", "enum": ["real", "simulated"]},
+    "runner": {"type": "string", "enum": ["k6", "ghz", "hybrid"]},
+    "hardware_profile": {
+      "type": "object",
+      "required": ["platform", "arch", "cpu_count"],
+      "properties": {
+        "platform": {"type": "string"},
+        "arch": {"type": "string"},
+        "cpu_count": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": true
+    },
+    "fulcrum_commit": {"type": "string"},
+    "contracts_snapshot_sha": {"type": "string"},
     "commit": {"type": "string"},
     "env": {"type": "string"},
     "workload": {"type": "string"},

@@ -1,0 +1,22 @@
+{
+  "scenario": "clock-skew",
+  "injection": "skewed_token_freshness_validation",
+  "data_source": "real",
+  "fulcrum_commit": "5c86a3517f803f525041d826dfc17ea497bbd147",
+  "scenario_hash": "101f18fbe0349ea1055755c8c911f5e36125b97578bb9a53e3555cf4a8bcf5a0",
+  "evidence_class": "measured",
+  "revocation_window_ms": 76.001,
+  "safety_violations": 0,
+  "recovery_time_ms": 32.639,
+  "within_bounds": true,
+  "expected_bounds": {
+    "max_revocation_window_ms": 400.0,
+    "max_safety_violations": 0
+  },
+  "metadata": {
+    "iterations": 500,
+    "generated_at": "2026-02-20T10:19:51Z",
+    "mode": "real-ghz",
+    "seed": 0
+  }
+}

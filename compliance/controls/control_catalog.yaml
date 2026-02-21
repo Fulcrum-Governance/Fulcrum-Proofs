@@ -9,3 +9,9 @@ controls:
   - control_id: CTRL-BUDGET-AUTHZ
     objective: Enforce budget and privilege conservation pre-execution.
     mapped_claims: [C-009, C-014, C-015]
+  - control_id: CTRL-EPOCH-FRESHNESS
+    objective: Enforce epoch/freshness and revocation checks on each authorization transition.
+    mapped_claims: [C-014, C-015]
+  - control_id: CTRL-EVIDENCE-TRACEABILITY
+    objective: Maintain clause-to-control traceability with immutable test artifacts.
+    mapped_claims: [C-015]

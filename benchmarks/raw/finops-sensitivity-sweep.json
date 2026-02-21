@@ -1,0 +1,25 @@
+{
+  "run_id": "bench-finops-sensitivity-sweep-1771582030",
+  "data_source": "real",
+  "runner": "ghz",
+  "hardware_profile": {
+    "platform": "macOS-26.4-arm64-arm-64bit",
+    "arch": "arm64",
+    "cpu_count": 8
+  },
+  "fulcrum_commit": "5c86a3517f803f525041d826dfc17ea497bbd147",
+  "contracts_snapshot_sha": "5c86a3517f803f525041d826dfc17ea497bbd147",
+  "commit": "7bb600ebb6deb30679f4ab1054c0e1cdff896c2f",
+  "env": "bench-gate",
+  "workload": "finops-sensitivity-sweep",
+  "durability_mode": "finops_sensitivity",
+  "samples": 100,
+  "p50": 2.1975,
+  "p95": 49.420666,
+  "p99": 345.745041,
+  "ci95": {
+    "low": 4.16376983734941,
+    "high": 29.15816512265059
+  },
+  "errors": 0
+}
