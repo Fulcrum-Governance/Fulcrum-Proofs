@@ -27,7 +27,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ ! -d "$SOURCE/.git" ]]; then
+if [[ ! -e "$SOURCE/.git" ]]; then
   echo "Source repo not found: $SOURCE" >&2
   exit 1
 fi
