@@ -1,21 +1,14 @@
 /-
-  Incentive Compatibility (DSIC) for Fulcrum's Proportional Allocation
+  Incentive Properties for Fulcrum's Proportional Allocation
 
-  Proves that Fulcrum's budget allocation mechanism is dominant-strategy
-  incentive compatible (DSIC) under the sufficiency assumption: when the
-  total budget is sufficient to cover all agents' truthful requests.
-
-  Under sufficiency, each agent receives exactly what they request when
-  reporting truthfully. Inflating provides no benefit (you already get
-  everything you need), so truth-telling is a dominant strategy.
-
-  Without sufficiency (competitive budget), proportional allocation is
-  NOT DSIC in general. This is a known result in mechanism design.
-
-  Reference: Zhang et al. (2024), arxiv:2402.12907 (ICSAP framework)
+  The current utility model is `allocationUtility trueNeed allocation = -|allocation - trueNeed|`.
+  Under that utility, budget sufficiency does imply that truthful reporting gives an agent at
+  least their requested amount, but it does NOT imply DSIC. In oversupplied settings, an agent
+  can strictly improve utility by under-reporting to move their allocation closer to their true need.
 -/
 
 import Proofs.GameTheory.Definitions
+import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Real.Basic
 
 set_option autoImplicit false
@@ -49,7 +42,7 @@ noncomputable def allocationUtility
   -(|allocation - trueNeed|)
 
 -- ═══════════════════════════════════════════════════════════
--- DSIC under budget sufficiency
+-- Budget sufficiency and a concrete non-DSIC counterexample
 -- ═══════════════════════════════════════════════════════════
 
 /-- Budget sufficiency: the total budget is at least the sum of all
@@ -64,43 +57,97 @@ def BudgetSufficient {n : Nat} (budget : ℝ)
 theorem truthful_allocation_sufficient
     {n : Nat} (budget : ℝ) (trueNeeds : Fin n → BudgetRequest)
     (hSuff : BudgetSufficient budget trueNeeds)
-    (hBudgetPos : budget > 0) (hn : n > 0) (i : Fin n) :
+    (_hBudgetPos : budget > 0) (_hn : n > 0) (i : Fin n) :
     proportionalAllocation budget trueNeeds i ≥ (trueNeeds i).amount := by
-  sorry -- Follows from: budget/totalReported ≥ 1 under sufficiency
+  unfold proportionalAllocation
+  let totalReported := Finset.sum Finset.univ (fun j => (trueNeeds j).amount)
+  have hNeedLe : (trueNeeds i).amount ≤ totalReported := by
+    dsimp [totalReported]
+    exact Finset.single_le_sum
+      (fun j _ => le_of_lt (trueNeeds j).hPositive)
+      (Finset.mem_univ i)
+  have hTotalPos : 0 < totalReported := lt_of_lt_of_le (trueNeeds i).hPositive hNeedLe
+  have hTotalLeBudget : totalReported ≤ budget := by
+    simpa [BudgetSufficient, totalReported] using hSuff
+  rw [if_pos hTotalPos]
+  change (trueNeeds i).amount ≤ budget * (trueNeeds i).amount / totalReported
+  rw [le_div_iff₀ hTotalPos]
+  nlinarith [hTotalLeBudget, (trueNeeds i).hPositive]
 
-/-- DSIC theorem: under budget sufficiency, truthful reporting is a
-    dominant strategy for every agent under proportional allocation.
+/-- Under the current `allocationUtility`, proportional allocation is not DSIC:
+    with two agents who both truly need 5 and budget 20, truthful reporting gives
+    allocation 10, while under-reporting to 5/3 gives exact allocation 5 and higher utility. -/
+theorem proportional_allocation_counterexample_under_sufficiency :
+    let trueNeeds : Fin 2 → BudgetRequest := fun _ => ⟨5, by norm_num⟩
+    let falseReport : BudgetRequest := ⟨(5 : ℝ) / 3, by norm_num⟩
+    BudgetSufficient 20 trueNeeds ∧
+      allocationUtility (trueNeeds 0).amount (proportionalAllocation 20 trueNeeds 0) <
+        allocationUtility (trueNeeds 0).amount
+          (proportionalAllocation 20 (Function.update trueNeeds 0 falseReport) 0) := by
+  dsimp
+  constructor
+  · norm_num [BudgetSufficient]
+  · have hTruth : |(20 : ℝ) * 5 / (2 * 5) - 5| = 5 := by
+      norm_num
+    have hMisreportAlloc :
+        (if (0 : ℝ) < (5 : ℝ) / 3 + 5 then 20 * ((5 : ℝ) / 3) / (((5 : ℝ) / 3) + 5) else 0) = 5 := by
+      norm_num
+      rfl
+    have hFalse :
+        |((if (0 : ℝ) < (5 : ℝ) / 3 + 5 then 20 * ((5 : ℝ) / 3) / (((5 : ℝ) / 3) + 5) else 0) - 5)| = 0 := by
+      rw [hMisreportAlloc]
+      norm_num
+    simp [allocationUtility, proportionalAllocation, Fin.sum_univ_two]
+    rw [hFalse, hTruth]
+    norm_num
 
-    Formally: for any agent i with true need tᵢ, reporting tᵢ
-    maximizes utility regardless of other agents' reports.
-
-    Mathematical argument:
-    Under sufficiency, budget ≥ Σ needs. So budget/Σreports ≥ 1 when
-    all report truthfully. Each agent gets allocation ≥ need.
-    Since utility = -|allocation - need|, and truthful allocation ≥ need,
-    the agent cannot improve by inflating (already gets enough) or
-    deflating (gets less than needed). -/
-theorem proportional_allocation_dsic
-    {n : Nat} (budget : ℝ) (trueNeeds : Fin n → BudgetRequest)
-    (hSuff : BudgetSufficient budget trueNeeds)
-    (hBudgetPos : budget > 0) (hn : n > 0) :
-    IsDSIC
-      (mechanism := fun (reports : (i : Fin n) → BudgetRequest) =>
-        fun i => proportionalAllocation budget reports i)
+/-- Formal negation of DSIC for the concrete oversupplied two-agent instance above. -/
+theorem proportional_allocation_not_dsic :
+    ¬ IsDSIC
+      (mechanism := fun (reports : (i : Fin 2) → BudgetRequest) =>
+        fun i => proportionalAllocation 20 reports i)
       (utility := fun i trueNeed_i outcome =>
         allocationUtility trueNeed_i.amount (outcome i)) := by
-  sorry -- Follows from truthful_allocation_sufficient + monotonicity of |·|
+  intro hDSIC
+  let trueNeeds : Fin 2 → BudgetRequest := fun _ => ⟨5, by norm_num⟩
+  let falseReport : BudgetRequest := ⟨(5 : ℝ) / 3, by norm_num⟩
+  have h := hDSIC 0 trueNeeds falseReport
+  simp [trueNeeds, falseReport, allocationUtility, proportionalAllocation, Fin.sum_univ_two] at h
+  have hTruth : |(20 : ℝ) * 5 / (2 * 5) - 5| = 5 := by norm_num
+  have hMisreportAlloc :
+      (if (0 : ℝ) < (5 : ℝ) / 3 + 5 then 20 * ((5 : ℝ) / 3) / (((5 : ℝ) / 3) + 5) else 0) = 5 := by
+    norm_num
+    rfl
+  have hFalse :
+      |((if (0 : ℝ) < (5 : ℝ) / 3 + 5 then 20 * ((5 : ℝ) / 3) / (((5 : ℝ) / 3) + 5) else 0) - 5)| = 0 := by
+    rw [hMisreportAlloc]
+    norm_num
+  rw [hTruth, hFalse] at h
+  norm_num at h
 
-/-- Corollary: in the Fulcrum coordination game under sufficient budget,
-    agents have no incentive to misreport their token needs. -/
-theorem fulcrum_ic_under_sufficiency
-    {n : Nat} (budget : ℝ) (trueNeeds : Fin n → BudgetRequest)
-    (hSuff : BudgetSufficient budget trueNeeds)
-    (hBudgetPos : budget > 0) (hn : n > 0) :
-    ∀ (i : Fin n) (falseReport : BudgetRequest),
-    allocationUtility (trueNeeds i).amount (proportionalAllocation budget trueNeeds i) ≥
-    allocationUtility (trueNeeds i).amount
-      (proportionalAllocation budget (Function.update trueNeeds i falseReport) i) := by
-  sorry -- Corollary of proportional_allocation_dsic
+/-- Fulcrum-style corollary: under the current utility model, sufficient budget does
+    not make truthful need-reporting a dominant strategy. -/
+theorem fulcrum_not_ic_under_sufficiency :
+    ∃ (i : Fin 2) (trueNeeds : Fin 2 → BudgetRequest) (falseReport : BudgetRequest),
+      BudgetSufficient 20 trueNeeds ∧
+      allocationUtility (trueNeeds i).amount (proportionalAllocation 20 trueNeeds i) <
+        allocationUtility (trueNeeds i).amount
+          (proportionalAllocation 20 (Function.update trueNeeds i falseReport) i) := by
+  refine ⟨0, fun _ => ⟨5, by norm_num⟩, ⟨(5 : ℝ) / 3, by norm_num⟩, ?_⟩
+  constructor
+  · norm_num [BudgetSufficient]
+  · have hTruth : |(20 : ℝ) * 5 / (2 * 5) - 5| = 5 := by
+      norm_num
+    have hMisreportAlloc :
+        (if (0 : ℝ) < (5 : ℝ) / 3 + 5 then 20 * ((5 : ℝ) / 3) / (((5 : ℝ) / 3) + 5) else 0) = 5 := by
+      norm_num
+      rfl
+    have hFalse :
+        |((if (0 : ℝ) < (5 : ℝ) / 3 + 5 then 20 * ((5 : ℝ) / 3) / (((5 : ℝ) / 3) + 5) else 0) - 5)| = 0 := by
+      rw [hMisreportAlloc]
+      norm_num
+    simp [allocationUtility, proportionalAllocation, Fin.sum_univ_two]
+    rw [hFalse, hTruth]
+    norm_num
 
 end Fulcrum.GameTheory

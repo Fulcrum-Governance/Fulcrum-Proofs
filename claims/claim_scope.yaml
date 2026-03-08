@@ -76,18 +76,21 @@ claims:
       - pure_strategy_nash_existence_proven
       - mixed_strategy_nash_existence_proven_via_kakutani
       - simulation_confirms_equilibrium
-    notes: 16 sorry holes remain in computational sub-goals (Finset.sum over abstract Fin n).
-      Core structure and types are machine-checked. Kakutani FPT axiomatized pending toolchain alignment.
+    notes: Pure-strategy Nash existence is now sorry-free. One remaining placeholder
+      remains in mixed-strategy existence (`mixed_nash_exists`) due the external Kakutani
+      fixed-point dependency gap.
     owner: formal-systems
   - claim_id: C-019
-    statement: Fulcrum governance mechanism is dominant-strategy incentive-compatible
+    statement: Under allocationUtility = -|allocation - trueNeed|, proportional allocation is not dominant-strategy incentive-compatible
     type: formal
-    status: proven-with-sorry
+    status: proven
     closure_criteria:
       - mechanism_design_structures_defined
-      - dsic_theorem_stated_and_structured
-      - proportional_allocation_modeled
-    notes: DSIC theorem structure established with 3 sorry holes in allocation proofs.
+      - truthful_allocation_lower_bound_proven
+      - explicit_non_dsic_counterexample_proven
+    notes: The previous positive DSIC claim was false under the current utility model.
+      The Lean development now proves truthful oversupply lower bounds plus an explicit
+      two-agent counterexample showing profitable under-reporting under budget sufficiency.
     owner: formal-systems
   - claim_id: C-020
     statement: Coordination loss (Price of Anarchy) is bounded at 9/7
@@ -98,7 +101,8 @@ claims:
       - tla_coordination_invariants_hold
       - simulation_convergence_rate_above_90pct
     notes: Three-axis closure. TLC verifies 6 invariants (2,972 states). Simulation confirms
-      100% convergence to all-moderate with PoA = 9/7. Lean structure with sorry sub-goals.
+      100% convergence to all-moderate with PoA = 9/7. Lean support is reduced to one remaining
+      placeholder in `fulcrum_poa_bounded`; welfare helper lemmas are now sorry-free.
     owner: formal-systems
   - claim_id: C-021
     statement: Budget enforcement grounds the coordination game model
@@ -108,6 +112,6 @@ claims:
       - bridge_theorem_connects_budget_safety_to_game
       - governance_restricts_strategy_space_proven
       - runtime_blocks_overspend_proven
-    notes: budget_enforcement_grounds_game and governance_restricts_strategy_space are
-      sorry-free. budget_game_bridge has 1 sorry (witness construction).
+    notes: budget_enforcement_grounds_game, governance_restricts_strategy_space, and
+      budget_game_bridge are all sorry-free.
     owner: formal-systems

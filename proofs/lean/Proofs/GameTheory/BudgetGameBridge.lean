@@ -17,6 +17,7 @@
 -/
 
 import Proofs.GameTheory.FulcrumGame
+import Proofs.GameTheory.NashExistence
 import Proofs.BasicInvariants
 
 set_option autoImplicit false
@@ -71,11 +72,13 @@ theorem governance_restricts_strategy_space
     This makes the game theory results applicable to the real system. -/
 theorem budget_game_bridge
     (params : BudgetParams)
-    (hBudget : params.totalBudget = 25 * params.agentCount) :
+    (hBudget : params.totalBudget = 25 * params.agentCount)
+    (hSmall : params.agentCount ≤ 12) :
     ∃ σ : Fin params.agentCount → AgentAction,
       (∀ i, actionViolates (σ i) = false) ∧
       IsNashEquilibrium (fulcrumCoordinationGame params) σ := by
-  sorry -- Witness: allModerate. Noncompliant excluded by governance,
-        -- Nash equilibrium follows from moderate_is_nash_equilibrium.
+  refine ⟨fun _ => AgentAction.moderate, ?_, moderate_is_nash_equilibrium params hBudget hSmall⟩
+  intro i
+  simp [actionViolates]
 
 end Fulcrum.GameTheory

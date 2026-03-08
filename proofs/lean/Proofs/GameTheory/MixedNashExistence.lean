@@ -19,6 +19,8 @@
 -/
 
 import Proofs.GameTheory.Definitions
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Fintype.Pi
 
 set_option autoImplicit false
 
@@ -59,7 +61,12 @@ axiom kakutani_fixed_point_theorem
     players' mixed strategies. -/
 noncomputable def expectedPayoff {n : Nat} (G : NormalFormGame n)
     (i : Fin n) (σ : MixedStrategyProfile G) : ℝ :=
-  sorry -- Sum over all pure strategy profiles weighted by product of PMF values
+  letI : ∀ j, Fintype (G.Strategy j) := G.strategyFintype
+  letI : ∀ j, DecidableEq (G.Strategy j) := G.strategyDecEq
+  letI : Fintype ((j : Fin n) → G.Strategy j) := inferInstance
+  letI : DecidableEq ((j : Fin n) → G.Strategy j) := inferInstance
+  ∑ s : ((j : Fin n) → G.Strategy j),
+    (∏ j : Fin n, ((σ j).val (s j)).toReal) * G.payoff i s
 
 /-- The best-response correspondence for player i maps mixed strategy
     profiles to the set of mixed strategies that maximize i's expected

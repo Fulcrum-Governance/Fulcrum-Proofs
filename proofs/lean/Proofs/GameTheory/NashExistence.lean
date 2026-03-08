@@ -11,13 +11,14 @@
   - noncompliant deviation: penalty 20 overwhelms quality gain 1 → net loss ≥ 19
 
   NOTE: Some computational sub-goals (Finset.sum changes under Function.update
-  over abstract Fin n) use sorry. The mathematical argument is complete;
+  over abstract Fin n) previously used placeholders. The mathematical argument is complete;
   the tactic engineering for abstract-n Finset.sum manipulation is pending.
   The mixed-strategy theorem (MixedNashExistence) provides a complementary
   proof path via Kakutani/Brouwer that covers all n without restriction.
 -/
 
 import Proofs.GameTheory.FulcrumGame
+import Proofs.GameTheory.SumUpdateLemmas
 import Mathlib.Data.Fintype.BigOperators
 
 set_option autoImplicit false
@@ -48,10 +49,9 @@ theorem allModerate_totalTokens (n : Nat) :
 lemma totalTokens_deviation (n : Nat) (i : Fin n) (a : AgentAction) :
     totalTokens n (Function.update (allModerate n) i a) =
     25 * n - 25 + actionTokenCost a := by
-  unfold totalTokens allModerate
-  -- The sum splits into: cost(a) for index i, plus 25 for each j ≠ i
-  -- Total = cost(a) + 25 * (n - 1) = 25n - 25 + cost(a)
-  sorry -- Finset.sum under Function.update for abstract n
+  unfold allModerate
+  rw [totalTokens_update_allModerate]
+  omega
 
 -- ═══════════════════════════════════════════════════════════
 -- Core theorem: noncompliant is strictly dominated
@@ -68,7 +68,77 @@ theorem noncompliant_strictly_dominated
     profile i = AgentAction.noncompliant →
     fulcrumPayoff params (Function.update profile i AgentAction.moderate) i
       > fulcrumPayoff params profile i := by
-  sorry -- Requires Finset.sum comparison under Function.update for abstract profiles
+  intro profile hNoncomp
+  set totalNew := totalTokens params.agentCount (Function.update profile i AgentAction.moderate)
+    with hTotalNew
+  set totalOld := totalTokens params.agentCount profile with hTotalOld
+  have hTokensEq : totalNew + 40 = totalOld + 25 := by
+    rw [hTotalNew, hTotalOld]
+    simpa [hNoncomp, actionTokenCost] using
+      totalTokens_update_general params.agentCount profile i AgentAction.moderate
+  have hTokensLe : totalNew ≤ totalOld := by
+    omega
+  let overflowAmt : Nat → Nat :=
+    fun t => if h : t > params.totalBudget then t - params.totalBudget else 0
+  have hOverflowAmtLe : overflowAmt totalNew ≤ overflowAmt totalOld := by
+    by_cases hOld : totalOld > params.totalBudget
+    · by_cases hNew : totalNew > params.totalBudget
+      · simp [overflowAmt, hOld, hNew]
+        omega
+      · simp [overflowAmt, hOld, hNew]
+    · have hOldLe : totalOld ≤ params.totalBudget := le_of_not_gt hOld
+      have hNewLe : totalNew ≤ params.totalBudget := le_trans hTokensLe hOldLe
+      have hNew : ¬ totalNew > params.totalBudget := by
+        omega
+      simp [overflowAmt, hOld, hNew]
+  have hn_pos : (0 : ℝ) < params.agentCount := by
+    exact_mod_cast params.hPositive
+  have hOverflowLe :
+      ((overflowAmt totalNew : ℝ) / (params.agentCount : ℝ)) ≤
+        ((overflowAmt totalOld : ℝ) / (params.agentCount : ℝ)) := by
+    exact div_le_div_of_nonneg_right (by exact_mod_cast hOverflowAmtLe) (le_of_lt hn_pos)
+  have hOverflowEq (t : Nat) :
+      (if (t : ℝ) > (params.totalBudget : ℝ)
+        then ((t : ℝ) - (params.totalBudget : ℝ)) / (params.agentCount : ℝ)
+        else 0) =
+      ((overflowAmt t : ℝ) / (params.agentCount : ℝ)) := by
+    by_cases h : t > params.totalBudget
+    · have hReal : (t : ℝ) > (params.totalBudget : ℝ) := by
+        exact_mod_cast h
+      rw [if_pos hReal]
+      simp [overflowAmt, h]
+      rw [Nat.cast_sub (Nat.le_of_lt h)]
+    · have hReal : ¬ ((t : ℝ) > (params.totalBudget : ℝ)) := by
+        exact_mod_cast h
+      rw [if_neg hReal]
+      simp [overflowAmt, h]
+  have hNewPayoff :
+      fulcrumPayoff params (Function.update profile i AgentAction.moderate) i =
+        7 - ((overflowAmt totalNew : ℝ) / (params.agentCount : ℝ)) := by
+    unfold fulcrumPayoff
+    dsimp
+    rw [show (if ((totalTokens params.agentCount (Function.update profile i AgentAction.moderate) : ℝ) >
+          (params.totalBudget : ℝ))
+        then ((totalTokens params.agentCount (Function.update profile i AgentAction.moderate) : ℝ) -
+          (params.totalBudget : ℝ)) / (params.agentCount : ℝ)
+        else 0) = ((overflowAmt totalNew : ℝ) / (params.agentCount : ℝ)) by
+        rw [← hTotalNew]
+        exact hOverflowEq totalNew]
+    simp [Function.update_self, actionQuality, actionViolates]
+  have hOldPayoff :
+      fulcrumPayoff params profile i =
+        8 - 20 - ((overflowAmt totalOld : ℝ) / (params.agentCount : ℝ)) := by
+    unfold fulcrumPayoff
+    dsimp
+    rw [show (if ((totalTokens params.agentCount profile : ℝ) > (params.totalBudget : ℝ))
+        then ((totalTokens params.agentCount profile : ℝ) - (params.totalBudget : ℝ)) /
+          (params.agentCount : ℝ)
+        else 0) = ((overflowAmt totalOld : ℝ) / (params.agentCount : ℝ)) by
+        rw [← hTotalOld]
+        exact hOverflowEq totalOld]
+    simp [hNoncomp, actionQuality, actionViolates, violationPenalty]
+  rw [hNewPayoff, hOldPayoff]
+  nlinarith
 
 -- ═══════════════════════════════════════════════════════════
 -- Core theorem: all-moderate is Nash under tight budget
@@ -80,9 +150,9 @@ lemma allModerate_payoff_eq_seven (params : BudgetParams)
     (hBudget : params.totalBudget = 25 * params.agentCount)
     (i : Fin params.agentCount) :
     fulcrumPayoff params (allModerate params.agentCount) i = 7 := by
-  -- quality(moderate) = 7, no violation, totalTokens = 25n = budget → no overflow
-  -- Therefore payoff = 7 - 0 - 0 = 7
-  sorry -- Computational: unfold fulcrumPayoff, show no overflow, simplify to 7
+  unfold fulcrumPayoff
+  rw [allModerate_totalTokens]
+  simp [allModerate, hBudget, actionQuality, actionViolates]
 
 /-- Under tight budget (= 25n) with n ≤ 12, the all-moderate profile is
     a Nash equilibrium. No agent can profitably deviate.
@@ -105,31 +175,131 @@ theorem moderate_is_nash_equilibrium
     IsNashEquilibrium (fulcrumCoordinationGame params)
       (fun _ => AgentAction.moderate) := by
   intro i s'
-  -- The goal reduces to: payoff(all-moderate) ≥ payoff(deviation to s')
-  show fulcrumPayoff params (fun _ => AgentAction.moderate) i ≥
-    fulcrumPayoff params (Function.update (fun (_ : Fin params.agentCount) => AgentAction.moderate) i s') i
-  -- The all-moderate payoff is exactly 7
+  change fulcrumPayoff params (allModerate params.agentCount) i ≥
+    fulcrumPayoff params (Function.update (allModerate params.agentCount) i s') i
   have h_base := allModerate_payoff_eq_seven params hBudget i
-  unfold allModerate at h_base
   rw [h_base]
-  -- Case split on the four possible deviations
   cases s' with
   | moderate =>
-    -- No deviation: Function.update with same value is identity
-    show (7 : ℝ) ≥ fulcrumPayoff params (Function.update (fun _ => AgentAction.moderate) i AgentAction.moderate) i
-    sorry -- Computational: update with same value → same profile → same payoff
+    rw [show Function.update (allModerate params.agentCount) i AgentAction.moderate =
+        allModerate params.agentCount by
+          simpa [allModerate] using
+            (Function.update_eq_self i (allModerate params.agentCount))]
+    rw [h_base]
   | conservative =>
-    -- Quality drops to 3, still no overflow (10 < 25, total decreases)
-    unfold fulcrumPayoff
-    sorry -- Finset.sum comparison: 25n - 15 ≤ 25n → no overflow → payoff = 3 < 7
+    have hTokens :
+        totalTokens params.agentCount
+          (Function.update (allModerate params.agentCount) i AgentAction.conservative) =
+            10 + 25 * (params.agentCount - 1) := by
+      simpa [allModerate, actionTokenCost] using
+        totalTokens_update_allModerate params.agentCount i AgentAction.conservative
+    have hNoOverflowNat : 10 + 25 * (params.agentCount - 1) ≤ params.totalBudget := by
+      rw [hBudget]
+      have hpos := params.hPositive
+      omega
+    have hPayoff :
+        fulcrumPayoff params
+          (Function.update (allModerate params.agentCount) i AgentAction.conservative) i = 3 := by
+      unfold fulcrumPayoff
+      rw [hTokens]
+      dsimp
+      have hNoOverflow :
+          ¬ ((((10 + 25 * (params.agentCount - 1) : Nat) : ℝ) > (params.totalBudget : ℝ))) := by
+        exact not_lt.mpr (by exact_mod_cast hNoOverflowNat)
+      rw [if_neg hNoOverflow]
+      norm_num [Function.update_self, actionQuality, actionViolates]
+    rw [hPayoff]
+    norm_num
   | aggressive =>
-    -- Quality = 9, no penalty, but overflow = 25/n
-    -- Payoff = 9 - 25/n. For n ≤ 12: 25/n > 2, so 9 - 25/n < 7
-    sorry -- Requires: totalTokens = 25n + 25 > budget, and 25/n > 2 for n ≤ 12
+    have hTokens :
+        totalTokens params.agentCount
+          (Function.update (allModerate params.agentCount) i AgentAction.aggressive) =
+            50 + 25 * (params.agentCount - 1) := by
+      simpa [allModerate, actionTokenCost] using
+        totalTokens_update_allModerate params.agentCount i AgentAction.aggressive
+    have hOverflowNat : params.totalBudget < 50 + 25 * (params.agentCount - 1) := by
+      rw [hBudget]
+      have hpos := params.hPositive
+      omega
+    have hn_pos : (0 : ℝ) < params.agentCount := by
+      exact_mod_cast params.hPositive
+    have hDivGtTwo : (2 : ℝ) < 25 / (params.agentCount : ℝ) := by
+      have hn_le : (params.agentCount : ℝ) ≤ 12 := by
+        exact_mod_cast hSmall
+      have hmul : (2 : ℝ) * params.agentCount < 25 := by
+        nlinarith
+      exact (lt_div_iff₀ hn_pos).2 hmul
+    have hPayoff :
+        fulcrumPayoff params
+          (Function.update (allModerate params.agentCount) i AgentAction.aggressive) i =
+            9 - 25 / (params.agentCount : ℝ) := by
+      unfold fulcrumPayoff
+      rw [hTokens]
+      dsimp
+      have hOverflow :
+          (((50 + 25 * (params.agentCount - 1) : Nat) : ℝ) > (params.totalBudget : ℝ)) := by
+        exact_mod_cast hOverflowNat
+      rw [if_pos hOverflow]
+      have hEqNat : 50 + 25 * (params.agentCount - 1) = 25 * params.agentCount + 25 := by
+        have hpos := params.hPositive
+        omega
+      have hOverflowValue :
+          ((((50 + 25 * (params.agentCount - 1) : Nat) : ℝ) - (params.totalBudget : ℝ)) /
+            (params.agentCount : ℝ)) = 25 / (params.agentCount : ℝ) := by
+        rw [show (((50 + 25 * (params.agentCount - 1) : Nat) : ℝ) =
+            ((25 * params.agentCount + 25 : Nat) : ℝ)) by exact_mod_cast hEqNat]
+        rw [hBudget]
+        have hn_ne : (params.agentCount : ℝ) ≠ 0 := by
+          positivity
+        field_simp [hn_ne]
+        norm_num
+      rw [hOverflowValue]
+      norm_num [Function.update_self, actionQuality, actionViolates]
+    rw [hPayoff]
+    nlinarith
   | noncompliant =>
-    -- Quality = 8, penalty = 20, overflow = 15/n
-    -- Payoff = 8 - 20 - 15/n = -12 - 15/n ≪ 7
-    sorry -- Requires: totalTokens = 25n + 15 > budget, and -12 - 15/n < 7
+    have hTokens :
+        totalTokens params.agentCount
+          (Function.update (allModerate params.agentCount) i AgentAction.noncompliant) =
+            40 + 25 * (params.agentCount - 1) := by
+      simpa [allModerate, actionTokenCost] using
+        totalTokens_update_allModerate params.agentCount i AgentAction.noncompliant
+    have hOverflowNat : params.totalBudget < 40 + 25 * (params.agentCount - 1) := by
+      rw [hBudget]
+      have hpos := params.hPositive
+      omega
+    have hn_pos : (0 : ℝ) < params.agentCount := by
+      exact_mod_cast params.hPositive
+    have hDivPos : (0 : ℝ) < 15 / (params.agentCount : ℝ) := by
+      exact div_pos (by norm_num) hn_pos
+    have hPayoff :
+        fulcrumPayoff params
+          (Function.update (allModerate params.agentCount) i AgentAction.noncompliant) i =
+            8 - 20 - 15 / (params.agentCount : ℝ) := by
+      unfold fulcrumPayoff
+      rw [hTokens]
+      dsimp
+      have hOverflow :
+          (((40 + 25 * (params.agentCount - 1) : Nat) : ℝ) > (params.totalBudget : ℝ)) := by
+        exact_mod_cast hOverflowNat
+      rw [if_pos hOverflow]
+      have hEqNat : 40 + 25 * (params.agentCount - 1) = 25 * params.agentCount + 15 := by
+        have hpos := params.hPositive
+        omega
+      have hOverflowValue :
+          ((((40 + 25 * (params.agentCount - 1) : Nat) : ℝ) - (params.totalBudget : ℝ)) /
+            (params.agentCount : ℝ)) = 15 / (params.agentCount : ℝ) := by
+        rw [show (((40 + 25 * (params.agentCount - 1) : Nat) : ℝ) =
+            ((25 * params.agentCount + 15 : Nat) : ℝ)) by exact_mod_cast hEqNat]
+        rw [hBudget]
+        have hn_ne : (params.agentCount : ℝ) ≠ 0 := by
+          positivity
+        field_simp [hn_ne]
+        norm_num
+      rw [hOverflowValue]
+      norm_num [Function.update_self, actionQuality, actionViolates, violationPenalty]
+    rw [hPayoff]
+    nlinarith
 
 /-- The Fulcrum coordination game admits at least one pure-strategy
     Nash equilibrium under tight budget with bounded team size. -/
