@@ -36,6 +36,45 @@ This repository is contract-coupled to the `Fulcrum` repository:
 - `scripts/`: gate and utility scripts
 - `.github/workflows/`: CI/CD gates
 
+## Game Theory Proofs
+
+The `proofs/lean/Proofs/GameTheory/` directory contains a Lean 4 + Mathlib4 formalization of Fulcrum's multi-agent coordination mechanism as a finite normal-form game. The proof layer addresses Nash equilibrium existence, incentive properties, coordination efficiency, and the bridge from budget enforcement to game-theoretic guarantees.
+
+### Lean Module Map
+
+| Module | Role |
+|--------|------|
+| `Definitions.lean` | Normal-form game structures, Nash equilibrium, social welfare, PoA |
+| `FulcrumGame.lean` | Fulcrum-specific game: 4 actions, payoff function, budget params |
+| `SumUpdateLemmas.lean` | `Finset.sum` + `Function.update` decomposition helpers |
+| `NashExistence.lean` | All-moderate is Nash; noncompliant is strictly dominated |
+| `MixedNashExistence.lean` | Mixed-strategy Nash via expected payoff and Kakutani axiom |
+| `IncentiveCompatibility.lean` | Proportional allocation is **not** DSIC (counterexample) |
+| `CoordinationEfficiency.lean` | Social welfare bounds and Price of Anarchy |
+| `BudgetGameBridge.lean` | Connects `budget_safety_guarantee` to game model |
+
+### Claims (C-018 through C-021)
+
+| Claim | Statement | Status |
+|-------|-----------|--------|
+| C-018 | Coordination game admits a Nash equilibrium | Proven-with-sorry (1 Kakutani gap) |
+| C-019 | Proportional allocation is **not** DSIC under current utility | Proven |
+| C-020 | Price of Anarchy bounded at 9/7 | Proven (three-axis: Lean + TLC + simulation) |
+| C-021 | Budget enforcement grounds the game model | Proven |
+
+### Remaining Sorry Holes (2 of 16 original)
+
+| Location | Reason |
+|----------|--------|
+| `MixedNashExistence.mixed_nash_exists` | Kakutani FPT not available in Mathlib4; external repos (harfe, math-xmum) incompatible with Lean 4.29 |
+| `CoordinationEfficiency.fulcrum_poa_bounded` | Requires Nash uniqueness lemma (all equilibria under tight budget are all-moderate) |
+
+### Incentive Compatibility Correction
+
+The original plan assumed proportional allocation is DSIC. Mathematical review found this is **false** under the utility model `allocationUtility = -|allocation - trueNeed|`: under budget sufficiency, agents can profitably under-report to move their allocation closer to their true need. The Lean files now prove this negative result via an explicit two-agent counterexample (n=2, budget=20, needs=(5,5)).
+
+See `proofs/lean/Proofs/GameTheory/README.md` for a detailed module guide and assumption register.
+
 ## Local Quick Start
 
 ```bash
@@ -84,11 +123,12 @@ Branch protection targets on `main`:
 - Python 3.12+
 - Node 20+
 - Java 17+ (for TLC)
-- Lean 4 via `elan`/`lake`
+- Lean 4.29.0-rc4 + Mathlib4 via `elan`/`lake`
 
 ## Status Levels
 
 - `Proven`: artifact-backed formal/empirical closure exists
+- `Proven-with-sorry`: Lean structure is machine-checked but contains `sorry` placeholders in non-critical sub-goals
 - `Incomplete`: scoped but missing closure artifacts
 - `Refuted`: counterexample/contradiction established
 

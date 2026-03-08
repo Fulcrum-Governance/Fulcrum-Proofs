@@ -1,3 +1,8 @@
+> **Status: Completed** (2026-03-07). The Nash equilibrium gap identified here was
+> addressed by the coordination proofs plan and the sorry-hole closure plan.
+> All recommended claims (C-018 through C-021) have been added and closed or
+> reduced to minimal sorry.
+
 # Proof Audit & Nash Equilibrium Gap Analysis
 
 Date: 2026-03-07

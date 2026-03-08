@@ -1,3 +1,12 @@
+> **Status: Executed with deviations** (2026-03-08). Final result: **16 to 2 sorry**
+> (not 16 to 1 as originally targeted). Deviations:
+> - IC theorems (Tasks 7): The positive DSIC claim was mathematically false.
+>   All 3 IC sorry holes were closed by proving the **negative** result (not DSIC)
+>   via a two-agent counterexample, rather than the original false positive.
+> - PoA (Task 6): `fulcrum_poa_bounded` retains 1 sorry because the Nash uniqueness
+>   lemma required for the final step was deferred. Welfare helper lemmas are sorry-free.
+> - Mixed Nash (Task 8): `mixed_nash_exists` retains 1 sorry (Kakutani gap, as expected).
+
 # Sorry Hole Closure Plan
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.

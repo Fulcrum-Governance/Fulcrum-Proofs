@@ -1,3 +1,13 @@
+> **Status: Superseded** (2026-03-08). This plan was partially executed. Key deviations:
+> - External Kakutani dependencies (harfe, math-xmum) were **not** imported due to
+>   Lean toolchain version mismatch (repos pinned to v4.21-4.22 vs our v4.29).
+>   Mixed Nash uses axiomatized Kakutani instead.
+> - Incentive compatibility was **redesigned**: the original DSIC claim is mathematically
+>   false under the current utility model. The proofs now establish a negative result
+>   (proportional allocation is not DSIC) via an explicit counterexample.
+> - The sorry-hole closure plan (`2026-03-08-sorry-hole-closure.md`) supersedes
+>   the proof engineering tasks here.
+
 # Nash Equilibrium Coordination Proofs — Implementation Plan (Rev 2)
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
