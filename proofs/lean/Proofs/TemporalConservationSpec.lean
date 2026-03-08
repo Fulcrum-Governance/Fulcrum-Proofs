@@ -36,7 +36,7 @@ theorem deny_when_revoked (g : GateInput) :
   intro hRevoked
   intro hAllow
   have hNotRevoked : g.revoked = false := hAllow.2.2.2.2.2.2
-  exact Bool.noConfusion (Eq.trans hRevoked hNotRevoked)
+  simp [hRevoked] at hNotRevoked
 
 structure TransitionAssumptions where
   perHopRevalidation : Prop
@@ -76,6 +76,6 @@ theorem thm_temporal_revocation_fail_closed
   intro hAllow
   have hStickyRevoked : g'.revoked = true := hStep.2.2.2 hRevoked
   have hNotRevoked : g'.revoked = false := hAllow.2.2.2.2.2.2
-  exact Bool.noConfusion (Eq.trans hStickyRevoked hNotRevoked)
+  simp [hStickyRevoked] at hNotRevoked
 
 end Fulcrum

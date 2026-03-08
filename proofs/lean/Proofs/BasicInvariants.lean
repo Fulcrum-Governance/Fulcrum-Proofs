@@ -1,3 +1,5 @@
+import Mathlib.Data.Set.Basic
+
 namespace Fulcrum
 
 structure AgentBudget where
@@ -31,7 +33,7 @@ abbrev Cap := String
 abbrev Caps := Set Cap
 
 theorem subset_iff_diff_empty (cReq cA : Caps) :
-  Set.Subset cReq cA <-> cReq \ cA = (Set.empty : Caps) := by
+  cReq ⊆ cA ↔ cReq \ cA = (∅ : Caps) := by
   constructor
   · intro h
     ext x
@@ -44,8 +46,8 @@ theorem subset_iff_diff_empty (cReq cA : Caps) :
     intro x
     intro hxReq
     by_contra hxNotInA
-    have hxDiff : x in cReq \ cA := And.intro hxReq hxNotInA
-    have : x in (Set.empty : Caps) := by simpa [h] using hxDiff
+    have hxDiff : x ∈ cReq \ cA := And.intro hxReq hxNotInA
+    have : x ∈ (∅ : Caps) := by simpa [h] using hxDiff
     simpa using this
 
 theorem thm_budget_local
@@ -55,7 +57,7 @@ theorem thm_budget_local
   exact budget_safety_guarantee b a newB hExec
 
 theorem thm_privilege_static (cReq cA : Caps) :
-  Set.Subset cReq cA <-> cReq \ cA = (Set.empty : Caps) := by
+  cReq ⊆ cA ↔ cReq \ cA = (∅ : Caps) := by
   exact subset_iff_diff_empty cReq cA
 
 end Fulcrum

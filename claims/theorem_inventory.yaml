@@ -1,5 +1,5 @@
-version: 1
-updated_at: 2026-02-20
+version: 2
+updated_at: 2026-03-08
 theorems:
   - theorem_id: THM-BUDGET-LOCAL
     assumptions:
@@ -26,3 +26,54 @@ theorems:
       - THM-PRIVILEGE-STATIC
       - THM-BUDGET-LOCAL
     proof_status: proven
+  - theorem_id: THM-NASH-PURE-EXISTENCE
+    assumptions:
+      - A-GAME-001: agents have finite action sets (4 actions)
+      - A-GAME-002: budget = 25 * agentCount (tight budget)
+      - A-GAME-003: violation penalty (20) > quality gain from noncompliance (1)
+    lean_module: Proofs/GameTheory/NashExistence.lean
+    dependencies: [THM-BUDGET-LOCAL]
+    proof_status: proven
+    notes: Pure-strategy Nash existence, deviation arithmetic, and all-moderate equilibrium
+      proofs are now sorry-free.
+  - theorem_id: THM-NASH-MIXED-EXISTENCE
+    assumptions:
+      - A-GAME-004: finite strategy sets (Fintype)
+      - A-GAME-005: real-valued continuous payoffs
+    lean_module: Proofs/GameTheory/MixedNashExistence.lean
+    dependencies: [THM-NASH-PURE-EXISTENCE]
+    proof_status: proven-with-sorry
+    sorry_count: 1
+    notes: Expected payoff is fully defined. The remaining placeholder is the final
+      Kakutani-to-mixed-Nash existence step, still blocked by toolchain incompatibility
+      with external fixed-point formalizations.
+  - theorem_id: THM-NONCOMPLIANT-DOMINATED
+    assumptions: [A-GAME-003]
+    lean_module: Proofs/GameTheory/NashExistence.lean
+    dependencies: []
+    proof_status: proven
+    notes: Strict domination is now proven via explicit single-agent token update and
+      overflow monotonicity.
+  - theorem_id: THM-NOT-DSIC
+    assumptions:
+      - A-MECH-001: proportional allocation with allocationUtility = -|allocation - trueNeed|
+    lean_module: Proofs/GameTheory/IncentiveCompatibility.lean
+    dependencies: []
+    proof_status: proven
+    notes: Truthful allocation sufficiency is proven, but DSIC is disproven by an explicit
+      two-agent oversupply counterexample; the file now proves the negative result sorry-free.
+  - theorem_id: THM-POA-BOUNDED
+    assumptions: [A-GAME-001, A-GAME-002]
+    lean_module: Proofs/GameTheory/CoordinationEfficiency.lean
+    dependencies: [THM-NASH-PURE-EXISTENCE]
+    proof_status: proven-with-sorry
+    sorry_count: 1
+    notes: Welfare accounting lemmas are sorry-free; the remaining placeholder is the final
+      `fulcrum_poa_bounded` theorem.
+  - theorem_id: THM-BUDGET-GAME-BRIDGE
+    assumptions: [A-BUDGET-001]
+    lean_module: Proofs/GameTheory/BudgetGameBridge.lean
+    dependencies: [THM-BUDGET-LOCAL]
+    proof_status: proven
+    notes: budget_enforcement_grounds_game, governance_restricts_strategy_space, and
+      budget_game_bridge are all now sorry-free.
