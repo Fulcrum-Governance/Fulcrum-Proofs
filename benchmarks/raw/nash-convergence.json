@@ -9,7 +9,7 @@
   "summary": {
     "convergence_rate": 1.0,
     "nash_equilibrium_rate": 1.0,
-    "avg_price_of_anarchy": 1.2857142857142854
+    "avg_price_of_anarchy": 1.0
   },
   "runs": [
     {
@@ -23,8 +23,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 1
     },
@@ -39,8 +39,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 2
     },
@@ -55,8 +55,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 3
     },
@@ -71,8 +71,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 4
     },
@@ -87,8 +87,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 5
     },
@@ -103,8 +103,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 6
     },
@@ -119,8 +119,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 7
     },
@@ -135,8 +135,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 8
     },
@@ -151,8 +151,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 9
     },
@@ -167,8 +167,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 10
     },
@@ -183,8 +183,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 11
     },
@@ -199,8 +199,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 12
     },
@@ -215,8 +215,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 13
     },
@@ -231,8 +231,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 14
     },
@@ -247,8 +247,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 15
     },
@@ -263,8 +263,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 16
     },
@@ -279,8 +279,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 17
     },
@@ -295,8 +295,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 18
     },
@@ -311,8 +311,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 19
     },
@@ -327,8 +327,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 20
     },
@@ -343,8 +343,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 21
     },
@@ -359,8 +359,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 22
     },
@@ -375,8 +375,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 23
     },
@@ -391,8 +391,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 24
     },
@@ -407,8 +407,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 25
     },
@@ -423,8 +423,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 26
     },
@@ -439,8 +439,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 27
     },
@@ -455,8 +455,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 28
     },
@@ -471,8 +471,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 29
     },
@@ -487,8 +487,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 30
     },
@@ -503,8 +503,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 31
     },
@@ -519,8 +519,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 32
     },
@@ -535,8 +535,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 33
     },
@@ -551,8 +551,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 34
     },
@@ -567,8 +567,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 35
     },
@@ -583,8 +583,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 36
     },
@@ -599,8 +599,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 37
     },
@@ -615,8 +615,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 38
     },
@@ -631,8 +631,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 39
     },
@@ -647,8 +647,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 40
     },
@@ -663,8 +663,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 41
     },
@@ -679,8 +679,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 42
     },
@@ -695,8 +695,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 43
     },
@@ -711,8 +711,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 44
     },
@@ -727,8 +727,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 45
     },
@@ -743,8 +743,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 46
     },
@@ -759,8 +759,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 47
     },
@@ -775,8 +775,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 48
     },
@@ -791,8 +791,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 49
     },
@@ -807,8 +807,8 @@
         "moderate"
       ],
       "social_welfare": 35,
-      "optimal_welfare": 45,
-      "price_of_anarchy": 1.2857142857142858,
+      "optimal_welfare": 35,
+      "price_of_anarchy": 1.0,
       "is_nash": true,
       "repeat": 50
     }

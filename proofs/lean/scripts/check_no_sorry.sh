@@ -10,7 +10,9 @@ if ! command -v rg >/dev/null 2>&1; then
 fi
 
 # Known, justified sorry holes tracked in claims/claim_ledger.yaml.
-# Each entry: "filename:pattern" — these are allowed through the gate.
+# Each entry is a single exact allowlisted occurrence. The gate fails if the
+# count changes, which preserves a zero-new-sorry policy even in files that
+# currently contain a documented placeholder.
 #
 # MixedNashExistence.lean: Kakutani FPT axiomatized; machine-checked proofs
 #   exist (harfe/fixed-point-theorems-lean4, math-xmum/Brouwer) but on
@@ -19,28 +21,35 @@ fi
 # CoordinationEfficiency.lean: fulcrum_poa_bounded composition step;
 #   all sub-lemmas (welfare_upper_bound, allModerate_welfare) are sorry-free.
 #   Claim C-020.
-ALLOWED_FILES=(
-  "GameTheory/MixedNashExistence.lean"
-  "GameTheory/CoordinationEfficiency.lean"
+ALLOWED_OCCURRENCES=(
+  "GameTheory/MixedNashExistence.lean:sorry -- Kakutani FPT applied to best-response correspondence"
+  "GameTheory/CoordinationEfficiency.lean:sorry -- Follows from welfare_upper_bound and allModerate_welfare"
 )
 
-# Build exclusion pattern for rg
-EXCLUDE_ARGS=()
-for f in "${ALLOWED_FILES[@]}"; do
-  EXCLUDE_ARGS+=(-g "!**/$f")
+mapfile -t ALL_MATCHES < <(rg -n "\bsorry\b" -g "*.lean" "$LEAN_PROOFS_DIR" || true)
+TOTAL_MATCHES=${#ALL_MATCHES[@]}
+EXPECTED_TOTAL=${#ALLOWED_OCCURRENCES[@]}
+
+for entry in "${ALLOWED_OCCURRENCES[@]}"; do
+  IFS=":" read -r file pattern <<< "$entry"
+  COUNT=$({ rg -F -o "$pattern" "$LEAN_PROOFS_DIR/$file" 2>/dev/null || true; } | wc -l | tr -d ' ')
+  if [[ "$COUNT" -ne 1 ]]; then
+    echo "proof closure check failed: allowlisted sorry occurrence changed in $file" >&2
+    printf '%s\n' "${ALL_MATCHES[@]}"
+    exit 1
+  fi
 done
 
-# Check for sorry in all .lean files EXCEPT the allowlisted ones
-if rg -n "\bsorry\b" -g "*.lean" "${EXCLUDE_ARGS[@]}" "$LEAN_PROOFS_DIR"; then
-  echo "proof closure check failed: found 'sorry' in Lean proofs (outside allowlist)" >&2
+if [[ "$TOTAL_MATCHES" -ne "$EXPECTED_TOTAL" ]]; then
+  echo "proof closure check failed: found unauthorized 'sorry' in Lean proofs" >&2
+  printf '%s\n' "${ALL_MATCHES[@]}"
   exit 1
 fi
 
-# Report allowlisted sorries for transparency
 echo "=== Allowlisted sorry holes (tracked in claim_ledger.yaml) ==="
-for f in "${ALLOWED_FILES[@]}"; do
-  matches=$(rg -c "\bsorry\b" "$LEAN_PROOFS_DIR/$f" 2>/dev/null || echo "0")
-  echo "  $f: $matches sorry(s)"
+for entry in "${ALLOWED_OCCURRENCES[@]}"; do
+  IFS=":" read -r file _ <<< "$entry"
+  echo "  $file: 1 exact allowlisted sorry"
 done
 
 echo "proof closure check passed: no unauthorized sorry found"

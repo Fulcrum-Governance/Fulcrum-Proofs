@@ -59,7 +59,7 @@ The `proofs/lean/Proofs/GameTheory/` directory contains a Lean 4 + Mathlib4 form
 |-------|-----------|--------|
 | C-018 | Coordination game admits a Nash equilibrium | Proven-with-sorry (1 Kakutani gap) |
 | C-019 | Proportional allocation is **not** DSIC under current utility | Proven |
-| C-020 | Price of Anarchy bounded at 9/7 | Proven (three-axis: Lean + TLC + simulation) |
+| C-020 | Price of Anarchy bounded at 9/7 | Proven (formal upper bound 9/7; audited simulation realized PoA = 1.0) |
 | C-021 | Budget enforcement grounds the game model | Proven |
 
 ### Remaining Sorry Holes (2 of 16 original)
@@ -72,6 +72,8 @@ The `proofs/lean/Proofs/GameTheory/` directory contains a Lean 4 + Mathlib4 form
 ### Incentive Compatibility Correction
 
 The original plan assumed proportional allocation is DSIC. Mathematical review found this is **false** under the utility model `allocationUtility = -|allocation - trueNeed|`: under budget sufficiency, agents can profitably under-report to move their allocation closer to their true need. The Lean files now prove this negative result via an explicit two-agent counterexample (n=2, budget=20, needs=(5,5)).
+
+For the audited simulation instance (`n=5`, `budget=125`), best-response dynamics converge to the welfare-optimal all-moderate profile, so realized PoA is `1.0`. The Lean theorem still states the general upper bound `PoA ≤ 9/7`.
 
 See `proofs/lean/Proofs/GameTheory/README.md` for a detailed module guide and assumption register.
 

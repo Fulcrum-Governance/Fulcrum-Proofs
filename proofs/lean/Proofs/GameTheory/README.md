@@ -48,6 +48,10 @@ Requires proving that under tight budget (budget = 25n) with n <= 12, every Nash
 
 Resolution: prove `nash_implies_allModerate` by showing conservative, aggressive, and noncompliant are non-best-responses for every agent in any profile.
 
+## Empirical PoA Note
+
+The simulation artifact `benchmarks/raw/nash-convergence.json` computes optimal welfare under the same budgeted payoff function as the Lean model. For the audited tight-budget instance (`n=5`, `budget=125`), best-response dynamics converge to the welfare-optimal all-moderate profile, so realized PoA is `1.0`. The Lean theorem remains the general upper bound `PoA ≤ 9/7`.
+
 ## Assumptions Register
 
 | ID | Assumption | Used By |

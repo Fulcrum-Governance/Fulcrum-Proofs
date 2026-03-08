@@ -98,7 +98,9 @@ entries:
   - benchmarks/raw/nash-convergence.json
   notes: Three-axis closure. Lean welfare lemmas are now sorry-free and one placeholder
     remains in `fulcrum_poa_bounded`. TLC exhaustive verification of 6 invariants across
-    2,972 states. Simulation confirms PoA = 9/7 with 100% convergence to all-moderate.
+    2,972 states. Simulation confirms 100% convergence to all-moderate; for the audited
+    tight-budget instance (n=5, budget=125), realized PoA = 1.0 while the formal upper
+    bound remains PoA ≤ 9/7.
 - claim_id: C-021
   type: formal
   status: proven

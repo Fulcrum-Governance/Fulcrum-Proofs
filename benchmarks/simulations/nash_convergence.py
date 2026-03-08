@@ -21,7 +21,7 @@ import random
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
+from typing import Iterable, List, Tuple
 
 
 @dataclass
@@ -77,7 +77,31 @@ def social_welfare(actions: List[int], budget: int) -> float:
     return sum(payoff(ACTIONS[a], total, budget, n) for a in actions)
 
 
-def simulate(n_agents: int, budget: int, rounds: int) -> dict:
+def action_count_profiles(total_agents: int, action_count: int) -> Iterable[Tuple[int, ...]]:
+    if action_count == 1:
+        yield (total_agents,)
+        return
+    for count in range(total_agents + 1):
+        for rest in action_count_profiles(total_agents - count, action_count - 1):
+            yield (count,) + rest
+
+
+def optimal_welfare(n_agents: int, budget: int) -> float:
+    """Compute the welfare optimum under the same budgeted payoff model.
+
+    Because payoff depends only on total spend and action counts, we can search
+    over action-count compositions instead of enumerating every agent profile.
+    """
+    best = float("-inf")
+    for counts in action_count_profiles(n_agents, len(ACTIONS)):
+        total = sum(count * action.token_cost for count, action in zip(counts, ACTIONS))
+        welfare = sum(count * payoff(action, total, budget, n_agents) for count, action in zip(counts, ACTIONS))
+        if welfare > best:
+            best = welfare
+    return best
+
+
+def simulate(n_agents: int, budget: int, rounds: int, optimal_sw: float) -> dict:
     actions = [random.randint(0, len(ACTIONS) - 1) for _ in range(n_agents)]
     converged_round = -1
 
@@ -90,7 +114,6 @@ def simulate(n_agents: int, budget: int, rounds: int) -> dict:
 
     final_actions = [ACTIONS[a].name for a in actions]
     sw = social_welfare(actions, budget)
-    optimal_sw = n_agents * 9
 
     return {
         "converged": converged_round >= 0,
@@ -114,9 +137,10 @@ def main():
     args = parser.parse_args()
 
     random.seed(args.seed)
+    optimal_sw = optimal_welfare(args.agents, args.budget)
     results = []
     for i in range(args.repeats):
-        result = simulate(args.agents, args.budget, args.rounds)
+        result = simulate(args.agents, args.budget, args.rounds, optimal_sw)
         result["repeat"] = i + 1
         results.append(result)
 

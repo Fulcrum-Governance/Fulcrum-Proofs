@@ -63,11 +63,9 @@ def IsNashEquilibrium {n : Nat} (G : NormalFormGame n)
 def WeaklyDominates {n : Nat} (G : NormalFormGame n) (i : Fin n)
     (s s' : G.Strategy i) : Prop :=
   (∀ σ : StrategyProfile G, σ i = s →
-    ∀ σ' : StrategyProfile G, (∀ j, j ≠ i → σ' j = σ j) → σ' i = s' →
-      G.payoff i σ ≥ G.payoff i σ') ∧
-  (∃ σ : StrategyProfile G, σ i = s →
-    ∃ σ' : StrategyProfile G, (∀ j, j ≠ i → σ' j = σ j) → σ' i = s' →
-      G.payoff i σ > G.payoff i σ')
+      G.payoff i σ ≥ G.payoff i (Function.update σ i s')) ∧
+  (∃ σ : StrategyProfile G, σ i = s ∧
+      G.payoff i σ > G.payoff i (Function.update σ i s'))
 
 /-- A strategy profile is Pareto optimal if no player can be made
     better off without making another worse off. -/
