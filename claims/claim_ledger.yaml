@@ -84,8 +84,9 @@ entries:
   status: proven
   evidence_refs:
   - proofs/lean/Proofs/GameTheory/IncentiveCompatibility.lean
-  notes: The original positive DSIC claim was false under the current utility model.
-    The file now proves a stronger negative result: truthful allocation can overshoot need,
+  notes: >-
+    The original positive DSIC claim was false under the current utility model.
+    The file now proves a stronger negative result — truthful allocation can overshoot need,
     and an explicit two-agent oversupply counterexample shows profitable under-reporting.
 - claim_id: C-020
   type: hybrid
