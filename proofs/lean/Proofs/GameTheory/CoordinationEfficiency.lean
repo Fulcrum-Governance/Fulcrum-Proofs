@@ -15,6 +15,7 @@
 
 import Proofs.GameTheory.FulcrumGame
 import Proofs.GameTheory.NashExistence
+import Proofs.GameTheory.NashUniqueness
 import Proofs.GameTheory.SumUpdateLemmas
 
 set_option autoImplicit false
@@ -120,14 +121,6 @@ theorem fulcrum_poa_bounded (params : BudgetParams)
     rw [h_welfare]
     have : (0 : ℝ) ≤ (params.agentCount : ℝ) := Nat.cast_nonneg _
     nlinarith
-  -- Nash equilibrium uniqueness: the tactic-level proof requires extensive
-  -- case analysis on overflow conditions, cross-agent Nash reasoning, and
-  -- integer divisibility arguments. The mathematical argument is complete
-  -- (documented above). The key lemmas used are:
-  -- · noncompliant_strictly_dominated (from NashExistence.lean)
-  -- · totalTokens_update_general (from SumUpdateLemmas.lean)
-  -- · moderate_is_nash_equilibrium (from NashExistence.lean)
-  -- · The inequality 25/n > 2 for n ≤ 12 (since 25 > 2·12 = 24)
-  sorry
+  exact nash_eq_allModerate params hBudget hSmall σ_eq hNash
 
 end Fulcrum.GameTheory
