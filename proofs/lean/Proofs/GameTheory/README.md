@@ -13,9 +13,11 @@ BasicInvariants
        |
   SumUpdateLemmas
     /    |     \          \
-Nash   Mixed   Coord     BudgetGame
-Exist  Nash    Efficiency  Bridge
+Nash   Mixed   Nash      BudgetGame
+Exist  Nash    Uniqueness  Bridge
   |    Exist      |
+  |          Coord
+  |          Efficiency
   |               |
   IncentiveCompatibility
 ```
@@ -28,10 +30,11 @@ Exist  Nash    Efficiency  Bridge
 | THM-NONCOMPLIANT-DOMINATED | `noncompliant_strictly_dominated` | NashExistence.lean |
 | THM-NASH-MIXED-EXISTENCE | `mixed_nash_exists` | MixedNashExistence.lean |
 | THM-NOT-DSIC | `proportional_allocation_not_dsic` | IncentiveCompatibility.lean |
+| THM-NASH-UNIQUENESS | `nash_eq_allModerate` | NashUniqueness.lean |
 | THM-POA-BOUNDED | `fulcrum_poa_bounded` | CoordinationEfficiency.lean |
 | THM-BUDGET-GAME-BRIDGE | `budget_game_bridge` | BudgetGameBridge.lean |
 
-## Known Gaps (2 sorry)
+## Known Gaps (1 sorry)
 
 ### `mixed_nash_exists` (MixedNashExistence.lean)
 
@@ -42,11 +45,9 @@ Resolution paths:
 - Wait for Mathlib4 to add Brouwer/Kakutani
 - Port harfe's Sperner-based proof to v4.29 manually
 
-### `fulcrum_poa_bounded` (CoordinationEfficiency.lean)
+### ~~`fulcrum_poa_bounded` (CoordinationEfficiency.lean)~~ — RESOLVED
 
-Requires proving that under tight budget (budget = 25n) with n <= 12, every Nash equilibrium is the all-moderate profile (Nash uniqueness). The welfare helper lemmas (`allModerate_welfare`, `welfare_upper_bound`) are already sorry-free.
-
-Resolution: prove `nash_implies_allModerate` by showing conservative, aggressive, and noncompliant are non-best-responses for every agent in any profile.
+Resolved via `nash_eq_allModerate` in NashUniqueness.lean (703 lines). Proves all-moderate is the unique Nash equilibrium under tight budget (25n, n ≤ 12) via 4 elimination steps: noncompliant (strictly dominated), overflow (pigeonhole + 25/n > 2), conservative (deviation gains ≥ 4), aggressive (total ≥ 25n + 25 > budget). PR #5.
 
 ## Empirical PoA Note
 
