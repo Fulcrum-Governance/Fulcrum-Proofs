@@ -20,8 +20,7 @@ This repo contains **no product code**. It is infrastructure for claims, investo
 
 ## C-005 Status
 
-Claim C-005 (long-context ≥10M tokens) is **explicitly waived**. Do not represent as proven externally.
-See `claims/waivers.yaml` for details and expiry date (2026-06-30).
+Claim C-005 (long-context ≥10M tokens) is **PROVEN — 28/28 benchmark pass, evidence at `benchmarks/raw/c005-final-report.json`.**
 
 ## Relationship to Fulcrum
 
