@@ -13,9 +13,13 @@ entries:
     output.
 - claim_id: C-005
   type: empirical
-  status: incomplete
-  evidence_refs: []
-  notes: Kept downgraded until dedicated long-context dataset and protocol exist.
+  status: proven
+  evidence_refs:
+  - benchmarks/raw/c005-final-report.json
+  notes: 28/28 signals detected across 4 corpus sizes (1K-1M tokens). Zero accuracy
+    degradation. Recursive inference loop with LLM-driven Python navigation code in
+    sandboxed Docker. 7 signal types (gratitude loop, budget overrun, trust oscillation,
+    tool misuse, cost plateau spike, silent drift, healthy convergence).
 - claim_id: C-009
   type: formal
   status: proven
