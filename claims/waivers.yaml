@@ -1,5 +1,5 @@
 version: 1
-updated_at: 2026-02-20
+updated_at: 2026-04-02
 waivers:
   - claim_id: C-005
     reason: "Resolved — C-005 proven 28/28 benchmark pass. Evidence: benchmarks/raw/c005-final-report.json"
