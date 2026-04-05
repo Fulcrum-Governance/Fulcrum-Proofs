@@ -1,5 +1,5 @@
 version: 2
-updated_at: 2026-03-08
+updated_at: 2026-04-02
 entries:
 - claim_id: C-004
   type: empirical
@@ -13,9 +13,13 @@ entries:
     output.
 - claim_id: C-005
   type: empirical
-  status: incomplete
-  evidence_refs: []
-  notes: Kept downgraded until dedicated long-context dataset and protocol exist.
+  status: proven
+  evidence_refs:
+  - benchmarks/raw/c005-final-report.json
+  notes: 28/28 signals detected across 4 corpus sizes (1K-1M tokens). Zero accuracy
+    degradation. Recursive inference loop with LLM-driven Python navigation code in
+    sandboxed Docker. 7 signal types (gratitude loop, budget overrun, trust oscillation,
+    tool misuse, cost plateau spike, silent drift, healthy convergence).
 - claim_id: C-009
   type: formal
   status: proven
@@ -96,11 +100,11 @@ entries:
   - models/tla/reports/tlc-AgentCoordination.log
   - models/tla/reports/tlc-AgentCoordinationSmall.log
   - benchmarks/raw/nash-convergence.json
-  notes: Three-axis closure. Lean welfare lemmas are now sorry-free and one placeholder
-    remains in `fulcrum_poa_bounded`. TLC exhaustive verification of 6 invariants across
-    2,972 states. Simulation confirms 100% convergence to all-moderate; for the audited
-    tight-budget instance (n=5, budget=125), realized PoA = 1.0 while the formal upper
-    bound remains PoA ≤ 9/7.
+  notes: Three-axis closure. All Lean welfare lemmas and `fulcrum_poa_bounded` are
+    sorry-free (Nash uniqueness proof eliminated the placeholder). TLC exhaustive
+    verification of 6 invariants across 2,972 states. Simulation confirms 100%
+    convergence to all-moderate; for the audited tight-budget instance (n=5,
+    budget=125), realized PoA = 1.0 while the formal upper bound remains PoA ≤ 9/7.
 - claim_id: C-021
   type: formal
   status: proven

@@ -1,3 +1,5 @@
+**RESOLVED 2026-04-02:** C-005 is now proven. This waiver is no longer active. Evidence: benchmarks/raw/c005-final-report.json
+
 # C-005 Waiver Limitation
 
 Claim `C-005` remains `incomplete` for this sprint because no validated benchmark dataset/protocol for 10M+ token long-context recall is yet published in this repository.

@@ -17,13 +17,8 @@ fi
 # MixedNashExistence.lean: Kakutani FPT axiomatized; machine-checked proofs
 #   exist (harfe/fixed-point-theorems-lean4, math-xmum/Brouwer) but on
 #   incompatible toolchain (v4.21-22 vs our v4.29). Claim C-018.
-#
-# CoordinationEfficiency.lean: fulcrum_poa_bounded composition step;
-#   all sub-lemmas (welfare_upper_bound, allModerate_welfare) are sorry-free.
-#   Claim C-020.
 ALLOWED_OCCURRENCES=(
   "GameTheory/MixedNashExistence.lean:sorry -- Kakutani FPT applied to best-response correspondence"
-  "GameTheory/CoordinationEfficiency.lean:sorry -- Follows from welfare_upper_bound and allModerate_welfare"
 )
 
 mapfile -t ALL_MATCHES < <(rg -n "\bsorry\b" -g "*.lean" "$LEAN_PROOFS_DIR" || true)

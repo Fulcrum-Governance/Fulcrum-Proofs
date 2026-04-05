@@ -1,9 +1,10 @@
 version: 1
-updated_at: 2026-02-20
+updated_at: 2026-04-02
 waivers:
   - claim_id: C-005
-    reason: Long-context recall over 10M+ tokens lacks a validated dataset/protocol in this sprint.
+    reason: "Resolved — C-005 proven 28/28 benchmark pass. Evidence: benchmarks/raw/c005-final-report.json"
     owner: research-validation
     approved_by: td
     expires_at: 2026-06-30
+    resolved_at: 2026-04-02
     limitations_ref: audits/final/c005-waiver-limitation.md

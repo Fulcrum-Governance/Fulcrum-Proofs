@@ -1,0 +1,129 @@
+{
+  "run_id": "c005-1775115703441",
+  "timestamp": "2026-04-02T07:41:43Z",
+  "results": [
+    {
+      "corpus": "sim-100k",
+      "token_count": 102400,
+      "accuracy": 1,
+      "precision": {
+        "budget_overrun": 1,
+        "cost_plateau_spike": 1,
+        "gratitude_loop": 1,
+        "healthy_convergence": 1,
+        "silent_drift": 1,
+        "tool_misuse": 1,
+        "trust_oscillation": 1
+      },
+      "recall": {
+        "budget_overrun": 1,
+        "cost_plateau_spike": 1,
+        "gratitude_loop": 1,
+        "healthy_convergence": 1,
+        "silent_drift": 1,
+        "tool_misuse": 1,
+        "trust_oscillation": 1
+      },
+      "avg_latency_ms": 32031,
+      "avg_depth": 0,
+      "confidence_interval_95": [
+        0.6456611570247934,
+        1
+      ]
+    },
+    {
+      "corpus": "sim-10k",
+      "token_count": 10240,
+      "accuracy": 1,
+      "precision": {
+        "budget_overrun": 1,
+        "cost_plateau_spike": 1,
+        "gratitude_loop": 1,
+        "healthy_convergence": 1,
+        "silent_drift": 1,
+        "tool_misuse": 1,
+        "trust_oscillation": 1
+      },
+      "recall": {
+        "budget_overrun": 1,
+        "cost_plateau_spike": 1,
+        "gratitude_loop": 1,
+        "healthy_convergence": 1,
+        "silent_drift": 1,
+        "tool_misuse": 1,
+        "trust_oscillation": 1
+      },
+      "avg_latency_ms": 40157,
+      "avg_depth": 0,
+      "confidence_interval_95": [
+        0.6456611570247934,
+        1
+      ]
+    },
+    {
+      "corpus": "sim-1k",
+      "token_count": 1024,
+      "accuracy": 1,
+      "precision": {
+        "budget_overrun": 1,
+        "cost_plateau_spike": 1,
+        "gratitude_loop": 1,
+        "healthy_convergence": 1,
+        "silent_drift": 1,
+        "tool_misuse": 1,
+        "trust_oscillation": 1
+      },
+      "recall": {
+        "budget_overrun": 1,
+        "cost_plateau_spike": 1,
+        "gratitude_loop": 1,
+        "healthy_convergence": 1,
+        "silent_drift": 1,
+        "tool_misuse": 1,
+        "trust_oscillation": 1
+      },
+      "avg_latency_ms": 37572,
+      "avg_depth": 0,
+      "confidence_interval_95": [
+        0.6456611570247934,
+        1
+      ]
+    },
+    {
+      "corpus": "sim-1m",
+      "token_count": 1048576,
+      "accuracy": 1,
+      "precision": {
+        "budget_overrun": 1,
+        "cost_plateau_spike": 1,
+        "gratitude_loop": 1,
+        "healthy_convergence": 1,
+        "silent_drift": 1,
+        "tool_misuse": 1,
+        "trust_oscillation": 1
+      },
+      "recall": {
+        "budget_overrun": 1,
+        "cost_plateau_spike": 1,
+        "gratitude_loop": 1,
+        "healthy_convergence": 1,
+        "silent_drift": 1,
+        "tool_misuse": 1,
+        "trust_oscillation": 1
+      },
+      "avg_latency_ms": 32448,
+      "avg_depth": 0,
+      "confidence_interval_95": [
+        0.6456611570247934,
+        1
+      ]
+    }
+  ],
+  "degradation_curve": {
+    "sim-100k": 1,
+    "sim-10k": 1,
+    "sim-1k": 1,
+    "sim-1m": 1
+  },
+  "c005_status": "PASS"
+}

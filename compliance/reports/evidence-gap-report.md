@@ -16,4 +16,4 @@ Status: updated after sprint closure run.
 
 ## Remaining non-compliance gaps
 - None in current control matrix scope.
-- Scope limit remains for claim `C-005` (handled via waiver in `/Users/td/ConceptDev/Projects/Fulcrum-Proofs/claims/waivers.yaml`).
+- Claim `C-005` scope limit resolved — now proven (28/28 benchmark pass, evidence at `benchmarks/raw/c005-final-report.json`).

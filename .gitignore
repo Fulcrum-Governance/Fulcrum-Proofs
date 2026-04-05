@@ -8,6 +8,10 @@
 # Lean build
 proofs/lean/.lake/
 proofs/lean/build/
+proofs/lean/Proofs/Generated/
+
+# TLA+ state dumps
+models/tla/specs/states/
 
 # TLA+ artifacts
 models/tla/traces/*.out

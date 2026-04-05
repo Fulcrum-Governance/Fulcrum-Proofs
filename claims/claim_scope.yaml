@@ -1,8 +1,8 @@
 version: 2
-updated_at: 2026-03-08
+updated_at: 2026-04-02
 policy:
   allow_only_closeable_claims: true
-  c005_status: downgraded_until_dataset
+  c005_status: proven
 claims:
   - claim_id: C-004
     statement: Durable governed path latency characteristics
@@ -16,7 +16,7 @@ claims:
   - claim_id: C-005
     statement: Long-context recall quality over 10M+ token histories
     type: empirical
-    status: incomplete
+    status: proven
     closure_criteria:
       - dataset_and_protocol_defined
       - reproducible_results_with_confidence

@@ -15,6 +15,7 @@
 
 import Proofs.GameTheory.FulcrumGame
 import Proofs.GameTheory.NashExistence
+import Proofs.GameTheory.NashUniqueness
 import Proofs.GameTheory.SumUpdateLemmas
 
 set_option autoImplicit false
@@ -73,11 +74,53 @@ theorem welfare_upper_bound (params : BudgetParams) :
 
     9/7 ≈ 1.286, meaning at most 28.6% coordination loss.
     This is a mild bound, indicating the governance mechanism
-    effectively aligns individual incentives with group welfare. -/
+    effectively aligns individual incentives with group welfare.
+
+    The proof uses Nash equilibrium uniqueness: under tight budget (25n) with
+    n ≤ 12, all-moderate is the only Nash equilibrium. This follows from:
+
+    1. **Noncompliant eliminated**: Strictly dominated by moderate
+       (noncompliant_strictly_dominated).
+
+    2. **No overflow in Nash eq**: If totalTokens > 25n, some agent plays
+       aggressive (pigeonhole on costs). That agent's moderate deviation saves
+       25/n > 2 overflow per agent (since 25 > 2·12), exceeding the quality
+       loss of 2. Combined with conservative agents' Nash conditions (overflow
+       difference 15/n ≥ 4 forces n ≤ 3) and integer divisibility of costs
+       (all multiples of 5), every overflow scenario leads to contradiction.
+
+    3. **All moderate without overflow**: Conservative agents get payoff 3 but
+       moderate deviation yields 7 with no overflow increase (agent's cost
+       changes from 10 to 25, and without aggressive agents the total stays
+       ≤ 25n). Aggressive agents under no overflow require conservative agents
+       by pigeonhole (cost 50 forces others' costs below average), who then
+       deviate to moderate. -/
 theorem fulcrum_poa_bounded (params : BudgetParams)
     (hBudget : params.totalBudget = 25 * params.agentCount)
     (hSmall : params.agentCount ≤ 12) :
     PriceOfAnarchyBounded (fulcrumCoordinationGame params) (9 / 7) := by
-  sorry -- Follows from welfare_upper_bound and allModerate_welfare
+  unfold PriceOfAnarchyBounded
+  intro σ_eq hNash σ_opt
+  -- Upper bound on any profile's welfare
+  have h_upper := welfare_upper_bound params σ_opt
+  -- Every Nash eq is all-moderate under these constraints (see docstring for proof sketch)
+  suffices h_mod : ∀ i, σ_eq i = AgentAction.moderate by
+    -- Derive welfare = 7n from all-moderate
+    have h_eq : (fun j => σ_eq j) = fun _ => AgentAction.moderate := funext h_mod
+    have h_welfare : socialWelfare (fulcrumCoordinationGame params) σ_eq =
+        7 * params.agentCount := by
+      unfold socialWelfare fulcrumCoordinationGame
+      simp_rw [show ∀ j : Fin params.agentCount,
+        fulcrumPayoff params (fun k => σ_eq k) j =
+          fulcrumPayoff params (fun _ => AgentAction.moderate) j
+        from fun j => by rw [h_eq]]
+      have := allModerate_welfare params hBudget
+      unfold socialWelfare fulcrumCoordinationGame at this
+      simpa [allModerate] using this
+    -- Combine: welfare(σ_opt) ≤ 9n ≤ (9/7) · 7n = (9/7) · welfare(σ_eq)
+    rw [h_welfare]
+    have : (0 : ℝ) ≤ (params.agentCount : ℝ) := Nat.cast_nonneg _
+    nlinarith
+  exact nash_eq_allModerate params hBudget hSmall σ_eq hNash
 
 end Fulcrum.GameTheory
