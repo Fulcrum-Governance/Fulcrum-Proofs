@@ -10,8 +10,8 @@
   3. Conservative: without overflow, deviation to moderate gains 4
   4. Aggressive: without overflow and no conservative/noncompliant, total = 25n + 25a > 25n
 
-  Combined with CoordinationEfficiency.lean, this eliminates the sorry
-  in the Price of Anarchy bound theorem.
+  Combined with CoordinationEfficiency.lean, this closes the last
+  placeholder in the Price of Anarchy bound theorem.
 -/
 
 import Proofs.GameTheory.FulcrumGame
