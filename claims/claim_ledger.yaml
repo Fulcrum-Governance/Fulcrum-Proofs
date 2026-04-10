@@ -114,3 +114,21 @@ entries:
   notes: budget_enforcement_grounds_game connects budget_safety_guarantee to the game
     model. governance_restricts_strategy_space proves noncompliant excluded.
     budget_game_bridge is now sorry-free.
+- claim_id: C-022
+  type: formal
+  status: proven
+  evidence_refs:
+  - proofs/lean/Proofs/TrustTermination.lean
+  notes: 10 theorems formalizing Beta-distribution trust model termination guarantee.
+    Monotonic degradation, threshold reachability, termination invariant, cumulative
+    degradation, guaranteed termination, circuit breaker state machine (4 states).
+    All sorry-free. Nat cross-multiplication avoids Rat arithmetic.
+- claim_id: C-023
+  type: formal
+  status: proven
+  evidence_refs:
+  - proofs/lean/Proofs/RLMContracts.lean
+  notes: RLM interface contracts mirroring Go internal/rlm/interfaces.go. Depth bounded,
+    step decreasing (termination measure), answer monotonicity, token budget enforcement
+    (all proven). Context partition isolation axiomatized (sandbox property). Models
+    inference loop from arXiv:2512.24601.

@@ -1,5 +1,7 @@
 import Proofs.BasicInvariants
 import Proofs.TemporalConservationSpec
+import Proofs.TrustTermination
+import Proofs.RLMContracts
 import Proofs.GameTheory.Definitions
 import Proofs.GameTheory.FulcrumGame
 import Proofs.GameTheory.SumUpdateLemmas

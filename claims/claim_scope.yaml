@@ -116,3 +116,30 @@ claims:
     notes: budget_enforcement_grounds_game, governance_restricts_strategy_space, and
       budget_game_bridge are all sorry-free.
     owner: formal-systems
+  - claim_id: C-022
+    statement: Trust circuit breaker guarantees agent termination under sustained failure
+    type: formal
+    status: proven
+    closure_criteria:
+      - trust_monotone_decreasing_proven
+      - trust_threshold_reachable_proven
+      - trust_termination_invariant_proven
+      - circuit_breaker_transitions_valid_proven
+    notes: 10 theorems in TrustTermination.lean, all sorry-free. Nat cross-multiplication
+      avoids Rat arithmetic. Covers monotonicity, reachability, termination invariant,
+      cumulative degradation, guaranteed termination, and circuit breaker state machine.
+    owner: formal-systems
+  - claim_id: C-023
+    statement: RLM inference loop satisfies bounded termination and resource constraints
+    type: formal
+    status: proven
+    closure_criteria:
+      - rlm_depth_bounded_proven
+      - rlm_step_decreasing_proven
+      - rlm_answer_monotone_proven
+      - rlm_token_budget_respected_proven
+      - context_isolation_axiomatized
+    notes: Interface contracts in RLMContracts.lean. 4 proven theorems + 1 axiom
+      (isolation). Mirrors Go internal/rlm/interfaces.go structure. Step function
+      models inference loop with termination measure on partitionsRemaining.
+    owner: formal-systems

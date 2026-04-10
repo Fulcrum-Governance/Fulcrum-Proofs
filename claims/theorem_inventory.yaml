@@ -77,3 +77,82 @@ theorems:
     proof_status: proven
     notes: budget_enforcement_grounds_game, governance_restricts_strategy_space, and
       budget_game_bridge are all now sorry-free.
+  - theorem_id: THM-TRUST-MONOTONE
+    assumptions:
+      - A-TRUST-001: Trust score is Laplace-smoothed Beta distribution mean
+      - A-TRUST-002: alpha, beta are natural numbers (interaction counts)
+    lean_module: Proofs/TrustTermination.lean
+    dependencies: []
+    proof_status: proven
+    notes: Each additional failure strictly decreases trust. Proved via Nat
+      cross-multiplication, avoiding Rat arithmetic entirely.
+  - theorem_id: THM-TRUST-THRESHOLD
+    assumptions:
+      - A-TRUST-001
+      - A-TRUST-003: Threshold is a rational p/q with 0 < p < q
+    lean_module: Proofs/TrustTermination.lean
+    dependencies: [THM-TRUST-MONOTONE]
+    proof_status: proven
+    notes: Constructive proof — for any threshold and any alpha, there exists
+      beta_star such that trust drops below threshold. Uses nlinarith.
+  - theorem_id: THM-TRUST-TERMINATION
+    assumptions:
+      - A-TRUST-001
+      - A-TRUST-004: Circuit breaker state is well-formed (consistent with trust vs threshold)
+    lean_module: Proofs/TrustTermination.lean
+    dependencies: [THM-TRUST-THRESHOLD]
+    proof_status: proven
+    notes: Circuit breaker is open iff trust is below threshold. Follows from
+      well-formedness predicate definition.
+  - theorem_id: THM-TRUST-GUARANTEED
+    assumptions: [A-TRUST-001, A-TRUST-003]
+    lean_module: Proofs/TrustTermination.lean
+    dependencies: [THM-TRUST-MONOTONE, THM-TRUST-THRESHOLD]
+    proof_status: proven
+    notes: Combining reachability with monotonicity — continued failures from any
+      starting state guarantee termination.
+  - theorem_id: THM-CIRCUIT-TRANSITIONS
+    assumptions:
+      - A-TRUST-005: Circuit breaker has 4 states (closed, open, halfOpen, terminated)
+    lean_module: Proofs/TrustTermination.lean
+    dependencies: []
+    proof_status: proven
+    notes: Valid transition relation with terminated as absorbing state.
+      Proves no_closed_to_halfOpen (must go through open first).
+  - theorem_id: THM-RLM-DEPTH-BOUNDED
+    assumptions:
+      - A-RLM-001: RLM state tracks recursion depth with maxDepth invariant
+    lean_module: Proofs/RLMContracts.lean
+    dependencies: []
+    proof_status: proven
+    notes: Interface contract — depth never exceeds maxDepth, preserved across steps.
+  - theorem_id: THM-RLM-STEP-DECREASING
+    assumptions:
+      - A-RLM-002: Step function processes exactly one partition per step
+    lean_module: Proofs/RLMContracts.lean
+    dependencies: []
+    proof_status: proven
+    notes: Interface contract — termination measure (partitionsRemaining) strictly
+      decreases on each successful step. Establishes well-founded recursion.
+  - theorem_id: THM-RLM-ANSWER-MONOTONE
+    assumptions:
+      - A-RLM-003: Step function returns None when answerReady is true
+    lean_module: Proofs/RLMContracts.lean
+    dependencies: []
+    proof_status: proven
+    notes: Interface contract — once answer.ready, no further state transitions.
+  - theorem_id: THM-RLM-TOKEN-BUDGET
+    assumptions:
+      - A-RLM-004: Step function checks token budget before proceeding
+    lean_module: Proofs/RLMContracts.lean
+    dependencies: []
+    proof_status: proven
+    notes: Interface contract — token consumption never exceeds budget after any step.
+  - theorem_id: THM-RLM-ISOLATION
+    assumptions:
+      - A-RLM-005: Sandbox enforces partition boundaries
+    lean_module: Proofs/RLMContracts.lean
+    dependencies: []
+    proof_status: axiom
+    notes: Axiomatized — systems property of Docker sandbox, not provable from pure math.
+      Any correct sandbox implementation must satisfy this contract.
