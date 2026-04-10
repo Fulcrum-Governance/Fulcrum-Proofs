@@ -30,9 +30,11 @@ benchmarks/raw/bench-*.json
 benchmarks/raw/raw-*.json
 fault/raw/*.raw.json
 
-# Python cache
+# Python cache / coverage
 __pycache__/
 *.pyc
+.coverage
+.pytest_cache/
 
 # OS/editor
 .DS_Store

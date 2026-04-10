@@ -241,10 +241,10 @@ func (wpe *WorkflowPolicyEvaluator) evaluatePolicies(ctx context.Context, envelo
 		EnvelopeID: envelopeID,
 		WorkflowID: wpe.workflow.ID,
 		Attributes: map[string]string{
-			"workflow_name":   wpe.workflow.Name,
-			"scope":           string(PolicyScopeWorkflow),
-			"envelope_count":  fmt.Sprintf("%d", wpe.workflow.GetEnvelopeCount()),
-			"active_agents":   fmt.Sprintf("%d", wpe.workflow.GetActiveEnvelopeCount()),
+			"workflow_name":  wpe.workflow.Name,
+			"scope":          string(PolicyScopeWorkflow),
+			"envelope_count": fmt.Sprintf("%d", wpe.workflow.GetEnvelopeCount()),
+			"active_agents":  fmt.Sprintf("%d", wpe.workflow.GetActiveEnvelopeCount()),
 		},
 	}
 
