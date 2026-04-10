@@ -42,7 +42,12 @@ make proof-gate model-gate bench-gate fault-gate evidence-gate audit-gate
 1 remaining sorry hole (down from 16):
 - `MixedNashExistence.mixed_nash_exists` — Kakutani FPT unavailable in Mathlib4
 
-All other theorems are sorry-free, including `fulcrum_poa_bounded` (PoA ≤ 9/7).
+All other theorems are sorry-free, including:
+- `fulcrum_poa_bounded` (PoA ≤ 9/7, NashUniqueness.lean)
+- `trust_guaranteed_termination` + 9 companion theorems (TrustTermination.lean)
+- 4 RLM interface contracts + 1 axiom (RLMContracts.lean)
+
+**Total proof portfolio:** 20+ sorry-free theorems across 5 files, 23 claims (C-004 through C-023).
 
 ## Branch Protection (Strict)
 

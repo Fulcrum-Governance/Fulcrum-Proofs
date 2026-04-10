@@ -36,6 +36,62 @@ This repository is contract-coupled to the `Fulcrum` repository:
 - `scripts/`: gate and utility scripts
 - `.github/workflows/`: CI/CD gates
 
+## Trust Termination Proofs
+
+The `proofs/lean/Proofs/TrustTermination.lean` file formalizes the Beta(alpha,beta) trust model's termination guarantee — the mathematical basis for `fulcrum-trust`'s circuit breaker.
+
+### Theorem Inventory
+
+| Theorem | Statement | Status |
+|---------|-----------|--------|
+| `trust_monotone_decreasing` | Each failure strictly decreases trust | Proven |
+| `trust_failure_degrades` | Failure makes trust strictly lower (via `trustLt`) | Proven |
+| `trust_threshold_reachable` | For any threshold, exists beta_star below it | Proven |
+| `trust_termination_invariant` | Circuit open iff trust below threshold (well-formed states) | Proven |
+| `trust_safety_invariant` | Circuit closed iff trust at/above threshold | Proven |
+| `trust_cumulative_degradation` | More failures = lower trust (generalized monotonicity) | Proven |
+| `trust_guaranteed_termination` | Continued failures from any start guarantee termination | Proven |
+| `terminated_is_absorbing` | No valid transition leaves TERMINATED | Proven |
+| `closed_transitions` | CLOSED can only go to OPEN or TERMINATED | Proven |
+| `no_closed_to_halfOpen` | Cannot skip to recovery without termination | Proven |
+
+### Claims (C-022)
+
+| Claim | Statement | Status |
+|-------|-----------|--------|
+| C-022 | Trust circuit breaker guarantees agent termination under sustained failure | Proven |
+
+### Technical Approach
+
+All proofs use Nat cross-multiplication to encode rational inequalities, avoiding Lean 4 `Rat` type entirely. The trust score `Trust(alpha, beta) = (alpha + 1) / (alpha + beta + 2)` is represented as a numerator/denominator pair, and ordering is defined via `trustNum * otherDen < otherNum * thisDen`. This makes `omega` and `nlinarith` the workhorse tactics.
+
+The circuit breaker models 4 states matching the Python implementation: CLOSED, OPEN, HALF_OPEN, TERMINATED. TERMINATED is an admin override (absorbing state).
+
+Reference implementation: `fulcrum-trust/fulcrum_trust/evaluator.py`, `manager.py`
+
+## RLM Interface Contracts
+
+The `proofs/lean/Proofs/RLMContracts.lean` file defines formal interface contracts for the Recursive Language Model inference loop.
+
+### Contract Inventory
+
+| Contract | Type | Status |
+|----------|------|--------|
+| Context partition isolation | Axiom | Axiomatized (sandbox property) |
+| Recursion depth bounded | Theorem | Proven |
+| Step decreases partitions (termination measure) | Theorem | Proven |
+| Answer readiness monotonic | Theorem | Proven |
+| Token budget enforced | Theorem | Proven |
+| Answer on completion | Theorem | Proven |
+
+### Claims (C-023)
+
+| Claim | Statement | Status |
+|-------|-----------|--------|
+| C-023 | RLM inference loop satisfies bounded termination and resource constraints | Proven |
+
+These are *interface contracts* — they specify correctness criteria that any RLM implementation must satisfy. They mirror the Go interfaces in `fulcrum-io/internal/rlm/interfaces.go`. The step function models the core loop body in `internal/rlm/inference/loop.go`.
+
 ## Game Theory Proofs
 
 The `proofs/lean/Proofs/GameTheory/` directory contains a Lean 4 + Mathlib4 formalization of Fulcrum's multi-agent coordination mechanism as a finite normal-form game. The proof layer addresses Nash equilibrium existence, incentive properties, coordination efficiency, and the bridge from budget enforcement to game-theoretic guarantees.
@@ -61,6 +117,16 @@ The `proofs/lean/Proofs/GameTheory/` directory contains a Lean 4 + Mathlib4 form
 | C-019 | Proportional allocation is **not** DSIC under current utility | Proven |
 | C-020 | Price of Anarchy bounded at 9/7 | Proven (formal upper bound 9/7; audited simulation realized PoA = 1.0) |
 | C-021 | Budget enforcement grounds the game model | Proven |
+
+### Proof Portfolio Summary
+
+| File | Theorems | Sorry-free? |
+|------|----------|-------------|
+| `BasicInvariants.lean` | 4 (budget safety, privilege subset) | Yes |
+| `TemporalConservationSpec.lean` | 3 (temporal conservation, revocation) | Yes |
+| `TrustTermination.lean` | 10 (trust model, circuit breaker) | Yes |
+| `RLMContracts.lean` | 8 (4 proven + 1 axiom + helpers) | Yes (1 axiom) |
+| `GameTheory/*.lean` | 10+ (Nash, PoA, incentives, bridge) | 1 sorry (Kakutani) |
 
 ### Remaining Sorry Holes (1 of 16 original)
 
