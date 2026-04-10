@@ -102,8 +102,8 @@ claims:
       - simulation_convergence_rate_above_90pct
     notes: Three-axis closure. TLC verifies 6 invariants (2,972 states). Simulation confirms
       100% convergence to all-moderate; for the audited tight-budget instance (n=5,
-      budget=125), realized PoA = 1.0. Lean support is reduced to one remaining
-      placeholder in `fulcrum_poa_bounded`; the formal upper bound remains PoA ≤ 9/7.
+      budget=125), realized PoA = 1.0. Lean `fulcrum_poa_bounded` is now sorry-free
+      via Nash uniqueness proof (NashUniqueness.lean). Formal upper bound PoA ≤ 9/7 fully proven.
     owner: formal-systems
   - claim_id: C-021
     statement: Budget enforcement grounds the coordination game model

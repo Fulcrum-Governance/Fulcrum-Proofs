@@ -18,12 +18,11 @@ Check for remaining `sorry` placeholders:
 rg '\bsorry\b' proofs/lean/Proofs/ --glob '*.lean'
 ```
 
-As of 2026-03-08 there are 2 remaining sorry holes (down from 16):
+As of 2026-04-09 there is 1 remaining sorry hole (down from 16):
 
 | Location | Reason |
 |----------|--------|
 | `MixedNashExistence.mixed_nash_exists` | Kakutani FPT unavailable in Mathlib4 for Lean 4.29 |
-| `CoordinationEfficiency.fulcrum_poa_bounded` | Requires Nash uniqueness lemma (deferred) |
 
 ## Running Other Gates
 

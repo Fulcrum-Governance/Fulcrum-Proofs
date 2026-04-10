@@ -1,5 +1,5 @@
 version: 2
-updated_at: 2026-03-08
+updated_at: 2026-04-09
 theorems:
   - theorem_id: THM-BUDGET-LOCAL
     assumptions:
@@ -66,10 +66,10 @@ theorems:
     assumptions: [A-GAME-001, A-GAME-002]
     lean_module: Proofs/GameTheory/CoordinationEfficiency.lean
     dependencies: [THM-NASH-PURE-EXISTENCE]
-    proof_status: proven-with-sorry
-    sorry_count: 1
-    notes: Welfare accounting lemmas are sorry-free; the remaining placeholder is the final
-      `fulcrum_poa_bounded` theorem.
+    proof_status: proven
+    sorry_count: 0
+    notes: Fully proven via NashUniqueness.lean (PR #6). All-moderate is the unique Nash
+      equilibrium under tight budget; PoA ≤ 9/7 bound is sorry-free.
   - theorem_id: THM-BUDGET-GAME-BRIDGE
     assumptions: [A-BUDGET-001]
     lean_module: Proofs/GameTheory/BudgetGameBridge.lean
