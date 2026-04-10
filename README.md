@@ -62,12 +62,13 @@ The `proofs/lean/Proofs/GameTheory/` directory contains a Lean 4 + Mathlib4 form
 | C-020 | Price of Anarchy bounded at 9/7 | Proven (formal upper bound 9/7; audited simulation realized PoA = 1.0) |
 | C-021 | Budget enforcement grounds the game model | Proven |
 
-### Remaining Sorry Holes (2 of 16 original)
+### Remaining Sorry Holes (1 of 16 original)
 
 | Location | Reason |
 |----------|--------|
 | `MixedNashExistence.mixed_nash_exists` | Kakutani FPT not available in Mathlib4; external repos (harfe, math-xmum) incompatible with Lean 4.29 |
-| `CoordinationEfficiency.fulcrum_poa_bounded` | Requires Nash uniqueness lemma (all equilibria under tight budget are all-moderate) |
+
+`CoordinationEfficiency.fulcrum_poa_bounded` was closed via `NashUniqueness.lean` (PR #5) — all equilibria under tight budget are all-moderate, giving PoA ≤ 9/7.
 
 ### Incentive Compatibility Correction
 
@@ -121,7 +122,7 @@ Branch protection targets on `main`:
 
 ## Toolchain
 
-- Go 1.24.13
+- Go 1.26.2
 - Python 3.12+
 - Node 20+
 - Java 17+ (for TLC)
