@@ -2,8 +2,10 @@
 package policyengine
 
 import (
+	"cmp"
 	"context"
 	"fmt"
+	"slices"
 	"time"
 
 	"github.com/fulcrum-io/fulcrum/internal/brain"
@@ -12,12 +14,22 @@ import (
 	"go.uber.org/zap"
 )
 
+// SemanticFailMode controls behavior when the Semantic Judge is unavailable.
+type SemanticFailMode int
+
+const (
+	// SemanticFailClosed denies when the judge is unavailable (default, safe).
+	SemanticFailClosed SemanticFailMode = iota
+	// SemanticFailOpen skips semantic conditions when the judge is unavailable.
+	SemanticFailOpen
+)
+
 // Evaluator provides policy evaluation capabilities.
 type Evaluator struct {
-	// Configuration
 	maxEvaluationTime time.Duration
 	enableAuditLog    bool
 	semanticJudge     *brain.SemanticJudge
+	semanticFailMode  SemanticFailMode
 }
 
 // NewEvaluator creates a new policy evaluator.
@@ -25,6 +37,7 @@ func NewEvaluator(opts ...EvaluatorOption) *Evaluator {
 	e := &Evaluator{
 		maxEvaluationTime: 10 * time.Millisecond,
 		enableAuditLog:    true,
+		semanticFailMode:  SemanticFailClosed,
 	}
 	for _, opt := range opts {
 		opt(e)
@@ -37,6 +50,13 @@ type EvaluatorOption func(*Evaluator)
 func WithSemanticJudge(judge *brain.SemanticJudge) EvaluatorOption {
 	return func(e *Evaluator) {
 		e.semanticJudge = judge
+	}
+}
+
+// WithSemanticFailMode sets the behavior when the Semantic Judge is unavailable.
+func WithSemanticFailMode(mode SemanticFailMode) EvaluatorOption {
+	return func(e *Evaluator) {
+		e.semanticFailMode = mode
 	}
 }
 
@@ -72,12 +92,21 @@ func (e *Evaluator) EvaluatePolicy(ctx context.Context, policy *policyv1.Policy,
 		}, nil
 	}
 
-	// Evaluate rules in priority order
+	// Sort rules: highest priority first, deterministic secondary sort by RuleId
+	sortedRules := make([]*policyv1.PolicyRule, len(policy.Rules))
+	copy(sortedRules, policy.Rules)
+	slices.SortFunc(sortedRules, func(a, b *policyv1.PolicyRule) int {
+		if c := cmp.Compare(b.Priority, a.Priority); c != 0 {
+			return c // descending by priority
+		}
+		return cmp.Compare(a.RuleId, b.RuleId) // ascending by rule ID
+	})
+
 	var matchedRules []*policyv1.RuleMatch
 	var actions []*policyv1.PolicyAction
 	decision := policyv1.EvaluationDecision_EVALUATION_DECISION_ALLOW
 
-	for _, rule := range policy.Rules {
+	for _, rule := range sortedRules {
 		if e.enableAuditLog {
 			logging.Debug("evaluating rule",
 				zap.String("rule_id", rule.RuleId),
@@ -239,11 +268,14 @@ func (e *Evaluator) evaluateRule(rule *policyv1.PolicyRule, ctx *policyv1.Evalua
 
 		if condition.ConditionType == policyv1.ConditionType_CONDITION_TYPE_SEMANTIC {
 			if e.semanticJudge == nil {
-				if e.enableAuditLog {
-					logging.Warn("semantic condition without SemanticJudge",
-						zap.String("rule_id", rule.RuleId))
+				logging.Warn("semantic_judge_unavailable: rule has semantic conditions but judge is absent, defaulting to fail-closed",
+					zap.String("rule_id", rule.RuleId),
+					zap.String("fail_mode", fmt.Sprintf("%d", e.semanticFailMode)))
+				if e.semanticFailMode == SemanticFailOpen {
+					return false, nil // explicit opt-in: skip the rule
 				}
-				return false, nil // Fail open or closed? Here returning false means rule doesn't match.
+				// Fail closed: treat as matched so the rule's actions (DENY) apply
+				return true, nil
 			}
 			judgeCtx, judgeCancel := context.WithTimeout(context.Background(), 15*time.Second)
 			matches, err = e.semanticJudge.Evaluate(judgeCtx, condition, ctx)

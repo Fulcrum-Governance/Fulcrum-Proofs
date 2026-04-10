@@ -1,0 +1,23 @@
+ syntax = "proto3";
+ 
+ package fulcrum.vericoding.v1;
+ 
+ option go_package = "github.com/fulcrum-io/fulcrum/fulcrum/vericoding/v1";
+ 
+ service VericodingService {
+   rpc VerifyIncidentPattern(PatternRequest) returns (CertificateResponse);
+ }
+ 
+ message PatternRequest {
+   string incident_id = 1;
+   string formal_statement = 2;
+   map<string, string> context_variables = 3;
+ }
+ 
+ message CertificateResponse {
+   bool is_verified = 1;
+   string lean_proof = 2;
+   string compiler_certificate = 3;
+   int32 iterations_required = 4;
+   string error_trace = 5;
+ }
