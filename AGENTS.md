@@ -1,21 +1,23 @@
 # Fulcrum-Proofs — Agent Context
 
-**Last updated:** 2026-04-09
+**Last updated:** 2026-04-17
 
 ---
 
-## Three-Repo Architecture
+## Four-Repo Architecture
 
-This is one of three repositories under the `Fulcrum-Governance` GitHub org.
+This is one of four repositories under the `Fulcrum-Governance` GitHub org.
 
 | Repo | Local Path | Language | Purpose |
 |------|-----------|----------|---------|
 | **fulcrum-io** | `/Users/td/ConceptDev/Projects/Fulcrum` | Go 1.26.2 | Backend platform: gRPC server, REST gateway, MCP endpoint, policy engine, cognitive layer, foundry, entropy monitor |
+| **governance-interception-layer** | `/Users/td/ConceptDev/Projects/governance-interception-layer` | Go 1.26.2 | Out-of-process enforcement boundary: transport adapters, shared governance pipeline, cross-transport parity |
 | **fulcrum-trust** | `/Users/td/ConceptDev/Projects/fulcrum-trust` | Python 3.9+ | Trust model authority: beta-distribution trust math, circuit breaker, LangGraph adapter, IPC bridge, RLM prototype |
 | **Fulcrum-Proofs** (this repo) | `/Users/td/ConceptDev/Projects/Fulcrum-Proofs` | Lean 4 / TLA+ / Python | Formal verification: Lean 4 proofs, TLA+ model checking, benchmark evidence, claim ledger |
 
 ### Cross-Repo Relationships
 - **Contract sync**: `contracts/snapshots/` mirrors proto definitions and Go interfaces from `fulcrum-io`. Synced via `scripts/sync-contracts.sh` in the IO repo.
+- **GIL evidence boundary**: Runtime enforcement parity for transport adapters lives in the GIL repo; proof claims should reference it only through explicit closure artifacts.
 - **Product bible**: Canonical product definition lives in `fulcrum-io/product/`.
 - **Claim discipline**: `fulcrum-io/CLAUDE.md` references proof status from this repo. Keep in sync.
 
