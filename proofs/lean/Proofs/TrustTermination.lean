@@ -82,7 +82,7 @@ def wellFormed (s : TrustState) : Prop :=
 theorem trust_monotone_decreasing (α β : Nat) :
     trustNum α * trustDen α β < trustNum α * trustDen α (β + 1) := by
   unfold trustNum trustDen
-  omega
+  nlinarith
 
 /-- Equivalently: adding a failure makes Trust strictly lower. -/
 theorem trust_failure_degrades (α β : Nat) :
@@ -112,11 +112,16 @@ theorem trustNum_pos (α : Nat) : 0 < trustNum α := by
     and (α+1)*q = q*α + q, so we need q*α + q < α + q*α + q + 2
     which simplifies to 0 < α + 2, always true. -/
 theorem trust_threshold_reachable (α p q : Nat)
-    (hp : 0 < p) (hq : 0 < q) (hpq : p < q) :
+    (hp : 0 < p) (_hq : 0 < q) (_hpq : p < q) :
     ∃ β_star : Nat, trustBelowThreshold α β_star p q := by
   use q * (α + 1)
   unfold trustBelowThreshold trustNum trustDen
-  nlinarith
+  have hp_one : 1 ≤ p := Nat.succ_le_of_lt hp
+  have hbase : (α + 1) * q < α + q * (α + 1) + 2 := by
+    nlinarith
+  have hscale : α + q * (α + 1) + 2 ≤ p * (α + q * (α + 1) + 2) := by
+    simpa using Nat.mul_le_mul_right (α + q * (α + 1) + 2) hp_one
+  exact lt_of_lt_of_le hbase hscale
 
 -- ═══════════════════════════════════════════════════════════════════════
 -- Theorem C: Termination Invariant
@@ -198,5 +203,49 @@ theorem trust_guaranteed_termination (α β₀ p q : Nat)
   use β_star
   unfold trustBelowThreshold trustNum trustDen at *
   nlinarith
+
+-- ═══════════════════════════════════════════════════════════════════════
+-- Theorem E: Decay Preserves Termination
+-- ═══════════════════════════════════════════════════════════════════════
+
+/-- Time decay does not prevent termination: if failures continue
+    to accumulate, decay on historical interactions makes termination
+    reach faster, not slower.
+
+    Decay is modeled as scaling α by a rational factor r_num/r_den
+    where 0 < r_num < r_den (i.e., 0 < r < 1). The decayed trust state
+    has a smaller α (decayed history) while fresh failures add to β
+    without decay.
+
+    This theorem shows that for any decayed α (r_num * α / r_den),
+    there still exists n additional failures that push trust below
+    the threshold — termination is guaranteed regardless of decay. -/
+theorem decay_preserves_termination (α β₀ p q : Nat)
+    (r_num r_den : Nat)
+    (_hr_pos : 0 < r_num) (_hr_lt : r_num < r_den)
+    (hp : 0 < p) (hq : 0 < q) (hpq : p < q) :
+    ∃ n : Nat, trustBelowThreshold (r_num * α / r_den) (β₀ + n) p q := by
+  exact trust_guaranteed_termination (r_num * α / r_den) β₀ p q hp hq hpq
+
+/-- Decay makes termination strictly faster: the decayed trust score
+    (with same β) is at most the undecayed score. This is because
+    r_num * α / r_den ≤ α when 0 < r_num < r_den, so the numerator
+    of the trust score is smaller while the denominator is smaller or equal.
+
+    Formally: trustNum(α') ≤ trustNum(α) when α' ≤ α. -/
+theorem decay_reduces_trust_numerator (α : Nat) (r_num r_den : Nat)
+    (hr_pos : 0 < r_num) (hr_lt : r_num < r_den) :
+    trustNum (r_num * α / r_den) ≤ trustNum α := by
+  unfold trustNum
+  have hden_pos : 0 < r_den := lt_trans hr_pos hr_lt
+  have hmul : r_num * α ≤ r_den * α := by
+    exact Nat.mul_le_mul_right α (Nat.le_of_lt hr_lt)
+  have hdiv : r_num * α / r_den ≤ r_den * α / r_den :=
+    Nat.div_le_div_right hmul
+  have hright : r_den * α / r_den = α := by
+    rw [Nat.mul_comm, Nat.mul_div_left _ hden_pos]
+  have hscaled : r_num * α / r_den ≤ α := by
+    simpa [hright] using hdiv
+  exact Nat.succ_le_succ hscaled
 
 end Fulcrum

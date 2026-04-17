@@ -95,15 +95,15 @@ axiom context_partition_isolation :
     Returns None if no partitions remain or answer is already ready.
     Models the core loop body in internal/rlm/inference/loop.go. -/
 def rlmStep (s : RLMState) (tokensUsed : Nat)
-    (h_tokens : tokensUsed > 0) : Option RLMState :=
+    (_h_tokens : tokensUsed > 0) : Option RLMState :=
   if s.answerReady then
     none
   else if h_parts : s.partitionsRemaining = 0 then
     none
-  else if h_budget : s.tokensConsumed + tokensUsed > s.tokenBudget then
+  else if _h_budget : s.tokensConsumed + tokensUsed > s.tokenBudget then
     none
   else
-    have h_parts_pos : 0 < s.partitionsRemaining := Nat.pos_of_ne_zero h_parts
+    have _h_parts_pos : 0 < s.partitionsRemaining := Nat.pos_of_ne_zero h_parts
     have h_new_parts_le : s.partitionsRemaining - 1 ≤ s.partitionsTotal :=
       Nat.le_trans (Nat.sub_le s.partitionsRemaining 1) s.h_parts_le
     some {
@@ -134,11 +134,15 @@ theorem rlm_step_preserves_depth (s : RLMState) (tok : Nat) (htok : tok > 0)
     (s' : RLMState) (h_step : rlmStep s tok htok = some s') :
     s'.depth ≤ s'.maxDepth := by
   unfold rlmStep at h_step
-  split at h_step <;> simp at h_step
-  split at h_step <;> simp at h_step
-  split at h_step <;> simp at h_step
-  obtain rfl := h_step
-  exact s.h_depth_le
+  by_cases h_ready : s.answerReady = true
+  · simp [h_ready] at h_step
+  · by_cases h_parts : s.partitionsRemaining = 0
+    · simp [h_ready, h_parts] at h_step
+    · by_cases h_budget : s.tokensConsumed + tok > s.tokenBudget
+      · simp [h_ready, h_parts, h_budget] at h_step
+      · simp [h_ready, h_parts, h_budget] at h_step
+        obtain rfl := h_step
+        exact s.h_depth_le
 
 -- ═══════════════════════════════════════════════════════════════════════
 -- Contract C: Termination Measure (Step Decreasing)
@@ -154,16 +158,16 @@ theorem rlm_step_decreases_measure (s : RLMState) (tok : Nat) (htok : tok > 0)
     (s' : RLMState) (h_step : rlmStep s tok htok = some s') :
     terminationMeasure s' < terminationMeasure s := by
   unfold rlmStep at h_step
-  split at h_step <;> simp at h_step
-  · rename_i h_ready; split at h_step <;> simp at h_step
-  · rename_i h_not_ready
-    split at h_step <;> simp at h_step
-    · rename_i h_parts_zero; split at h_step <;> simp at h_step
-    · rename_i h_parts_nonzero
-      split at h_step <;> simp at h_step
-      obtain rfl := h_step
-      unfold terminationMeasure
-      omega
+  by_cases h_ready : s.answerReady = true
+  · simp [h_ready] at h_step
+  · by_cases h_parts : s.partitionsRemaining = 0
+    · simp [h_ready, h_parts] at h_step
+    · by_cases h_budget : s.tokensConsumed + tok > s.tokenBudget
+      · simp [h_ready, h_parts, h_budget] at h_step
+      · simp [h_ready, h_parts, h_budget] at h_step
+        obtain rfl := h_step
+        unfold terminationMeasure
+        exact Nat.sub_lt (Nat.pos_of_ne_zero h_parts) Nat.zero_lt_one
 
 /-- The loop terminates in at most partitionsTotal iterations. -/
 theorem rlm_bounded_iterations (s : RLMState) :
@@ -190,11 +194,15 @@ theorem rlm_answer_on_completion (s : RLMState) (tok : Nat) (htok : tok > 0)
     (h_ready : s'.answerReady = true) :
     s'.partitionsRemaining = 0 := by
   unfold rlmStep at h_step
-  split at h_step <;> simp at h_step
-  split at h_step <;> simp at h_step
-  split at h_step <;> simp at h_step
-  obtain rfl := h_step
-  simpa using h_ready
+  by_cases h_state_ready : s.answerReady = true
+  · simp [h_state_ready] at h_step
+  · by_cases h_parts : s.partitionsRemaining = 0
+    · simp [h_state_ready, h_parts] at h_step
+    · by_cases h_budget : s.tokensConsumed + tok > s.tokenBudget
+      · simp [h_state_ready, h_parts, h_budget] at h_step
+      · simp [h_state_ready, h_parts, h_budget] at h_step
+        obtain rfl := h_step
+        simpa using h_ready
 
 -- ═══════════════════════════════════════════════════════════════════════
 -- Contract E: Token Budget Enforcement
@@ -206,10 +214,14 @@ theorem rlm_token_budget_respected (s : RLMState) (tok : Nat) (htok : tok > 0)
     (s' : RLMState) (h_step : rlmStep s tok htok = some s') :
     s'.tokensConsumed ≤ s'.tokenBudget := by
   unfold rlmStep at h_step
-  split at h_step <;> simp at h_step
-  split at h_step <;> simp at h_step
-  split at h_step <;> simp at h_step
-  · rename_i h_budget; obtain rfl := h_step; omega
-  · simp at h_step
+  by_cases h_ready : s.answerReady = true
+  · simp [h_ready] at h_step
+  · by_cases h_parts : s.partitionsRemaining = 0
+    · simp [h_ready, h_parts] at h_step
+    · by_cases h_budget : s.tokensConsumed + tok > s.tokenBudget
+      · simp [h_ready, h_parts, h_budget] at h_step
+      · simp [h_ready, h_parts, h_budget] at h_step
+        obtain rfl := h_step
+        exact le_of_not_gt h_budget
 
 end Fulcrum.RLM
