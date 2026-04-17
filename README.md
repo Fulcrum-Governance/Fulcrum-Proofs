@@ -1,6 +1,8 @@
 # Fulcrum-Proofs
 
-Proof and evidence repository for Fulcrum governance claims.
+The formal core of the Fulcrum governance kernel — proof and evidence repository for Fulcrum governance claims.
+
+Fulcrum is a governance kernel: a portable, typed, pre-execution control plane that sits between intent and action, enforces bounded invariants (policy, budget, trust, audit), and emits evidence-grade audit artifacts. This repository holds the machine-checkable proofs that ground those invariants.
 
 This repository is the source of truth for:
 - formal proofs (Lean)
@@ -9,6 +11,31 @@ This repository is the source of truth for:
 - fault-injection evidence
 - compliance evidence mappings
 - final re-audit closure artifacts
+
+## Claim Taxonomy
+
+Every public claim backed by this repository is labeled with exactly one of:
+
+| Label | Meaning | Example |
+|-------|---------|---------|
+| **Proved** | Machine-checkable Lean 4 proof, zero sorry | Budget Safety Invariant |
+| **Tested** | Empirical validation with published data | C-005 at 1M tokens |
+| **Implemented** | Exists in code, passes tests, deployed or deployable | GIL 4-stage pipeline |
+| **Simulated** | Benchmarked in controlled environment, not production | k6 scale suite at 1000 VUs |
+| **Conjectured** | Reasoned but not yet closed | 10M-token extrapolation |
+
+## Decision Taxonomy
+
+Every governance decision produced by the kernel is labeled with exactly one of:
+
+| Label | What it means | Audit trail shows |
+|-------|--------------|-------------------|
+| **Proved** | Lean 4 invariant check passed | Theorem ID + proof artifact |
+| **Deterministic** | Static policy rule matched | Policy rule ID + match reason |
+| **Classified** | Semantic Judge / probabilistic evaluation | Model ID + confidence + reasoning |
+| **Human-approved** | Human reviewed and approved | Approver ID + timestamp |
+
+No decision is ever labeled generic "governed." The taxonomy is the product's signature. Canonical language: [`NARRATIVE_SYSTEM.md`](https://github.com/Fulcrum-Governance/fulcrum-io/blob/main/.claude/sprint/kernel-reframe/NARRATIVE_SYSTEM.md) in fulcrum-io.
 
 ## Scope Policy
 
