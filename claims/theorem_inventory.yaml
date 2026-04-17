@@ -68,7 +68,8 @@ theorems:
     dependencies: [THM-NASH-PURE-EXISTENCE]
     proof_status: proven
     sorry_count: 0
-    notes: Fully proven via NashUniqueness.lean (PR #6). All-moderate is the unique Nash
+    notes: >
+      Fully proven via NashUniqueness.lean (PR #6). All-moderate is the unique Nash
       equilibrium under tight budget; PoA ≤ 9/7 bound is sorry-free.
   - theorem_id: THM-BUDGET-GAME-BRIDGE
     assumptions: [A-BUDGET-001]
