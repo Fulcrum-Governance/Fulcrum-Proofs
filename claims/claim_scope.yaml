@@ -93,17 +93,21 @@ claims:
       two-agent counterexample showing profitable under-reporting under budget sufficiency.
     owner: formal-systems
   - claim_id: C-020
-    statement: Coordination loss (Price of Anarchy) is bounded at 9/7
+    statement: Constrained Price of Anarchy is 1.0 under tight-budget optimality
     type: hybrid
-    status: proven
+    status: tested
     closure_criteria:
-      - lean_poa_bound_stated
+      - lean_constrained_poa_theorems_stated
+      - constrained_poa_enumeration_n_2_to_12_passes
+      - lean_unconstrained_reference_bound_proven
       - tla_coordination_invariants_hold
       - simulation_convergence_rate_above_90pct
-    notes: Three-axis closure. TLC verifies 6 invariants (2,972 states). Simulation confirms
-      100% convergence to all-moderate; for the audited tight-budget instance (n=5,
-      budget=125), realized PoA = 1.0. Lean `fulcrum_poa_bounded` is now sorry-free
-      via Nash uniqueness proof (NashUniqueness.lean). Formal upper bound PoA ≤ 9/7 fully proven.
+    notes: Constrained PoA = 1.0 is backed by exhaustive count-equivalence enumeration
+      for n=2..12 in `evidence/constrained_poa_results.json`; Lean declarations
+      `constrained_welfare_optimal` and `constrained_poa_exact` are present but still
+      use `sorry`, so formal closure is in progress. The unconstrained reference
+      bound PoA ≤ 9/7 remains fully proven by `fulcrum_poa_bounded` via Nash
+      uniqueness (NashUniqueness.lean).
     owner: formal-systems
   - claim_id: C-021
     statement: Budget enforcement grounds the coordination game model

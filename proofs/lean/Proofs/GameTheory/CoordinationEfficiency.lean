@@ -68,6 +68,28 @@ theorem welfare_upper_bound (params : BudgetParams) :
     _ = 9 * params.agentCount := by
           rw [sum_const_real]
 
+/-- Under tight budget B=25n, no budget-feasible compliant profile achieves
+    welfare exceeding the all-moderate profile.
+
+    Proof status: statement and computational evidence are in place; the
+    sorry marks the pending Lean closure for the count-based optimization. -/
+theorem constrained_welfare_optimal (params : BudgetParams)
+    (hBudget : params.totalBudget = 25 * params.agentCount)
+    (hSmall : params.agentCount ≤ 12) :
+    ∀ σ : StrategyProfile (fulcrumCoordinationGame params),
+    withinBudget params (fun j => σ j) →
+    socialWelfare (fulcrumCoordinationGame params) σ ≤ 7 * params.agentCount := by
+  sorry
+
+/-- Under tight budget, the Price of Anarchy is 1 against the constrained
+    welfare optimum. The Lean closure is pending; the computational evidence
+    enumerates the bounded regime used by the manuscript. -/
+theorem constrained_poa_exact (params : BudgetParams)
+    (hBudget : params.totalBudget = 25 * params.agentCount)
+    (hSmall : params.agentCount ≤ 12) :
+    PriceOfAnarchyBounded (fulcrumCoordinationGame params) 1 := by
+  sorry
+
 /-- Price of Anarchy bound: for the Fulcrum game under tight budget,
     PoA ≤ 9/7. The worst equilibrium (all-moderate) achieves welfare 7n,
     while optimal welfare is at most 9n.

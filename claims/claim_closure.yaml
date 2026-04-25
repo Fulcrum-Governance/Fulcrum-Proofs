@@ -337,20 +337,27 @@ closures:
       plus proof-gate replay.
 
   - claim_id: C-020
-    statement: Coordination loss (Price of Anarchy) is bounded at 9/7
+    statement: Constrained Price of Anarchy is 1.0 under tight-budget optimality
     type: hybrid
-    public_status: proven
+    public_status: tested
     theorem_ids:
+      - THM-POA-CONSTRAINED
       - THM-POA-BOUNDED
       - THM-NASH-PURE-EXISTENCE
     runtime_evidence:
+      - id: constrained_poa_enumeration_n_2_to_12
+        path: evidence/constrained_poa_results.json
+        repo: Fulcrum-Proofs
+        description: >
+          Exhaustive enumeration of action-count equivalence classes for
+          budget-feasible profiles under B=25n. For n=2..12, the maximum
+          feasible welfare is 7n and constrained PoA is 1.0.
       - id: rt_nash_convergence_poa_check
         path: benchmarks/raw/nash-convergence.json
         repo: Fulcrum-Proofs
         description: >
           Convergence simulation — for the audited tight-budget instance
-          (n=5, budget=125), realized PoA = 1.0 while formal upper bound
-          remains PoA ≤ 9/7.
+          (n=5, budget=125), realized PoA = 1.0.
     ci_jobs:
       - name: proof-gate.yml
         repo: Fulcrum-Proofs
@@ -361,6 +368,8 @@ closures:
         type: lean_proof
       - path: proofs/lean/Proofs/GameTheory/NashUniqueness.lean
         type: lean_proof
+      - path: evidence/constrained_poa_results.json
+        type: benchmark_report
       - path: models/tla/reports/tlc-AgentCoordination.log
         type: benchmark_report
       - path: models/tla/reports/tlc-AgentCoordinationSmall.log
@@ -368,9 +377,11 @@ closures:
       - path: benchmarks/raw/nash-convergence.json
         type: benchmark_report
     notes: >
-      Three-axis closure. Lean `fulcrum_poa_bounded` sorry-free via Nash
-      uniqueness (NashUniqueness.lean). TLC exhaustive verification of 6
-      invariants across 2,972 states. Simulation confirms 100% convergence.
+      Constrained PoA = 1.0 is tested by exhaustive enumeration for n=2..12.
+      Lean declarations `constrained_welfare_optimal` and `constrained_poa_exact`
+      are present but still use `sorry`, so the constrained formal proof is in
+      progress. The unconstrained reference bound PoA ≤ 9/7 remains sorry-free
+      via `fulcrum_poa_bounded` and Nash uniqueness.
 
   - claim_id: C-021
     statement: Budget enforcement grounds the coordination game model

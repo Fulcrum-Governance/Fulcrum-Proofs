@@ -71,6 +71,17 @@ theorems:
     notes: >
       Fully proven via NashUniqueness.lean (PR #6). All-moderate is the unique Nash
       equilibrium under tight budget; PoA ≤ 9/7 bound is sorry-free.
+  - theorem_id: THM-POA-CONSTRAINED
+    assumptions: [A-GAME-001, A-GAME-002]
+    lean_module: Proofs/GameTheory/CoordinationEfficiency.lean
+    dependencies: [THM-NASH-PURE-EXISTENCE, THM-POA-BOUNDED]
+    proof_status: proven-with-sorry
+    sorry_count: 2
+    notes: >
+      `constrained_welfare_optimal` and `constrained_poa_exact` state the
+      tightened constrained optimum and PoA=1 result. Both declarations compile
+      with `sorry`; computational evidence for n=2..12 is recorded in
+      evidence/constrained_poa_results.json.
   - theorem_id: THM-BUDGET-GAME-BRIDGE
     assumptions: [A-BUDGET-001]
     lean_module: Proofs/GameTheory/BudgetGameBridge.lean

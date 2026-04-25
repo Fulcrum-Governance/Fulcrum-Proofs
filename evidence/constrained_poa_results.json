@@ -1,0 +1,107 @@
+{
+  "claim": "C-020",
+  "result": "Constrained PoA = 1.0 for all n in [2, 12]",
+  "verification_date": "2026-04-25T11:11:58.559801+00:00",
+  "method": "exhaustive enumeration of action-count equivalence classes for budget-feasible strategy profiles, excluding noncompliant actions",
+  "details": [
+    {
+      "n": 2,
+      "budget": 50,
+      "best_feasible_welfare": 14,
+      "best_profile": "agg=0,mod=2,con=0,cost=50",
+      "all_moderate_welfare": 14,
+      "constrained_poa": 1.0,
+      "count_vectors_checked": 6
+    },
+    {
+      "n": 3,
+      "budget": 75,
+      "best_feasible_welfare": 21,
+      "best_profile": "agg=0,mod=3,con=0,cost=75",
+      "all_moderate_welfare": 21,
+      "constrained_poa": 1.0,
+      "count_vectors_checked": 10
+    },
+    {
+      "n": 4,
+      "budget": 100,
+      "best_feasible_welfare": 28,
+      "best_profile": "agg=0,mod=4,con=0,cost=100",
+      "all_moderate_welfare": 28,
+      "constrained_poa": 1.0,
+      "count_vectors_checked": 15
+    },
+    {
+      "n": 5,
+      "budget": 125,
+      "best_feasible_welfare": 35,
+      "best_profile": "agg=0,mod=5,con=0,cost=125",
+      "all_moderate_welfare": 35,
+      "constrained_poa": 1.0,
+      "count_vectors_checked": 21
+    },
+    {
+      "n": 6,
+      "budget": 150,
+      "best_feasible_welfare": 42,
+      "best_profile": "agg=0,mod=6,con=0,cost=150",
+      "all_moderate_welfare": 42,
+      "constrained_poa": 1.0,
+      "count_vectors_checked": 28
+    },
+    {
+      "n": 7,
+      "budget": 175,
+      "best_feasible_welfare": 49,
+      "best_profile": "agg=0,mod=7,con=0,cost=175",
+      "all_moderate_welfare": 49,
+      "constrained_poa": 1.0,
+      "count_vectors_checked": 36
+    },
+    {
+      "n": 8,
+      "budget": 200,
+      "best_feasible_welfare": 56,
+      "best_profile": "agg=0,mod=8,con=0,cost=200",
+      "all_moderate_welfare": 56,
+      "constrained_poa": 1.0,
+      "count_vectors_checked": 45
+    },
+    {
+      "n": 9,
+      "budget": 225,
+      "best_feasible_welfare": 63,
+      "best_profile": "agg=0,mod=9,con=0,cost=225",
+      "all_moderate_welfare": 63,
+      "constrained_poa": 1.0,
+      "count_vectors_checked": 55
+    },
+    {
+      "n": 10,
+      "budget": 250,
+      "best_feasible_welfare": 70,
+      "best_profile": "agg=0,mod=10,con=0,cost=250",
+      "all_moderate_welfare": 70,
+      "constrained_poa": 1.0,
+      "count_vectors_checked": 66
+    },
+    {
+      "n": 11,
+      "budget": 275,
+      "best_feasible_welfare": 77,
+      "best_profile": "agg=0,mod=11,con=0,cost=275",
+      "all_moderate_welfare": 77,
+      "constrained_poa": 1.0,
+      "count_vectors_checked": 78
+    },
+    {
+      "n": 12,
+      "budget": 300,
+      "best_feasible_welfare": 84,
+      "best_profile": "agg=0,mod=12,con=0,cost=300",
+      "all_moderate_welfare": 84,
+      "constrained_poa": 1.0,
+      "count_vectors_checked": 91
+    }
+  ]
+}
