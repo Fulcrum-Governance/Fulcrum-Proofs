@@ -142,7 +142,7 @@ The `proofs/lean/Proofs/GameTheory/` directory contains a Lean 4 + Mathlib4 form
 |-------|-----------|--------|
 | C-018 | Coordination game admits a Nash equilibrium | Proven-with-sorry (1 Kakutani gap) |
 | C-019 | Proportional allocation is **not** DSIC under current utility | Proven |
-| C-020 | Price of Anarchy bounded at 9/7 | Proven (formal upper bound 9/7; audited simulation realized PoA = 1.0) |
+| C-020 | Constrained Price of Anarchy is 1.0 under tight budget | Proven (formal constrained PoA = 1.0; reference upper bound 9/7) |
 | C-021 | Budget enforcement grounds the game model | Proven |
 
 ### Proof Portfolio Summary

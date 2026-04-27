@@ -89,6 +89,18 @@ def PriceOfAnarchyBounded {n : Nat} (G : NormalFormGame n) (bound : ℝ) : Prop 
     ∀ σ_opt : StrategyProfile G,
       socialWelfare G σ_opt ≤ bound * socialWelfare G σ_eq
 
+/-- Constrained Price of Anarchy bounded by `bound`: the ratio of optimal
+    feasible welfare to worst-case Nash equilibrium welfare is at most `bound`.
+    The feasibility predicate keeps domain-specific constraints, such as a
+    token budget, out of the generic game theory definitions. -/
+def ConstrainedPriceOfAnarchyBounded {n : Nat} (G : NormalFormGame n)
+    (feasible : StrategyProfile G → Prop) (bound : ℝ) : Prop :=
+  ∀ σ_eq : StrategyProfile G,
+    IsNashEquilibrium G σ_eq →
+    ∀ σ_opt : StrategyProfile G,
+      feasible σ_opt →
+      socialWelfare G σ_opt ≤ bound * socialWelfare G σ_eq
+
 /-- Incentive compatibility: truthful reporting is a dominant strategy.
     For mechanism `M`, agent `i` with type `tᵢ` weakly prefers reporting
     truthfully regardless of other agents' reports. -/

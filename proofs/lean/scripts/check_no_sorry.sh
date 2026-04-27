@@ -21,7 +21,10 @@ ALLOWED_OCCURRENCES=(
   "GameTheory/MixedNashExistence.lean:sorry -- Kakutani FPT applied to best-response correspondence"
 )
 
-mapfile -t ALL_MATCHES < <(rg -n "\bsorry\b" -g "*.lean" "$LEAN_PROOFS_DIR" || true)
+ALL_MATCHES=()
+while IFS= read -r line; do
+  ALL_MATCHES+=("$line")
+done < <(rg -n "\bsorry\b" -g "*.lean" "$LEAN_PROOFS_DIR" || true)
 TOTAL_MATCHES=${#ALL_MATCHES[@]}
 EXPECTED_TOTAL=${#ALLOWED_OCCURRENCES[@]}
 

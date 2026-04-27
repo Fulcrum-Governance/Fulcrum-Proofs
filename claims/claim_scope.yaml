@@ -95,7 +95,7 @@ claims:
   - claim_id: C-020
     statement: Constrained Price of Anarchy is 1.0 under tight-budget optimality
     type: hybrid
-    status: tested
+    status: proven
     closure_criteria:
       - lean_constrained_poa_theorems_stated
       - constrained_poa_enumeration_n_2_to_12_passes
@@ -103,11 +103,10 @@ claims:
       - tla_coordination_invariants_hold
       - simulation_convergence_rate_above_90pct
     notes: Constrained PoA = 1.0 is backed by exhaustive count-equivalence enumeration
-      for n=2..12 in `evidence/constrained_poa_results.json`; Lean declarations
-      `constrained_welfare_optimal` and `constrained_poa_exact` are present but still
-      use `sorry`, so formal closure is in progress. The unconstrained reference
-      bound PoA ≤ 9/7 remains fully proven by `fulcrum_poa_bounded` via Nash
-      uniqueness (NashUniqueness.lean).
+      for n=2..12 in `evidence/constrained_poa_results.json`; Lean theorems
+      `constrained_welfare_optimal` and `constrained_poa_exact` are now sorry-free.
+      The unconstrained reference bound PoA ≤ 9/7 remains fully proven by
+      `fulcrum_poa_bounded` via Nash uniqueness (NashUniqueness.lean).
     owner: formal-systems
   - claim_id: C-021
     statement: Budget enforcement grounds the coordination game model
