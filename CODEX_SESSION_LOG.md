@@ -30,3 +30,28 @@
 - Lean reports two expected `sorry` warnings for the new constrained declarations.
 - `python3 evidence/constrained_poa_verification.py > /dev/null` passed.
 - Claim YAML files parse with `yaml.safe_load`.
+
+## 2026-04-27 — D4 Kakutani Closure Pass
+
+### Scope
+
+- Continued on branch `codex/d4-kakutani-closure` in-place, with no new worktrees.
+- Used the Lean proof expert, math rigor, research validation, and paper editorial skills.
+- Reused expert-agent findings for the math-xmum feasibility gate and constrained PoA proof strategy.
+
+### Built
+
+- Added generic `ConstrainedPriceOfAnarchyBounded` in `Definitions.lean`.
+- Closed `constrained_welfare_optimal` and `constrained_poa_exact` sorry-free in `CoordinationEfficiency.lean`.
+- Fixed `proofs/lean/scripts/check_no_sorry.sh` for macOS Bash 3.2 by removing `mapfile`.
+- Promoted C-020 / `THM-POA-CONSTRAINED` metadata to proven with `sorry_count: 0`.
+- Updated proof README and top-level proof README language for constrained PoA closure.
+
+### Blocked
+
+- C-018 mixed Nash remains blocked. The math-xmum v4.29.0-rc4 feasibility gate is under the `<50` error threshold but still fails in `Gametheory/Brouwer.lean`, so the Kakutani/Nash import is not ready to certify.
+
+### Verification
+
+- `lake build Proofs.GameTheory.CoordinationEfficiency` passed from `proofs/lean`.
+- `bash proofs/lean/scripts/check_no_sorry.sh` passed with only the allowlisted mixed-Nash sorry.

@@ -14,14 +14,15 @@ fi
 # count changes, which preserves a zero-new-sorry policy even in files that
 # currently contain a documented placeholder.
 #
-# MixedNashExistence.lean: Kakutani FPT axiomatized; machine-checked proofs
-#   exist (harfe/fixed-point-theorems-lean4, math-xmum/Brouwer) but on
-#   incompatible toolchain (v4.21-22 vs our v4.29). Claim C-018.
-ALLOWED_OCCURRENCES=(
-  "GameTheory/MixedNashExistence.lean:sorry -- Kakutani FPT applied to best-response correspondence"
-)
+# As of d4-kakutani-closure: zero allowlisted sorrys. mixed_nash_exists is
+# closed via math-xmum/Brouwer's ExistsNashEq through a PMF ↔ stdSimplex
+# bridge. Claim C-018 is fully proven.
+ALLOWED_OCCURRENCES=()
 
-mapfile -t ALL_MATCHES < <(rg -n "\bsorry\b" -g "*.lean" "$LEAN_PROOFS_DIR" || true)
+ALL_MATCHES=()
+while IFS= read -r line; do
+  ALL_MATCHES+=("$line")
+done < <(rg -n "\bsorry\b" -g "*.lean" "$LEAN_PROOFS_DIR" || true)
 TOTAL_MATCHES=${#ALL_MATCHES[@]}
 EXPECTED_TOTAL=${#ALLOWED_OCCURRENCES[@]}
 

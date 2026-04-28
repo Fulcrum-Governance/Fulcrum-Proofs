@@ -69,26 +69,102 @@ theorem welfare_upper_bound (params : BudgetParams) :
           rw [sum_const_real]
 
 /-- Under tight budget B=25n, no budget-feasible compliant profile achieves
-    welfare exceeding the all-moderate profile.
-
-    Proof status: statement and computational evidence are in place; the
-    sorry marks the pending Lean closure for the count-based optimization. -/
+    welfare exceeding the all-moderate profile. -/
 theorem constrained_welfare_optimal (params : BudgetParams)
     (hBudget : params.totalBudget = 25 * params.agentCount)
     (hSmall : params.agentCount ≤ 12) :
     ∀ σ : StrategyProfile (fulcrumCoordinationGame params),
     withinBudget params (fun j => σ j) →
     socialWelfare (fulcrumCoordinationGame params) σ ≤ 7 * params.agentCount := by
-  sorry
+  intro σ hFeasible
+  unfold socialWelfare fulcrumCoordinationGame
+  have hNoOverflow :
+      ¬ ((totalTokens params.agentCount (fun j => σ j) : ℝ) > (params.totalBudget : ℝ)) := by
+    exact_mod_cast not_lt.mpr hFeasible
+  have hCostBoundNat :
+      totalTokens params.agentCount (fun j => σ j) ≤ 25 * params.agentCount := by
+    rw [← hBudget]
+    exact hFeasible
+  calc
+    ∑ i : Fin params.agentCount, fulcrumPayoff params (fun j => σ j) i
+      ≤ ∑ i : Fin params.agentCount,
+          (7 + (4 / 15 : ℝ) * ((actionTokenCost (σ i) : ℝ) - 25)) := by
+          refine Finset.sum_le_sum ?_
+          intro i hi
+          have hAction : ∀ a : AgentAction,
+              (actionQuality a : ℝ) -
+                  (if actionViolates a then (violationPenalty : ℝ) else 0) ≤
+                7 + (4 / 15 : ℝ) * ((actionTokenCost a : ℝ) - 25) := by
+            intro a
+            cases a
+            · have h : (3 : ℝ) ≤ 7 + (4 / 15 : ℝ) * (10 - 25) := by
+                norm_num
+              simpa [actionQuality, actionViolates, actionTokenCost] using h
+            · have h : (7 : ℝ) ≤ 7 + (4 / 15 : ℝ) * (25 - 25) := by
+                norm_num
+                exact le_rfl
+              simpa [actionQuality, actionViolates, actionTokenCost] using h
+            · have h : (9 : ℝ) ≤ 7 + (4 / 15 : ℝ) * (50 - 25) := by
+                norm_num
+              simpa [actionQuality, actionViolates, actionTokenCost] using h
+            · have h : (8 : ℝ) ≤ 7 + (4 / 15 : ℝ) * (40 - 25) + 20 := by
+                norm_num
+                have h8 : (8 : ℝ) ≤ 20 := by norm_num
+                have hAdd : (20 : ℝ) ≤ 7 + 4 + 20 := by
+                  have h0 : (0 : ℝ) ≤ 7 + 4 := by positivity
+                  have hAddRaw : (20 : ℝ) + 0 ≤ 20 + (7 + 4) :=
+                    add_le_add_right h0 20
+                  simpa [add_assoc, add_left_comm, add_comm] using hAddRaw
+                exact le_trans h8 hAdd
+              simpa [actionQuality, actionViolates, actionTokenCost, violationPenalty,
+                sub_eq_add_neg, add_assoc, add_left_comm, add_comm] using h
+          simp [fulcrumPayoff, hNoOverflow]
+          have := hAction (σ i)
+          nlinarith
+    _ = 7 * params.agentCount +
+          (4 / 15 : ℝ) *
+            ((∑ i : Fin params.agentCount, (actionTokenCost (σ i) : ℝ)) -
+              25 * params.agentCount) := by
+          rw [Finset.sum_add_distrib]
+          rw [sum_const_real]
+          rw [← Finset.mul_sum]
+          congr 1
+          rw [Finset.sum_sub_distrib]
+          rw [sum_const_real]
+    _ ≤ 7 * params.agentCount := by
+          have hTotal :
+              (∑ i : Fin params.agentCount, (actionTokenCost (σ i) : ℝ)) ≤
+                25 * params.agentCount := by
+            unfold totalTokens at hCostBoundNat
+            exact_mod_cast hCostBoundNat
+          nlinarith
 
 /-- Under tight budget, the Price of Anarchy is 1 against the constrained
-    welfare optimum. The Lean closure is pending; the computational evidence
-    enumerates the bounded regime used by the manuscript. -/
+    welfare optimum among budget-feasible profiles. -/
 theorem constrained_poa_exact (params : BudgetParams)
     (hBudget : params.totalBudget = 25 * params.agentCount)
     (hSmall : params.agentCount ≤ 12) :
-    PriceOfAnarchyBounded (fulcrumCoordinationGame params) 1 := by
-  sorry
+    ConstrainedPriceOfAnarchyBounded
+      (fulcrumCoordinationGame params)
+      (fun σ => withinBudget params (fun j => σ j))
+      1 := by
+  unfold ConstrainedPriceOfAnarchyBounded
+  intro σ_eq hNash σ_opt hOptFeasible
+  have hUpper := constrained_welfare_optimal params hBudget hSmall σ_opt hOptFeasible
+  have hEqAllModerate := nash_eq_allModerate params hBudget hSmall σ_eq hNash
+  have hEqProfile : (fun j => σ_eq j) = fun _ => AgentAction.moderate := funext hEqAllModerate
+  have hEqWelfare :
+      socialWelfare (fulcrumCoordinationGame params) σ_eq = 7 * params.agentCount := by
+    unfold socialWelfare fulcrumCoordinationGame
+    simp_rw [show ∀ j : Fin params.agentCount,
+      fulcrumPayoff params (fun k => σ_eq k) j =
+        fulcrumPayoff params (fun _ => AgentAction.moderate) j
+      from fun j => by rw [hEqProfile]]
+    have := allModerate_welfare params hBudget
+    unfold socialWelfare fulcrumCoordinationGame at this
+    simpa [allModerate] using this
+  rw [hEqWelfare]
+  nlinarith
 
 /-- Price of Anarchy bound: for the Fulcrum game under tight budget,
     PoA ≤ 9/7. The worst equilibrium (all-moderate) achieves welfare 7n,

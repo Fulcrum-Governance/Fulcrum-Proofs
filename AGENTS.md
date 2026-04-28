@@ -41,11 +41,16 @@ make proof-gate model-gate bench-gate fault-gate evidence-gate audit-gate
 
 ## Sorry Status
 
-1 remaining sorry hole (down from 16):
-- `MixedNashExistence.mixed_nash_exists` — Kakutani FPT unavailable in Mathlib4
+0 remaining sorry holes (down from 16). The previously axiomatized
+`kakutani_fixed_point_theorem` has been removed.
 
-All other theorems are sorry-free, including:
+All theorems are sorry-free, including:
+- `mixed_nash_exists` (MixedNashExistence.lean) — closed via math-xmum/Brouwer's
+  `ExistsNashEq` (Brouwer FPT on product simplices via Scarf's Lemma) through a
+  PMF ↔ stdSimplex bridge. External dependency:
+  `../math-xmum-brouwer-fork@fulcrum-v4.29-port`.
 - `fulcrum_poa_bounded` (PoA ≤ 9/7, NashUniqueness.lean)
+- `constrained_poa_exact` (CoordinationEfficiency.lean)
 - `trust_guaranteed_termination` + 9 companion theorems (TrustTermination.lean)
 - 4 RLM interface contracts + 1 axiom (RLMContracts.lean)
 
@@ -75,3 +80,37 @@ Three files govern claim metadata:
 - Conventional commits: `type(scope): message`
 - Never force-push main
 - Never commit secrets
+
+---
+
+## Lean 4 AI Tooling
+
+### lean-lsp-mcp (MCP Server)
+
+Provides Language Server Protocol access for LLM agents. Enables real-time diagnostics, goal state inspection, hover docs, completions, and external theorem search (LeanSearch, Loogle, Lean Hammer).
+
+**Claude Code:** Already configured as user-scoped MCP server.
+```bash
+claude mcp add --transport stdio --scope user lean-lsp -- uvx lean-lsp-mcp
+```
+
+**Codex:** Set `LEAN_PROJECT_PATH` before running:
+```bash
+export LEAN_PROJECT_PATH=/Users/td/ConceptDev/Projects/Fulcrum-Proofs/proofs/lean
+```
+
+### lean4-skills (Workflow Pack)
+
+Structured prove/review/golf loop for AI coding agents.
+
+**Location:** `/Users/td/.codex/skills/lean4-skills/plugins/lean4/skills/lean4/SKILL.md`
+
+**Environment:**
+- `LEAN4_PLUGIN_ROOT=/Users/td/.codex/skills/lean4-skills/plugins/lean4`
+- `LEAN4_SCRIPTS=$LEAN4_PLUGIN_ROOT/lib/scripts`
+- `LEAN4_REFS=$LEAN4_PLUGIN_ROOT/skills/lean4/references`
+
+### Usage Notes
+- lean-lsp-mcp requires `lake build` to have been run at least once (warnings like sorry are OK)
+- External search tools (LeanSearch, Loogle) are rate-limited to 3 requests per 30 seconds
+- Set `LEAN_LOG_LEVEL=WARNING` to reduce noise in agent sessions

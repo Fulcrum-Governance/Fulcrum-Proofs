@@ -4,8 +4,10 @@ open Lake DSL
 package "fulcrum_proofs" where
   moreLeanArgs := #[]
 
+require «Gametheory» from ".." / ".." / ".." / "math-xmum-brouwer-fork"
+
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4"
+  "https://github.com/leanprover-community/mathlib4" @ "06e947358d88e36af006f915f79a04a10fd43cc4"
 
 lean_lib "Proofs" where
   roots := #[`Proofs]
