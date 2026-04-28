@@ -283,7 +283,7 @@ closures:
   - claim_id: C-018
     statement: Fulcrum coordination game admits a Nash equilibrium under budget constraints
     type: formal
-    public_status: proven-with-sorry
+    public_status: proven
     theorem_ids:
       - THM-NASH-PURE-EXISTENCE
       - THM-NASH-MIXED-EXISTENCE
@@ -311,11 +311,19 @@ closures:
         type: lean_proof
       - path: benchmarks/raw/nash-convergence.json
         type: benchmark_report
+    external_dependencies:
+      - name: math-xmum-brouwer-fork
+        ref: fulcrum-v4.29-port
+        purpose: Brouwer fixed-point on product simplices (Scarf's Lemma); supplies
+          `ExistsNashEq` consumed by `mixed_nash_exists` through PMF ↔ stdSimplex bridge
     notes: >
-      Pure-strategy Nash (all-moderate) is sorry-free. One placeholder
-      remains in THM-NASH-MIXED-EXISTENCE (`mixed_nash_exists`) due to
-      external Kakutani fixed-point formalization incompatibility. Logged
-      as proven-with-sorry; surfaced in no-sorry-check.log.
+      Pure-strategy Nash (all-moderate) and mixed-strategy Nash are both
+      sorry-free. THM-NASH-MIXED-EXISTENCE (`mixed_nash_exists`) is closed
+      via math-xmum/Brouwer's `ExistsNashEq` (Brouwer FPT on product simplices
+      via Scarf's Lemma) through a PMF ↔ stdSimplex bridge in
+      MixedNashExistence.lean. The previous `kakutani_fixed_point_theorem`
+      axiom has been removed. No allowlisted sorry occurrences remain in
+      no-sorry-check.log.
 
   - claim_id: C-019
     statement: Under allocationUtility = -|allocation - trueNeed|, proportional allocation is not dominant-strategy incentive-compatible

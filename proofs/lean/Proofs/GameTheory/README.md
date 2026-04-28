@@ -35,16 +35,13 @@ Exist  Nash    Uniqueness  Bridge
 | THM-POA-CONSTRAINED | `constrained_poa_exact` | CoordinationEfficiency.lean |
 | THM-BUDGET-GAME-BRIDGE | `budget_game_bridge` | BudgetGameBridge.lean |
 
-## Known Gaps (1 sorry)
+## Known Gaps (0 sorry)
 
-### `mixed_nash_exists` (MixedNashExistence.lean)
+### ~~`mixed_nash_exists` (MixedNashExistence.lean)~~ — RESOLVED
 
-The final Kakutani-to-mixed-Nash step is axiomatized. Both external Lean 4 repos with Kakutani FPT proofs (harfe/fixed-point-theorems-lean4, math-xmum/Brouwer) are pinned to Lean 4.21-4.22 and are incompatible with our 4.29 toolchain. Mathlib4 does not include Kakutani.
+Mixed Nash existence is now closed via math-xmum/Brouwer's `ExistsNashEq` (Brouwer fixed-point on product simplices via Scarf's Lemma) through a PMF ↔ stdSimplex bridge.
 
-Resolution paths:
-- Wait for upstream repos to upgrade toolchains
-- Wait for Mathlib4 to add Brouwer/Kakutani
-- Port harfe's Sperner-based proof to v4.29 manually
+The Fulcrum-Proofs lakefile depends on a local v4.29-ported fork at `../math-xmum-brouwer-fork` (branch `fulcrum-v4.29-port`). The bridge constructions `pmfToSimplex` / `simplexToPMF` and the round-trip lemma `pmfToSimplex_simplexToPMF` translate between our PMF-based `MixedStrategyProfile` and math-xmum's `stdSimplex`-based `FinGame.mixedS`. The `kakutani_fixed_point_theorem` axiom has been removed.
 
 ### ~~`fulcrum_poa_bounded` (CoordinationEfficiency.lean)~~ — RESOLVED
 

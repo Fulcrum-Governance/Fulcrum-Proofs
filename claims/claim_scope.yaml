@@ -70,15 +70,17 @@ claims:
   - claim_id: C-018
     statement: Fulcrum coordination game admits a Nash equilibrium under budget constraints
     type: formal
-    status: proven-with-sorry
+    status: proven
     closure_criteria:
       - lean_game_definitions_compiled
       - pure_strategy_nash_existence_proven
-      - mixed_strategy_nash_existence_proven_via_kakutani
+      - mixed_strategy_nash_existence_proven_via_brouwer_product_simplex
       - simulation_confirms_equilibrium
-    notes: Pure-strategy Nash existence is now sorry-free. One remaining placeholder
-      remains in mixed-strategy existence (`mixed_nash_exists`) due the external Kakutani
-      fixed-point dependency gap.
+    notes: Pure-strategy Nash and mixed-strategy Nash are both sorry-free. Mixed
+      Nash existence (`mixed_nash_exists`) is closed via math-xmum/Brouwer's
+      `ExistsNashEq` (Brouwer fixed-point on product simplices via Scarf's Lemma)
+      through a PMF ↔ stdSimplex bridge. The previous `kakutani_fixed_point_theorem`
+      axiom has been removed.
     owner: formal-systems
   - claim_id: C-019
     statement: Under allocationUtility = -|allocation - trueNeed|, proportional allocation is not dominant-strategy incentive-compatible

@@ -41,12 +41,22 @@ theorems:
       - A-GAME-004: finite strategy sets (Fintype)
       - A-GAME-005: real-valued continuous payoffs
     lean_module: Proofs/GameTheory/MixedNashExistence.lean
-    dependencies: [THM-NASH-PURE-EXISTENCE]
-    proof_status: proven-with-sorry
-    sorry_count: 1
-    notes: Expected payoff is fully defined. The remaining placeholder is the final
-      Kakutani-to-mixed-Nash existence step, still blocked by toolchain incompatibility
-      with external fixed-point formalizations.
+    dependencies: [THM-NASH-PURE-EXISTENCE, EXT-EXISTS-NASH-EQ]
+    proof_status: proven
+    sorry_count: 0
+    external_refs:
+      - id: EXT-EXISTS-NASH-EQ
+        source: math-xmum-brouwer-fork
+        ref: fulcrum-v4.29-port
+        path: Gametheory/Nash.lean
+        symbol: ExistsNashEq
+        notes: Brouwer fixed-point on product simplices (via Scarf's Lemma) yields
+          mixed Nash existence for arbitrary FinGame. Bridged to our PMF-based
+          MixedStrategyProfile through `pmfToSimplex`/`simplexToPMF`.
+    notes: Mixed Nash existence is now sorry-free. Closed via math-xmum/Brouwer's
+      `ExistsNashEq` applied through a PMF ↔ stdSimplex bridge
+      (`expectedPayoff_eq_mixed_g`). The prior `kakutani_fixed_point_theorem` axiom
+      has been removed.
   - theorem_id: THM-NONCOMPLIANT-DOMINATED
     assumptions: [A-GAME-003]
     lean_module: Proofs/GameTheory/NashExistence.lean
