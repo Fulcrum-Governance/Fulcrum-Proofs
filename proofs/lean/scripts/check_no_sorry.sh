@@ -26,15 +26,17 @@ done < <(rg -n "\bsorry\b" -g "*.lean" "$LEAN_PROOFS_DIR" || true)
 TOTAL_MATCHES=${#ALL_MATCHES[@]}
 EXPECTED_TOTAL=${#ALLOWED_OCCURRENCES[@]}
 
-for entry in "${ALLOWED_OCCURRENCES[@]}"; do
-  IFS=":" read -r file pattern <<< "$entry"
-  COUNT=$({ rg -F -o "$pattern" "$LEAN_PROOFS_DIR/$file" 2>/dev/null || true; } | wc -l | tr -d ' ')
-  if [[ "$COUNT" -ne 1 ]]; then
-    echo "proof closure check failed: allowlisted sorry occurrence changed in $file" >&2
-    printf '%s\n' "${ALL_MATCHES[@]}"
-    exit 1
-  fi
-done
+if [[ "$EXPECTED_TOTAL" -gt 0 ]]; then
+  for entry in "${ALLOWED_OCCURRENCES[@]}"; do
+    IFS=":" read -r file pattern <<< "$entry"
+    COUNT=$({ rg -F -o "$pattern" "$LEAN_PROOFS_DIR/$file" 2>/dev/null || true; } | wc -l | tr -d ' ')
+    if [[ "$COUNT" -ne 1 ]]; then
+      echo "proof closure check failed: allowlisted sorry occurrence changed in $file" >&2
+      printf '%s\n' "${ALL_MATCHES[@]}"
+      exit 1
+    fi
+  done
+fi
 
 if [[ "$TOTAL_MATCHES" -ne "$EXPECTED_TOTAL" ]]; then
   echo "proof closure check failed: found unauthorized 'sorry' in Lean proofs" >&2
@@ -43,9 +45,13 @@ if [[ "$TOTAL_MATCHES" -ne "$EXPECTED_TOTAL" ]]; then
 fi
 
 echo "=== Allowlisted sorry holes (tracked in claim_ledger.yaml) ==="
-for entry in "${ALLOWED_OCCURRENCES[@]}"; do
-  IFS=":" read -r file _ <<< "$entry"
-  echo "  $file: 1 exact allowlisted sorry"
-done
+if [[ "$EXPECTED_TOTAL" -gt 0 ]]; then
+  for entry in "${ALLOWED_OCCURRENCES[@]}"; do
+    IFS=":" read -r file _ <<< "$entry"
+    echo "  $file: 1 exact allowlisted sorry"
+  done
+else
+  echo "  none"
+fi
 
 echo "proof closure check passed: no unauthorized sorry found"
