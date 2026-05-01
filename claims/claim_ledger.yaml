@@ -1,5 +1,5 @@
 version: 2
-updated_at: 2026-04-02
+updated_at: 2026-05-01
 entries:
 - claim_id: C-004
   type: empirical
@@ -72,17 +72,21 @@ entries:
     runs.
 - claim_id: C-018
   type: formal
-  status: proven-with-sorry
+  status: proven
   evidence_refs:
   - proofs/lean/Proofs/GameTheory/Definitions.lean
   - proofs/lean/Proofs/GameTheory/FulcrumGame.lean
   - proofs/lean/Proofs/GameTheory/NashExistence.lean
   - proofs/lean/Proofs/GameTheory/MixedNashExistence.lean
+  - proofs/lean/Proofs/GameTheory/NashUniqueness.lean
+  - proofs/lean/Proofs/GameTheory/CoordinationEfficiency.lean
   - benchmarks/raw/nash-convergence.json
-  notes: Game theory framework compiles with Mathlib4 on Lean 4.29. Pure-strategy Nash
-    (all-moderate) is now sorry-free. One remaining placeholder remains in mixed-strategy
-    existence (`mixed_nash_exists`) due the Kakutani dependency gap. Simulation confirms
-    100% convergence.
+  notes: |
+    Pure-strategy Nash and mixed-strategy Nash are both sorry-free. Mixed Nash existence
+    (`mixed_nash_exists`) closed via math-xmum/Brouwer's `ExistsNashEq` (Brouwer
+    fixed-point on product simplices via Scarf's Lemma) through a PMF↔stdSimplex bridge.
+    The previous `kakutani_fixed_point_theorem` axiom has been removed. Simulation
+    confirms 100% convergence.
 - claim_id: C-019
   type: formal
   status: proven

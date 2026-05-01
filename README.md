@@ -131,7 +131,7 @@ The `proofs/lean/Proofs/GameTheory/` directory contains a Lean 4 + Mathlib4 form
 | `FulcrumGame.lean` | Fulcrum-specific game: 4 actions, payoff function, budget params |
 | `SumUpdateLemmas.lean` | `Finset.sum` + `Function.update` decomposition helpers |
 | `NashExistence.lean` | All-moderate is Nash; noncompliant is strictly dominated |
-| `MixedNashExistence.lean` | Mixed-strategy Nash via expected payoff and Kakutani axiom |
+| `MixedNashExistence.lean` | Mixed-strategy Nash via PMF↔stdSimplex bridge to math-xmum/Brouwer `ExistsNashEq` |
 | `IncentiveCompatibility.lean` | Proportional allocation is **not** DSIC (counterexample) |
 | `CoordinationEfficiency.lean` | Social welfare bounds and Price of Anarchy |
 | `BudgetGameBridge.lean` | Connects `budget_safety_guarantee` to game model |
@@ -140,7 +140,7 @@ The `proofs/lean/Proofs/GameTheory/` directory contains a Lean 4 + Mathlib4 form
 
 | Claim | Statement | Status |
 |-------|-----------|--------|
-| C-018 | Coordination game admits a Nash equilibrium | Proven-with-sorry (1 Kakutani gap) |
+| C-018 | Coordination game admits a Nash equilibrium | Proven (sorry-free; mixed Nash via Brouwer-via-Scarf, Kakutani axiom removed) |
 | C-019 | Proportional allocation is **not** DSIC under current utility | Proven |
 | C-020 | Constrained Price of Anarchy is 1.0 under tight budget | Proven (formal constrained PoA = 1.0; reference upper bound 9/7) |
 | C-021 | Budget enforcement grounds the game model | Proven |
@@ -153,13 +153,11 @@ The `proofs/lean/Proofs/GameTheory/` directory contains a Lean 4 + Mathlib4 form
 | `TemporalConservationSpec.lean` | 3 (temporal conservation, revocation) | Yes |
 | `TrustTermination.lean` | 10 (trust model, circuit breaker) | Yes |
 | `RLMContracts.lean` | 8 (4 proven + 1 axiom + helpers) | Yes (1 axiom) |
-| `GameTheory/*.lean` | 10+ (Nash, PoA, incentives, bridge) | 1 sorry (Kakutani) |
+| `GameTheory/*.lean` | 10+ (Nash, PoA, incentives, bridge) | Yes |
 
-### Remaining Sorry Holes (1 of 16 original)
+### Remaining Sorry Holes (0 of 16 original)
 
-| Location | Reason |
-|----------|--------|
-| `MixedNashExistence.mixed_nash_exists` | Kakutani FPT not available in Mathlib4; external repos (harfe, math-xmum) incompatible with Lean 4.29 |
+All originally-tracked sorry holes are closed. `MixedNashExistence.mixed_nash_exists` was closed via math-xmum/Brouwer's `ExistsNashEq` (Brouwer fixed-point on product simplices via Scarf's Lemma) through a PMF↔stdSimplex bridge; the previous `kakutani_fixed_point_theorem` axiom has been removed.
 
 `CoordinationEfficiency.fulcrum_poa_bounded` was closed via `NashUniqueness.lean` (PR #5) — all equilibria under tight budget are all-moderate, giving PoA ≤ 9/7.
 
