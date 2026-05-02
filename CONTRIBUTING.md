@@ -18,11 +18,7 @@ Check for remaining `sorry` placeholders:
 rg '\bsorry\b' proofs/lean/Proofs/ --glob '*.lean'
 ```
 
-As of 2026-04-09 there is 1 remaining sorry hole (down from 16):
-
-| Location | Reason |
-|----------|--------|
-| `MixedNashExistence.mixed_nash_exists` | Kakutani FPT unavailable in Mathlib4 for Lean 4.29 |
+As of 2026-04-28 there are **0 remaining sorry holes** (all 16 originally tracked sorrys closed). `MixedNashExistence.mixed_nash_exists` was closed via math-xmum/Brouwer's `ExistsNashEq` (Brouwer fixed-point on product simplices via Scarf's Lemma) through a PMF↔stdSimplex bridge; the previous `kakutani_fixed_point_theorem` axiom has been removed.
 
 ## Running Other Gates
 
