@@ -14,7 +14,7 @@ The canonical product bible for the Fulcrum project (spanning all three repos) l
 - TLA+ models (`models/tla/`) — distributed safety specifications
 - Benchmark harness (`benchmarks/`) — reproducible performance evidence
 - Fault injection (`fault/`) — failure scenario testing
-- Compliance mappings (`compliance/`) — EU AI Act, SOX, SOC 2
+- Compliance mappings (`compliance/`) — EU AI Act, SOX, and SOC 2 Type II control families (CC6, CC7, CC8). Fulcrum is not independently audited against SOC 2; the `compliance/` directory contains mapping evidence only.
 
 This repo contains **no product code**. It is infrastructure for claims, investor credibility, and regulatory evidence.
 
