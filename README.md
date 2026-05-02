@@ -50,7 +50,17 @@ This repository is contract-coupled to the `Fulcrum` repository:
 
 ## Repository Layout
 
-- `claims/`: claim scope, theorem inventory, claim ledger
+- `claims/`: canonical claim sources for this repo. Internal authority order:
+  - `claims/theorem_inventory.yaml` (v2, last updated 2026-04-09) — **theorem-level
+    canonical source**. Reflects current proof state (`sorry_count`, `status`,
+    `theorem_id`) and takes precedence over `claim_ledger.yaml` for any
+    theorem-status question. Closes contradiction-ledger F-042.
+  - `claims/claim_closure.yaml` — claim-level closure manifest, the
+    machine-readable proof-to-runtime mapping consumed by CI gates.
+  - `claims/claim_scope.yaml` — claim definitions / scope.
+  - `claims/claim_ledger.yaml` — historical ledger; superseded by
+    `theorem_inventory.yaml` for theorem-level status.
+  - `claims/waivers.yaml` — open waivers (with expiry dates).
 - `contracts/`: imported contracts + sync tooling
 - `proofs/lean/`: machine-checkable proofs and replay scripts
 - `models/tla/`: distributed fault semantics and model checking
@@ -170,6 +180,26 @@ For the audited simulation instance (`n=5`, `budget=125`), best-response dynamic
 See `proofs/lean/Proofs/GameTheory/README.md` for a detailed module guide and assumption register.
 
 ## Local Quick Start
+
+> **Prerequisite — sibling Lean dependency.** `proofs/lean/lakefile.lean`
+> declares `require «Gametheory» from "../../../math-xmum-brouwer-fork"`,
+> a relative-path require for a forked Mathlib game-theory package
+> (Brouwer / Kakutani / `ExistsNashEq` through the PMF ↔ stdSimplex
+> bridge). Before running `lake build` or `replay.sh`, clone that fork
+> as a sibling directory of this repo so the path resolves:
+>
+> ```
+> ~/your-projects-root/
+>   ├── Fulcrum-Proofs/                  # this repo
+>   └── math-xmum-brouwer-fork/          # required sibling
+> ```
+>
+> Without the sibling clone the Lean build cannot resolve the
+> Gametheory dependency. Source-level checks (e.g.
+> `proofs/lean/scripts/check_no_sorry.sh`) do not require the fork —
+> they grep the in-repo `.lean` files only. This is contradiction-ledger
+> entry F-020; vendoring or git-pinning the fork remains the cleaner
+> long-term fix and is tracked for a follow-up sprint.
 
 ```bash
 # 1) Sync contracts from Fulcrum repo

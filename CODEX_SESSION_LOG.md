@@ -50,6 +50,7 @@
 ### Blocked
 
 - C-018 mixed Nash remains blocked. The math-xmum v4.29.0-rc4 feasibility gate is under the `<50` error threshold but still fails in `Gametheory/Brouwer.lean`, so the Kakutani/Nash import is not ready to certify.
+  - **RESOLVED 2026-04-27 — see `claims/claim_closure.yaml` C-018 (status: proven), commit `4f8e74c`.** Same-day timeline: this session entry was written before commit `4f8e74c` (Apr 27 17:02 PDT) closed C-018 sorry-free via the math-xmum/Brouwer `ExistsNashEq` import path through the PMF ↔ stdSimplex bridge. The Kakutani axiom was removed; `THM-NASH-MIXED-EXISTENCE` `sorry_count` is now 0. Mirrors the C-005 waiver-resolution pattern. Closes contradiction-ledger F-034.
 
 ### Verification
 

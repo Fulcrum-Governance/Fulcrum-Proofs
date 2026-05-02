@@ -11,10 +11,15 @@
   - noncompliant deviation: penalty 20 overwhelms quality gain 1 → net loss ≥ 19
 
   NOTE: Some computational sub-goals (Finset.sum changes under Function.update
-  over abstract Fin n) previously used placeholders. The mathematical argument is complete;
-  the tactic engineering for abstract-n Finset.sum manipulation is pending.
+  over abstract Fin n) previously used placeholders. The mathematical argument is complete,
+  and the abstract-n Finset.sum tactic engineering is now closed via
+  Proofs.GameTheory.SumUpdateLemmas — there are no remaining placeholders for
+  this proof path. (See `proofs/lean/scripts/check_no_sorry.sh` for the
+  repo-wide closure gate.)
   The mixed-strategy theorem (MixedNashExistence) provides a complementary
-  proof path via Kakutani/Brouwer that covers all n without restriction.
+  proof path via Brouwer on product simplices (math-xmum / `ExistsNashEq`,
+  PMF ↔ stdSimplex bridge) that covers all n without restriction.
+  Closes contradiction-ledger F-054.
 -/
 
 import Proofs.GameTheory.FulcrumGame
