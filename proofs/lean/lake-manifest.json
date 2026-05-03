@@ -16,7 +16,7 @@
    "name": "Gametheory",
    "manifestFile": "lake-manifest.json",
    "inherited": false,
-   "dir": "../../../math-xmum-brouwer-fork",
+   "dir": "vendor/Gametheory",
    "configFile": "lakefile.lean"},
   {"url": "https://github.com/leanprover-community/plausible",
    "type": "git",

@@ -9,6 +9,8 @@
 proofs/lean/.lake/
 proofs/lean/build/
 proofs/lean/Proofs/Generated/
+proofs/lean/vendor/**/.lake/
+proofs/lean/vendor/**/build/
 
 # TLA+ state dumps
 models/tla/specs/states/

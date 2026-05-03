@@ -181,25 +181,11 @@ See `proofs/lean/Proofs/GameTheory/README.md` for a detailed module guide and as
 
 ## Local Quick Start
 
-> **Prerequisite — sibling Lean dependency.** `proofs/lean/lakefile.lean`
-> declares `require «Gametheory» from "../../../math-xmum-brouwer-fork"`,
-> a relative-path require for a forked Mathlib game-theory package
-> (Brouwer / Kakutani / `ExistsNashEq` through the PMF ↔ stdSimplex
-> bridge). Before running `lake build` or `replay.sh`, clone that fork
-> as a sibling directory of this repo so the path resolves:
+> **Vendored Gametheory dependency** (as of 2026-05-03). The forked Mathlib game-theory package (Brouwer / Kakutani / `ExistsNashEq` through the PMF ↔ stdSimplex bridge) is now vendored at `proofs/lean/vendor/Gametheory/` — no sibling clone required. Lake resolves the dependency from the in-repo vendor path directly.
 >
-> ```
-> ~/your-projects-root/
->   ├── Fulcrum-Proofs/                  # this repo
->   └── math-xmum-brouwer-fork/          # required sibling
-> ```
+> Provenance: `proofs/lean/vendor/Gametheory/UPSTREAM.md` documents the upstream URL (`math-xmum/Brouwer`), the ported-from SHA (`1355a1c`), MIT license preservation, and the manual sync procedure if upstream advances.
 >
-> Without the sibling clone the Lean build cannot resolve the
-> Gametheory dependency. Source-level checks (e.g.
-> `proofs/lean/scripts/check_no_sorry.sh`) do not require the fork —
-> they grep the in-repo `.lean` files only. This is contradiction-ledger
-> entry F-020; vendoring or git-pinning the fork remains the cleaner
-> long-term fix and is tracked for a follow-up sprint.
+> This closes contradiction-ledger entry F-020 and `Fulcrum-Governance/Fulcrum-Proofs#16`. The plan-authorized admin-bypass precedent on `proof-gate` is now bounded to historical use (4 PRs total: Wave 2 #13, Wave 3 #14/#15/#17). New Proofs PRs from this point forward should pass `proof-gate` naturally.
 
 ```bash
 # 1) Sync contracts from Fulcrum repo
