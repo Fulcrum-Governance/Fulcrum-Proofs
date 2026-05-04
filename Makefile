@@ -15,7 +15,7 @@ BENCH_USE_EXISTING ?= 0
 FAULT_USE_EXISTING ?= 0
 
 sync-contracts:
-	./contracts/sync/sync_contracts.sh --source /Users/td/ConceptDev/Projects/Fulcrum
+	./contracts/sync/sync_contracts.sh
 
 contracts-check:
 	$(PYTHON) contracts/sync/check_version_manifest.py

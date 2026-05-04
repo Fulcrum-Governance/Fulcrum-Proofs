@@ -188,8 +188,10 @@ See `proofs/lean/Proofs/GameTheory/README.md` for a detailed module guide and as
 > This closes contradiction-ledger entry F-020 and `Fulcrum-Governance/Fulcrum-Proofs#16`. The plan-authorized admin-bypass precedent on `proof-gate` is now bounded to historical use (4 PRs total: Wave 2 #13, Wave 3 #14/#15/#17). New Proofs PRs from this point forward should pass `proof-gate` naturally.
 
 ```bash
-# 1) Sync contracts from Fulcrum repo
-./contracts/sync/sync_contracts.sh --source /Users/td/ConceptDev/Projects/Fulcrum
+# 1) Sync contracts from the sibling Fulcrum checkout
+./contracts/sync/sync_contracts.sh
+# Or override the source checkout explicitly:
+# ./contracts/sync/sync_contracts.sh --source <path-to-fulcrum-io>
 
 # 2) Run formal proof replay
 ./proofs/lean/scripts/replay.sh

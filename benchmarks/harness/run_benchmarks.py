@@ -43,6 +43,14 @@ def run(cmd: list[str], cwd: Path | None = None) -> subprocess.CompletedProcess[
     return subprocess.run(cmd, cwd=cwd, check=True, text=True, capture_output=True)
 
 
+def resolve_source_repo(value: str | None) -> Path:
+    raw = os.environ.get("FULCRUM_SOURCE_REPO", value or "../Fulcrum")
+    candidate = Path(raw).expanduser()
+    if candidate.is_absolute():
+        return candidate
+    return (ROOT / candidate).resolve()
+
+
 def load_credentials(creds_file: Path) -> dict[str, str]:
     out: dict[str, str] = {}
     if not creds_file.exists():
@@ -329,7 +337,12 @@ def main() -> None:
     commit = args.commit if args.commit else manifest.get("commit", "unknown")
     env = args.env if args.env else manifest.get("env", "local")
     run_prefix = manifest.get("run_id_prefix", "bench")
-    source_repo = Path(manifest.get("source_repo", "/Users/td/ConceptDev/Projects/Fulcrum"))
+    source_repo = resolve_source_repo(manifest.get("source_repo"))
+    if not source_repo.exists():
+        raise SystemExit(
+            f"source repo not found: {source_repo} "
+            "(set FULCRUM_SOURCE_REPO or update manifest source_repo)"
+        )
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
 

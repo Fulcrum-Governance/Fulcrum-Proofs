@@ -4,8 +4,8 @@
 Show that benchmark and fault artifacts are persisted as immutable raw evidence with source commit linkage.
 
 ## Evidence
-- Benchmark raw artifacts: `/Users/td/ConceptDev/Projects/Fulcrum-Proofs/benchmarks/raw/`
-- Fault raw artifacts: `/Users/td/ConceptDev/Projects/Fulcrum-Proofs/fault/raw/`
+- Benchmark raw artifacts: `benchmarks/raw/`
+- Fault raw artifacts: `fault/raw/`
 - Each benchmark run includes:
   - `fulcrum_commit`
   - `contracts_snapshot_sha`

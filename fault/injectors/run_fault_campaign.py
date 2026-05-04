@@ -2,6 +2,7 @@
 import argparse
 import hashlib
 import json
+import os
 import subprocess
 import tempfile
 import time
@@ -14,13 +15,23 @@ import yaml
 
 
 ROOT = Path(__file__).resolve().parents[2]
-SOURCE_REPO = Path("/Users/td/ConceptDev/Projects/Fulcrum")
 CREDS_FILE = Path("/tmp/fulcrum-load-test-credentials.sh")
 HOST = "localhost:50051"
 
 
 def run(cmd: list[str], cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
     return subprocess.run(cmd, cwd=cwd, check=True, text=True, capture_output=True)
+
+
+def resolve_source_repo() -> Path:
+    raw = os.environ.get("FULCRUM_SOURCE_REPO", "../Fulcrum")
+    candidate = Path(raw).expanduser()
+    if candidate.is_absolute():
+        return candidate
+    return (ROOT / candidate).resolve()
+
+
+SOURCE_REPO = resolve_source_repo()
 
 
 def load_credentials(creds_file: Path) -> dict[str, str]:
@@ -41,6 +52,11 @@ def load_credentials(creds_file: Path) -> dict[str, str]:
 
 
 def ensure_credentials() -> dict[str, str]:
+    if not SOURCE_REPO.exists():
+        raise RuntimeError(
+            f"source repo not found: {SOURCE_REPO} "
+            "(set FULCRUM_SOURCE_REPO to the fulcrum-io checkout)"
+        )
     creds = load_credentials(CREDS_FILE)
     if creds.get("FULCRUM_TEST_API_KEY") and creds.get("FULCRUM_TEST_TENANT_ID"):
         return creds

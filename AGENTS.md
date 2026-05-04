@@ -10,10 +10,10 @@ This is one of four repositories under the `Fulcrum-Governance` GitHub org.
 
 | Repo | Local Path | Language | Purpose |
 |------|-----------|----------|---------|
-| **fulcrum-io** | `/Users/td/ConceptDev/Projects/Fulcrum` | Go 1.26.2 | Backend platform: gRPC server, REST gateway, MCP endpoint, policy engine, cognitive layer, foundry, entropy monitor |
-| **governance-interception-layer** | `/Users/td/ConceptDev/Projects/governance-interception-layer` | Go 1.26.2 | Out-of-process enforcement boundary: transport adapters, shared governance pipeline, cross-transport parity |
-| **fulcrum-trust** | `/Users/td/ConceptDev/Projects/fulcrum-trust` | Python 3.9+ | Trust model authority: beta-distribution trust math, circuit breaker, LangGraph adapter, IPC bridge, RLM prototype |
-| **Fulcrum-Proofs** (this repo) | `/Users/td/ConceptDev/Projects/Fulcrum-Proofs` | Lean 4 / TLA+ / Python | Formal verification: Lean 4 proofs, TLA+ model checking, benchmark evidence, claim ledger |
+| **fulcrum-io** | `../Fulcrum` | Go 1.26.2 | Backend platform: gRPC server, REST gateway, MCP endpoint, policy engine, cognitive layer, foundry, entropy monitor |
+| **governance-interception-layer** | `../governance-interception-layer` | Go 1.26.2 | Out-of-process enforcement boundary: transport adapters, shared governance pipeline, cross-transport parity |
+| **fulcrum-trust** | `../fulcrum-trust` | Python 3.9+ | Trust model authority: beta-distribution trust math, circuit breaker, LangGraph adapter, IPC bridge, RLM prototype |
+| **Fulcrum-Proofs** (this repo) | `.` | Lean 4 / TLA+ / Python | Formal verification: Lean 4 proofs, TLA+ model checking, benchmark evidence, claim ledger |
 
 ### Cross-Repo Relationships
 - **Contract sync**: `contracts/snapshots/` mirrors proto definitions and Go interfaces from `fulcrum-io`. Synced via `scripts/sync-contracts.sh` in the IO repo.
@@ -47,8 +47,8 @@ make proof-gate model-gate bench-gate fault-gate evidence-gate audit-gate
 All theorems are sorry-free, including:
 - `mixed_nash_exists` (MixedNashExistence.lean) — closed via math-xmum/Brouwer's
   `ExistsNashEq` (Brouwer FPT on product simplices via Scarf's Lemma) through a
-  PMF ↔ stdSimplex bridge. External dependency:
-  `../math-xmum-brouwer-fork@fulcrum-v4.29-port`.
+  PMF ↔ stdSimplex bridge. Vendored dependency:
+  `proofs/lean/vendor/Gametheory/`.
 - `fulcrum_poa_bounded` (PoA ≤ 9/7, NashUniqueness.lean)
 - `constrained_poa_exact` (CoordinationEfficiency.lean)
 - `trust_guaranteed_termination` + 9 companion theorems (TrustTermination.lean)
@@ -96,17 +96,17 @@ claude mcp add --transport stdio --scope user lean-lsp -- uvx lean-lsp-mcp
 
 **Codex:** Set `LEAN_PROJECT_PATH` before running:
 ```bash
-export LEAN_PROJECT_PATH=/Users/td/ConceptDev/Projects/Fulcrum-Proofs/proofs/lean
+export LEAN_PROJECT_PATH="$(git rev-parse --show-toplevel)/proofs/lean"
 ```
 
 ### lean4-skills (Workflow Pack)
 
 Structured prove/review/golf loop for AI coding agents.
 
-**Location:** `/Users/td/.codex/skills/lean4-skills/plugins/lean4/skills/lean4/SKILL.md`
+**Location:** `$HOME/.codex/skills/lean4-skills/plugins/lean4/skills/lean4/SKILL.md`
 
 **Environment:**
-- `LEAN4_PLUGIN_ROOT=/Users/td/.codex/skills/lean4-skills/plugins/lean4`
+- `LEAN4_PLUGIN_ROOT=$HOME/.codex/skills/lean4-skills/plugins/lean4`
 - `LEAN4_SCRIPTS=$LEAN4_PLUGIN_ROOT/lib/scripts`
 - `LEAN4_REFS=$LEAN4_PLUGIN_ROOT/skills/lean4/references`
 

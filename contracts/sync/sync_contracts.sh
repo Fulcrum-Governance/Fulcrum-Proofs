@@ -2,11 +2,11 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-SOURCE_DEFAULT="/Users/td/ConceptDev/Projects/Fulcrum"
+SOURCE_DEFAULT="$ROOT/../Fulcrum"
 SOURCE="$SOURCE_DEFAULT"
 
 usage() {
-  echo "Usage: $0 [--source <fulcrum_repo_path>]"
+  echo "Usage: $0 [--source <fulcrum-io-repo-path>]"
 }
 
 while [[ $# -gt 0 ]]; do
@@ -27,8 +27,12 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+SOURCE="$(cd "$SOURCE" 2>/dev/null && pwd || true)"
+DEFAULT_SOURCE_CANON="$(cd "$SOURCE_DEFAULT" 2>/dev/null && pwd || true)"
+
 if [[ ! -e "$SOURCE/.git" ]]; then
-  echo "Source repo not found: $SOURCE" >&2
+  echo "Source repo not found: ${SOURCE:-<unresolved>}" >&2
+  echo "Set FULCRUM_SOURCE_REPO or pass --source <fulcrum-io-repo-path>." >&2
   exit 1
 fi
 
@@ -64,14 +68,18 @@ done
 SRC_SHA="$(git -C "$SOURCE" rev-parse HEAD)"
 SRC_REF="$(git -C "$SOURCE" rev-parse --abbrev-ref HEAD)"
 SYNC_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+SOURCE_LABEL="../Fulcrum"
+if [[ -n "$DEFAULT_SOURCE_CANON" && "$SOURCE" != "$DEFAULT_SOURCE_CANON" ]]; then
+  SOURCE_LABEL="<path-to-fulcrum-io>"
+fi
 
 cat > "$ROOT/contracts/snapshots/version_manifest.yaml" <<MANIFEST
 version: 1
-source_repo: $SOURCE
+source_repo: $SOURCE_LABEL
 source_branch: $SRC_REF
 source_commit_sha: $SRC_SHA
 synced_at: $SYNC_TIME
 notes: contract-coupled import from Fulcrum
 MANIFEST
 
-echo "Contracts synced from $SOURCE @ $SRC_SHA"
+echo "Contracts synced from $SOURCE_LABEL @ $SRC_SHA"

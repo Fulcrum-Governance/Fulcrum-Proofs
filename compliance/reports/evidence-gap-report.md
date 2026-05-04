@@ -3,7 +3,7 @@
 Status: updated after sprint closure run.
 
 ## Matrix coverage
-- Control rows in `/Users/td/ConceptDev/Projects/Fulcrum-Proofs/compliance/mappings/eu_ai_act_sox_matrix.json`: 5
+- Control rows in `compliance/mappings/eu_ai_act_sox_matrix.json`: 5
 - Rows with `pass`: 5
 - Rows with `incomplete`: 0
 - Rows with `waived`: 0

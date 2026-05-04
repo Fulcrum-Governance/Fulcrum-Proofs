@@ -1,5 +1,5 @@
 version: 1
-source_repo: /Users/td/ConceptDev/Projects/Fulcrum
+source_repo: ../Fulcrum
 source_branch: main
 source_commit_sha: 1dd8e787dac5df487d7bf18ce4c934726baadc51
 synced_at: 2026-04-10T00:18:22Z

@@ -6,7 +6,7 @@ Tests Mistral's Leanstral model against a real Lean 4 proof task from our repo.
 Validates API connectivity, model availability, and output quality.
 
 Usage:
-    cd /Users/td/ConceptDev/Projects/Fulcrum-Proofs
+    cd "$(git rev-parse --show-toplevel)"
     python3 scripts/leanstral-test.py
 """
 

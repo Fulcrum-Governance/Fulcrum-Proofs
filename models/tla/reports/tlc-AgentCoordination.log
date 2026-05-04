@@ -1,6 +1,6 @@
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
 Running breadth-first search Model-Checking with fp 120 and seed 8130999206131426770 with 1 worker on 8 cores with 5461MB heap and 64MB offheap memory [pid: 51112] (Mac OS X 26.4 aarch64, Homebrew 25.0.2 x86_64, MSBDiskFPSet, DiskStateQueue).
-Parsing file /Users/td/ConceptDev/Projects/Fulcrum-Proofs/models/tla/specs/AgentCoordination.tla
+Parsing file models/tla/specs/AgentCoordination.tla
 Parsing file /private/var/folders/w_/pr8gqt0d75zc0010zx43zj5c0000gn/T/Naturals.tla
 Parsing file /private/var/folders/w_/pr8gqt0d75zc0010zx43zj5c0000gn/T/FiniteSets.tla
 Parsing file /private/var/folders/w_/pr8gqt0d75zc0010zx43zj5c0000gn/T/TLC.tla
