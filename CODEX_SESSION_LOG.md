@@ -1,5 +1,52 @@
 # Codex Session Log
 
+## 2026-05-03 — Proofs Public-Flip Readiness + Style Mirror
+
+### Scope
+
+- Execute Phase A first from `.claude/sprint/yc/codex/PROOFS_AND_MIRROR_SPEC.md` on branch `proofs-public-flip-ready-2026-05-04`.
+- Keep work strictly in-sequence: Fulcrum-Proofs critical items before any mirror work in the other repos.
+- Treat the public-flip grep gate as authoritative: zero tracked `/Users/td` workstation paths outside this session log.
+
+### Start State
+
+- `Fulcrum-Proofs` is on `proofs-public-flip-ready-2026-05-04` from clean `main`.
+- Baseline verification already passed on this branch start:
+  - `cd proofs/lean && lake build`
+  - `proofs/lean/scripts/check_no_sorry.sh`
+- Prior YC submit dependencies were confirmed merged before starting this track:
+  - `fulcrum-io` PR #113
+  - `fulcrum-trust` PR #9
+
+### Findings
+
+- The workstation-path leak is broader than the spec's known sites. Current tracked hits include:
+  - `Makefile`
+  - `contracts/sync/sync_contracts.sh`
+  - `contracts/snapshots/version_manifest.yaml`
+  - `benchmarks/manifests/benchmark_manifest.yaml`
+  - `benchmarks/harness/run_benchmarks.py`
+  - `fault/injectors/run_fault_campaign.py`
+  - `README.md`
+  - `AGENTS.md`
+  - `LEAN4_SYSTEMS_CHECK.md`
+  - `scripts/leanstral-test.py`
+  - several `audits/post-repair/*.md` and `compliance/reports/*.md` files
+- `audits/final/addendum-2026-05-01.md` still describes F-020 as a sibling-path lakefile issue, but `proofs/lean/lakefile.lean` now vendors `Gametheory` in-tree.
+- The spec's Mixed Nash probe name is stale: the current theorem is `mixed_nash_exists`, not `MixedNashExistence.exists_nash_equilibrium`.
+
+### Decisions
+
+- Fix every tracked workstation-path hit needed to satisfy `git grep -nE '/Users/td' -- ':!CODEX_SESSION_LOG.md'`, not only the originally listed files.
+- Preserve repo behavior by converting executable defaults to repo-relative resolution from script location or repo root instead of swapping in inert placeholders where code paths are used.
+- Treat `LEAN4_SYSTEMS_CHECK.md` as historical but still public-surface tracked content; make it portable enough to survive the Phase A grep gate without altering the historical conclusions.
+
+### Next
+
+- Commit this triage entry before editing tracked files.
+- Execute A.1 workstation-path cleanup and verify the grep gate.
+- Then move to A.2 stale addendum refresh, followed by A.3 through A.5 with per-step verification.
+
 ## 2026-04-25 — D4 PoA Tightening
 
 ### Scope
