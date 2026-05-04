@@ -1,8 +1,21 @@
 # Fulcrum-Proofs
 
+[![proof-gate](https://github.com/Fulcrum-Governance/Fulcrum-Proofs/actions/workflows/proof-gate.yml/badge.svg)](https://github.com/Fulcrum-Governance/Fulcrum-Proofs/actions/workflows/proof-gate.yml) [![Lean 4.29.0-rc4](https://img.shields.io/badge/Lean-v4.29.0--rc4-0f766e)](https://github.com/leanprover/lean4/releases/tag/v4.29.0-rc4) [![mathlib 06e9473](https://img.shields.io/badge/mathlib-06e9473-1d4ed8)](https://github.com/leanprover-community/mathlib4/tree/06e947358d88e36af006f915f79a04a10fd43cc4) [![License: MIT](https://img.shields.io/badge/License-MIT-f59e0b.svg)](LICENSE) [![sorry count: 0](https://img.shields.io/badge/sorry-0-15803d)](proofs/lean/scripts/check_no_sorry.sh) [![DOI: pending](https://img.shields.io/badge/DOI-pending-6b7280)](CITATION.cff)
+
 The formal core of the Fulcrum governance kernel — proof and evidence repository for Fulcrum governance claims.
 
 Fulcrum is a governance kernel: a portable, typed, pre-execution control plane that sits between intent and action, enforces bounded invariants (policy, budget, trust, audit), and emits evidence-grade audit artifacts. This repository holds the machine-checkable proofs that ground those invariants.
+
+## Part of the Fulcrum Architecture
+
+| Repo | Role | License |
+|------|------|---------|
+| **[fulcrum-io](https://github.com/Fulcrum-Governance/fulcrum-io)** | Runtime control plane: policy engine, envelopes, Foundry, MCP proxy, dashboard | BSL 1.1 |
+| **[governance-interception-layer](https://github.com/Fulcrum-Governance/governance-interception-layer)** | Out-of-process enforcement boundary: transport adapters, shared governance pipeline | Apache 2.0 |
+| **[fulcrum-trust](https://github.com/Fulcrum-Governance/fulcrum-trust)** | Trust engine: Beta(α,β) evaluator, circuit breaker, LangGraph adapter | Apache 2.0 |
+| **Fulcrum-Proofs** (this repo) | Formal core: Lean 4 proofs, TLA+ models, benchmark and audit evidence | MIT |
+
+Contributing: [CONTRIBUTING.md](CONTRIBUTING.md) · Security: [SECURITY.md](SECURITY.md) · Changelog: [CHANGELOG.md](CHANGELOG.md) · Citation: [CITATION.cff](CITATION.cff)
 
 This repository is the source of truth for:
 - formal proofs (Lean)
@@ -51,7 +64,7 @@ This repository is contract-coupled to the `Fulcrum` repository:
 ## Repository Layout
 
 - `claims/`: canonical claim sources for this repo. Internal authority order:
-  - `claims/theorem_inventory.yaml` (v2, last updated 2026-04-09) — **theorem-level
+  - `claims/theorem_inventory.yaml` (v2, last updated 2026-05-03) — **theorem-level
     canonical source**. Reflects current proof state (`sorry_count`, `status`,
     `theorem_id`) and takes precedence over `claim_ledger.yaml` for any
     theorem-status question. Closes contradiction-ledger F-042.
@@ -188,8 +201,10 @@ See `proofs/lean/Proofs/GameTheory/README.md` for a detailed module guide and as
 > This closes contradiction-ledger entry F-020 and `Fulcrum-Governance/Fulcrum-Proofs#16`. The plan-authorized admin-bypass precedent on `proof-gate` is now bounded to historical use (4 PRs total: Wave 2 #13, Wave 3 #14/#15/#17). New Proofs PRs from this point forward should pass `proof-gate` naturally.
 
 ```bash
-# 1) Sync contracts from Fulcrum repo
-./contracts/sync/sync_contracts.sh --source /Users/td/ConceptDev/Projects/Fulcrum
+# 1) Sync contracts from the sibling Fulcrum checkout
+./contracts/sync/sync_contracts.sh
+# Or override the source checkout explicitly:
+# ./contracts/sync/sync_contracts.sh --source <path-to-fulcrum-io>
 
 # 2) Run formal proof replay
 ./proofs/lean/scripts/replay.sh

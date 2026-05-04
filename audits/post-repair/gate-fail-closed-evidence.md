@@ -5,11 +5,11 @@ Verify the gateway safety model denies authorization when freshness, nonce, repl
 
 ## Evidence
 - TLA model:
-  - `/Users/td/ConceptDev/Projects/Fulcrum-Proofs/models/tla/specs/GatewaySafety.tla`
+  - `models/tla/specs/GatewaySafety.tla`
 - TLC reports:
-  - `/Users/td/ConceptDev/Projects/Fulcrum-Proofs/models/tla/reports/tlc-GatewaySafetySmall.log`
-  - `/Users/td/ConceptDev/Projects/Fulcrum-Proofs/models/tla/reports/tlc-GatewaySafety.log`
-  - `/Users/td/ConceptDev/Projects/Fulcrum-Proofs/models/tla/reports/tlc-GatewaySafetyMedium.log`
+  - `models/tla/reports/tlc-GatewaySafetySmall.log`
+  - `models/tla/reports/tlc-GatewaySafety.log`
+  - `models/tla/reports/tlc-GatewaySafetyMedium.log`
 - Invariants checked:
   - `FailClosedOnInvalidContext`
   - `ReplayDenied`

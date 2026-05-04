@@ -72,7 +72,7 @@ echo "LEAN4_REFS=$LEAN4_REFS"
 ls $LEAN4_SCRIPTS/*.py 2>/dev/null | head -5
 
 # Run sorry analyzer on Fulcrum-Proofs
-cd /Users/td/ConceptDev/Projects/Fulcrum-Proofs/proofs/lean
+cd "$(git rev-parse --show-toplevel)/proofs/lean"
 python3 "$LEAN4_SCRIPTS/sorry_analyzer.py" . --format=summary --report-only 2>&1 || echo "sorry_analyzer not found or different interface"
 ```
 
@@ -109,11 +109,11 @@ print('LEANSTRAL API OK')
 
 ```bash
 # Verify toolchain
-cat /Users/td/ConceptDev/Projects/Fulcrum-Proofs/proofs/lean/lean-toolchain
+cat "$(git rev-parse --show-toplevel)/proofs/lean/lean-toolchain"
 # Expected: leanprover/lean4:v4.29.0-rc4
 
 # Verify project builds
-cd /Users/td/ConceptDev/Projects/Fulcrum-Proofs/proofs/lean
+cd "$(git rev-parse --show-toplevel)/proofs/lean"
 lake build 2>&1 | tail -5
 
 # Count sorrys
@@ -128,7 +128,7 @@ bash scripts/check_no_sorry.sh 2>&1
 ### 1.5 AGENTS.md Verification
 
 ```bash
-grep -A 3 "lean-lsp-mcp\|lean4-skills\|Leanstral" /Users/td/ConceptDev/Projects/Fulcrum-Proofs/AGENTS.md
+grep -A 3 "lean-lsp-mcp\|lean4-skills\|Leanstral" "$(git rev-parse --show-toplevel)/AGENTS.md"
 ```
 
 **Expected:** Lean 4 AI Tooling section present with all three tools documented.
@@ -163,7 +163,7 @@ If any tool fails, report the exact error. Do not attempt to fix — just report
 If all checks pass, the environment is ready for the Kakutani closure sprint. The execution spec is at:
 
 ```
-/Users/td/ConceptDev/Projects/Fulcrum/.claude/sprint/papers/d4-advancement/D4-KAKUTANI-CLOSURE-SPEC.md
+../Fulcrum/.claude/sprint/papers/d4-advancement/D4-KAKUTANI-CLOSURE-SPEC.md
 ```
 
 The Codex-reviewed execution plan that supersedes some spec details is in the user's conversation history (titled "D4 Sorry Closure v3 Execution Plan"). Key points from the execution plan:

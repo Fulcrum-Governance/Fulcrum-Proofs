@@ -1,5 +1,5 @@
 version: 2
-updated_at: 2026-04-09
+updated_at: 2026-05-03
 theorems:
   - theorem_id: THM-BUDGET-LOCAL
     assumptions:
@@ -8,12 +8,14 @@ theorems:
     lean_module: Proofs/BasicInvariants.lean
     dependencies: []
     proof_status: proven
+    axiom_profile: [propext]
   - theorem_id: THM-PRIVILEGE-STATIC
     assumptions:
       - A-PRIV-001: capability sets are sets over the capability universe
     lean_module: Proofs/BasicInvariants.lean
     dependencies: []
     proof_status: proven
+    axiom_profile: [propext, Classical.choice, Quot.sound]
   - theorem_id: THM-TEMPORAL-CONSERVATION-SPEC
     assumptions:
       - A-TEMP-001: request capability set is stable across a transition
@@ -26,6 +28,7 @@ theorems:
       - THM-PRIVILEGE-STATIC
       - THM-BUDGET-LOCAL
     proof_status: proven
+    axiom_profile: []
   - theorem_id: THM-NASH-PURE-EXISTENCE
     assumptions:
       - A-GAME-001: agents have finite action sets (4 actions)
@@ -34,6 +37,7 @@ theorems:
     lean_module: Proofs/GameTheory/NashExistence.lean
     dependencies: [THM-BUDGET-LOCAL]
     proof_status: proven
+    axiom_profile: [propext, Classical.choice, Quot.sound]
     notes: Pure-strategy Nash existence, deviation arithmetic, and all-moderate equilibrium
       proofs are now sorry-free.
   - theorem_id: THM-NASH-MIXED-EXISTENCE
@@ -43,6 +47,7 @@ theorems:
     lean_module: Proofs/GameTheory/MixedNashExistence.lean
     dependencies: [THM-NASH-PURE-EXISTENCE, EXT-EXISTS-NASH-EQ]
     proof_status: proven
+    axiom_profile: [propext, Classical.choice, Quot.sound]
     sorry_count: 0
     external_refs:
       - id: EXT-EXISTS-NASH-EQ
@@ -62,6 +67,7 @@ theorems:
     lean_module: Proofs/GameTheory/NashExistence.lean
     dependencies: []
     proof_status: proven
+    axiom_profile: [propext, Classical.choice, Quot.sound]
     notes: Strict domination is now proven via explicit single-agent token update and
       overflow monotonicity.
   - theorem_id: THM-NOT-DSIC
@@ -70,6 +76,7 @@ theorems:
     lean_module: Proofs/GameTheory/IncentiveCompatibility.lean
     dependencies: []
     proof_status: proven
+    axiom_profile: [propext, Classical.choice, Quot.sound]
     notes: Truthful allocation sufficiency is proven, but DSIC is disproven by an explicit
       two-agent oversupply counterexample; the file now proves the negative result sorry-free.
   - theorem_id: THM-POA-BOUNDED
@@ -77,6 +84,7 @@ theorems:
     lean_module: Proofs/GameTheory/CoordinationEfficiency.lean
     dependencies: [THM-NASH-PURE-EXISTENCE]
     proof_status: proven
+    axiom_profile: [propext, Classical.choice, Quot.sound]
     sorry_count: 0
     notes: >
       Fully proven via NashUniqueness.lean (PR #6). All-moderate is the unique Nash
@@ -86,6 +94,7 @@ theorems:
     lean_module: Proofs/GameTheory/CoordinationEfficiency.lean
     dependencies: [THM-NASH-PURE-EXISTENCE, THM-POA-BOUNDED]
     proof_status: proven
+    axiom_profile: [propext, Classical.choice, Quot.sound]
     sorry_count: 0
     notes: >
       `constrained_welfare_optimal` and `constrained_poa_exact` state the
@@ -97,6 +106,7 @@ theorems:
     lean_module: Proofs/GameTheory/BudgetGameBridge.lean
     dependencies: [THM-BUDGET-LOCAL]
     proof_status: proven
+    axiom_profile: [propext, Classical.choice, Quot.sound]
     notes: budget_enforcement_grounds_game, governance_restricts_strategy_space, and
       budget_game_bridge are all now sorry-free.
   - theorem_id: THM-TRUST-MONOTONE
@@ -106,6 +116,7 @@ theorems:
     lean_module: Proofs/TrustTermination.lean
     dependencies: []
     proof_status: proven
+    axiom_profile: [propext, Classical.choice, Quot.sound]
     notes: Each additional failure strictly decreases trust. Proved via Nat
       cross-multiplication, avoiding Rat arithmetic entirely.
   - theorem_id: THM-TRUST-THRESHOLD
@@ -115,6 +126,7 @@ theorems:
     lean_module: Proofs/TrustTermination.lean
     dependencies: [THM-TRUST-MONOTONE]
     proof_status: proven
+    axiom_profile: [propext, Classical.choice, Quot.sound]
     notes: Constructive proof — for any threshold and any alpha, there exists
       beta_star such that trust drops below threshold. Uses nlinarith.
   - theorem_id: THM-TRUST-TERMINATION
@@ -124,6 +136,7 @@ theorems:
     lean_module: Proofs/TrustTermination.lean
     dependencies: [THM-TRUST-THRESHOLD]
     proof_status: proven
+    axiom_profile: []
     notes: Circuit breaker is open iff trust is below threshold. Follows from
       well-formedness predicate definition.
   - theorem_id: THM-TRUST-GUARANTEED
@@ -131,6 +144,7 @@ theorems:
     lean_module: Proofs/TrustTermination.lean
     dependencies: [THM-TRUST-MONOTONE, THM-TRUST-THRESHOLD]
     proof_status: proven
+    axiom_profile: [propext, Classical.choice, Quot.sound]
     notes: Combining reachability with monotonicity — continued failures from any
       starting state guarantee termination.
   - theorem_id: THM-CIRCUIT-TRANSITIONS
@@ -139,6 +153,7 @@ theorems:
     lean_module: Proofs/TrustTermination.lean
     dependencies: []
     proof_status: proven
+    axiom_profile: []
     notes: Valid transition relation with terminated as absorbing state.
       Proves no_closed_to_halfOpen (must go through open first).
   - theorem_id: THM-RLM-DEPTH-BOUNDED
@@ -147,6 +162,7 @@ theorems:
     lean_module: Proofs/RLMContracts.lean
     dependencies: []
     proof_status: proven
+    axiom_profile: []
     notes: Interface contract — depth never exceeds maxDepth, preserved across steps.
   - theorem_id: THM-RLM-STEP-DECREASING
     assumptions:
@@ -154,6 +170,7 @@ theorems:
     lean_module: Proofs/RLMContracts.lean
     dependencies: []
     proof_status: proven
+    axiom_profile: [propext]
     notes: Interface contract — termination measure (partitionsRemaining) strictly
       decreases on each successful step. Establishes well-founded recursion.
   - theorem_id: THM-RLM-ANSWER-MONOTONE
@@ -162,6 +179,7 @@ theorems:
     lean_module: Proofs/RLMContracts.lean
     dependencies: []
     proof_status: proven
+    axiom_profile: [propext]
     notes: Interface contract — once answer.ready, no further state transitions.
   - theorem_id: THM-RLM-TOKEN-BUDGET
     assumptions:
@@ -169,6 +187,7 @@ theorems:
     lean_module: Proofs/RLMContracts.lean
     dependencies: []
     proof_status: proven
+    axiom_profile: [propext, Classical.choice, Quot.sound]
     notes: Interface contract — token consumption never exceeds budget after any step.
   - theorem_id: THM-RLM-ISOLATION
     assumptions:
@@ -176,5 +195,6 @@ theorems:
     lean_module: Proofs/RLMContracts.lean
     dependencies: []
     proof_status: axiom
+    axiom_profile: [Fulcrum.RLM.canAccess, Fulcrum.RLM.context_partition_isolation]
     notes: Axiomatized — systems property of Docker sandbox, not provable from pure math.
       Any correct sandbox implementation must satisfy this contract.

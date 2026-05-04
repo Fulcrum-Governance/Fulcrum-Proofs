@@ -9,7 +9,7 @@ Status: completed for in-scope closure (C-005 waived).
 - Artifact review framing sourced from ACM artifact review resources.
 
 ## Citation metadata consistency
-- Ran: `python3 /Users/td/ConceptDev/Projects/Fulcrum-Proofs/scripts/reference_sanity_check.py --input /Users/td/ConceptDev/Projects/Fulcrum-Proofs/audits/post-repair/references.txt`
+- Ran: `python3 scripts/reference_sanity_check.py --input audits/post-repair/references.txt`
 - Result: no arXiv year mismatch flags in this sprint pack.
 
 ## Empirical protocol quality (in scope)
