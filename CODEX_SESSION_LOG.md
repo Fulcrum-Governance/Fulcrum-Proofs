@@ -40,12 +40,39 @@
 - Fix every tracked workstation-path hit needed to satisfy `git grep -nE '/Users/td' -- ':!CODEX_SESSION_LOG.md'`, not only the originally listed files.
 - Preserve repo behavior by converting executable defaults to repo-relative resolution from script location or repo root instead of swapping in inert placeholders where code paths are used.
 - Treat `LEAN4_SYSTEMS_CHECK.md` as historical but still public-surface tracked content; make it portable enough to survive the Phase A grep gate without altering the historical conclusions.
+- Treat the public-flip checklist in `.claude/sprint/yc/codex/PROOFS_AND_MIRROR_HANDOFF.md` as the practical closure gate for the Proofs repo, even where it is stricter than the raw Phase B bullet list.
+
+### Built
+
+- Added the Phase A public-flip readiness set:
+  - workstation-path cleanup across tracked files
+  - refreshed F-020 addendum narrative
+  - axiom-profile probe plus expected baseline
+  - one-shot `proofs/reproduce.sh`
+  - `CITATION.cff`
+- Added the actionable Phase B items:
+  - README badges
+  - `HYPOTHESES.md`
+  - per-theorem `axiom_profile` metadata in `claims/theorem_inventory.yaml`
+- Added the missing public-surface docs from the handoff checklist:
+  - `CHANGELOG.md`
+  - `SECURITY.md`
+  - `CODE_OF_CONDUCT.md`
+  - README cross-link block for all four repos
+
+### Verification
+
+- `bash proofs/reproduce.sh`
+- `python3 -c "import yaml; yaml.safe_load(open('CITATION.cff'))"`
+- `git grep -nE '/Users/td' -- ':!CODEX_SESSION_LOG.md'`
 
 ### Next
 
-- Commit this triage entry before editing tracked files.
-- Execute A.1 workstation-path cleanup and verify the grep gate.
-- Then move to A.2 stale addendum refresh, followed by A.3 through A.5 with per-step verification.
+- Push the updated Proofs branch and refresh PR #19 after the final doc-pass verification.
+- Phase B.3 remains deferred until the Proofs branch merges to `main` and the repo is ready for a `v0.1.0` tag.
+- Phase B.4 remains manual user work (Zenodo wiring).
+- Phase B.6 remains skipped unless the founder supplies an ORCID.
+- After Proofs is green, move to the three-repo style mirror pass on `style-mirror-2026-05-04`.
 
 ## 2026-04-25 — D4 PoA Tightening
 

@@ -6,6 +6,17 @@ The formal core of the Fulcrum governance kernel — proof and evidence reposito
 
 Fulcrum is a governance kernel: a portable, typed, pre-execution control plane that sits between intent and action, enforces bounded invariants (policy, budget, trust, audit), and emits evidence-grade audit artifacts. This repository holds the machine-checkable proofs that ground those invariants.
 
+## Part of the Fulcrum Architecture
+
+| Repo | Role | License |
+|------|------|---------|
+| **[fulcrum-io](https://github.com/Fulcrum-Governance/fulcrum-io)** | Runtime control plane: policy engine, envelopes, Foundry, MCP proxy, dashboard | BSL 1.1 |
+| **[governance-interception-layer](https://github.com/Fulcrum-Governance/governance-interception-layer)** | Out-of-process enforcement boundary: transport adapters, shared governance pipeline | Apache 2.0 |
+| **[fulcrum-trust](https://github.com/Fulcrum-Governance/fulcrum-trust)** | Trust engine: Beta(α,β) evaluator, circuit breaker, LangGraph adapter | Apache 2.0 |
+| **Fulcrum-Proofs** (this repo) | Formal core: Lean 4 proofs, TLA+ models, benchmark and audit evidence | MIT |
+
+Contributing: [CONTRIBUTING.md](CONTRIBUTING.md) · Security: [SECURITY.md](SECURITY.md) · Changelog: [CHANGELOG.md](CHANGELOG.md) · Citation: [CITATION.cff](CITATION.cff)
+
 This repository is the source of truth for:
 - formal proofs (Lean)
 - distributed safety models (TLA+)
@@ -53,7 +64,7 @@ This repository is contract-coupled to the `Fulcrum` repository:
 ## Repository Layout
 
 - `claims/`: canonical claim sources for this repo. Internal authority order:
-  - `claims/theorem_inventory.yaml` (v2, last updated 2026-04-09) — **theorem-level
+  - `claims/theorem_inventory.yaml` (v2, last updated 2026-05-03) — **theorem-level
     canonical source**. Reflects current proof state (`sorry_count`, `status`,
     `theorem_id`) and takes precedence over `claim_ledger.yaml` for any
     theorem-status question. Closes contradiction-ledger F-042.
