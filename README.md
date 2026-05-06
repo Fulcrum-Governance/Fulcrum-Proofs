@@ -253,7 +253,7 @@ Branch protection targets on `main`:
 ## Status Levels
 
 - `Proven`: artifact-backed formal/empirical closure exists
-- `Proven-with-sorry`: Lean structure is machine-checked but contains `sorry` placeholders in non-critical sub-goals
+- `Proven-with-sorry`: Lean structure is machine-checked but contains `sorry` placeholders in non-critical sub-goals *(currently unused — 0 sorrys repo-wide)*
 - `Incomplete`: scoped but missing closure artifacts
 - `Refuted`: counterexample/contradiction established
 
