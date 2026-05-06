@@ -180,7 +180,7 @@ The `proofs/lean/Proofs/GameTheory/` directory contains a Lean 4 + Mathlib4 form
 
 ### Remaining Sorry Holes (0 of 16 original)
 
-All originally-tracked sorry holes are closed. `MixedNashExistence.mixed_nash_exists` was closed via math-xmum/Brouwer's `ExistsNashEq` (Brouwer fixed-point on product simplices via Scarf's Lemma) through a PMF↔stdSimplex bridge; the previous `kakutani_fixed_point_theorem` axiom has been removed.
+All originally-tracked sorry holes are closed. The zero-sorry claim covers all first-party Lean proofs in `Proofs/`. The vendored dependency (`vendor/Gametheory/`, MIT-licensed from math-xmum/Brouwer) is upstream code whose proof integrity is inherited, not re-verified by `check_no_sorry.sh`. `MixedNashExistence.mixed_nash_exists` was closed via math-xmum/Brouwer's `ExistsNashEq` (Brouwer fixed-point on product simplices via Scarf's Lemma) through a PMF↔stdSimplex bridge; the previous `kakutani_fixed_point_theorem` axiom has been removed.
 
 `CoordinationEfficiency.fulcrum_poa_bounded` was closed via `NashUniqueness.lean` (PR #5) — all equilibria under tight budget are all-moderate, giving PoA ≤ 9/7.
 
