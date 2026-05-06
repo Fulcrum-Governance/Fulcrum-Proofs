@@ -1,3 +1,8 @@
+> **⚠️ SUPERSEDED (2026-05-06):** This review was conducted before C-005 was proven,
+> before C-018/C-020 were closed sorry-free, and before the MIT relicense. The
+> findings below reflect the proof state as of their original date. For current
+> status, see `claims/theorem_inventory.yaml` and `audits/final/addendum-2026-05-01.md`.
+
 # Structured Academic Peer Review
 
 ## 1. Review Scope
