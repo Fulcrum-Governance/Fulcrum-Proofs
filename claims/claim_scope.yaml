@@ -75,6 +75,7 @@ claims:
       - lean_game_definitions_compiled
       - pure_strategy_nash_existence_proven
       - mixed_strategy_nash_existence_proven_via_brouwer_product_simplex
+      - nash_uniqueness_proven_for_bounded_agent_count
       - simulation_confirms_equilibrium
     notes: Pure-strategy Nash and mixed-strategy Nash are both sorry-free. Mixed
       Nash existence (`mixed_nash_exists`) is closed via math-xmum/Brouwer's

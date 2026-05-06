@@ -1,3 +1,11 @@
+> **⚠️ SUPERSEDED (2026-05-06):** This audit was conducted before C-005 was proven
+> (2026-04-02), before C-018 mixed Nash was closed sorry-free (2026-04-27), before
+> C-020 constrained PoA was proved (2026-04-27), and before the Fulcrum-Proofs
+> repository was relicensed to MIT (2026-05-03). The verdicts below reflect the
+> proof state as of their original date. For current theorem status, see
+> `claims/theorem_inventory.yaml`. For the resolution timeline, see
+> `audits/final/addendum-2026-05-01.md`.
+
 # Post-Repair Re-Audit (Full-Pass Closure)
 
 ## 1. Executive Verdict

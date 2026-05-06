@@ -163,9 +163,9 @@ The `proofs/lean/Proofs/GameTheory/` directory contains a Lean 4 + Mathlib4 form
 
 | Claim | Statement | Status |
 |-------|-----------|--------|
-| C-018 | Coordination game admits a Nash equilibrium | Proven (sorry-free; mixed Nash via Brouwer-via-Scarf, Kakutani axiom removed) |
+| C-018 | Coordination game admits a Nash equilibrium | Proven (sorry-free; mixed Nash via Brouwer-via-Scarf for arbitrary finite games; pure-strategy uniqueness verified for agentCount ≤ 12) |
 | C-019 | Proportional allocation is **not** DSIC under current utility | Proven |
-| C-020 | Constrained Price of Anarchy is 1.0 under tight budget | Proven (formal constrained PoA = 1.0; reference upper bound 9/7) |
+| C-020 | Constrained Price of Anarchy is 1.0 under tight budget | Proven (formal constrained PoA = 1.0 for agentCount ≤ 12; unconstrained reference upper bound PoA ≤ 9/7) |
 | C-021 | Budget enforcement grounds the game model | Proven |
 
 ### Proof Portfolio Summary
@@ -180,7 +180,7 @@ The `proofs/lean/Proofs/GameTheory/` directory contains a Lean 4 + Mathlib4 form
 
 ### Remaining Sorry Holes (0 of 16 original)
 
-All originally-tracked sorry holes are closed. `MixedNashExistence.mixed_nash_exists` was closed via math-xmum/Brouwer's `ExistsNashEq` (Brouwer fixed-point on product simplices via Scarf's Lemma) through a PMF↔stdSimplex bridge; the previous `kakutani_fixed_point_theorem` axiom has been removed.
+All originally-tracked sorry holes are closed. The zero-sorry claim covers all first-party Lean proofs in `Proofs/`. The vendored dependency (`vendor/Gametheory/`, MIT-licensed from math-xmum/Brouwer) is upstream code whose proof integrity is inherited, not re-verified by `check_no_sorry.sh`. `MixedNashExistence.mixed_nash_exists` was closed via math-xmum/Brouwer's `ExistsNashEq` (Brouwer fixed-point on product simplices via Scarf's Lemma) through a PMF↔stdSimplex bridge; the previous `kakutani_fixed_point_theorem` axiom has been removed.
 
 `CoordinationEfficiency.fulcrum_poa_bounded` was closed via `NashUniqueness.lean` (PR #5) — all equilibria under tight budget are all-moderate, giving PoA ≤ 9/7.
 

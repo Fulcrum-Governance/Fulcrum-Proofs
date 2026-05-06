@@ -41,7 +41,7 @@ make proof-gate model-gate bench-gate fault-gate evidence-gate audit-gate
 
 ## Sorry Status
 
-0 remaining sorry holes (down from 16). The previously axiomatized
+0 remaining sorry holes across all first-party Lean proofs (down from 16). The previously axiomatized
 `kakutani_fixed_point_theorem` has been removed.
 
 All theorems are sorry-free, including:
