@@ -43,6 +43,13 @@ required=(
   "thm_budget_local"
   "thm_privilege_static"
   "thm_temporal_conservation_spec"
+  "trust_monotone_decreasing"
+  "trust_guaranteed_termination"
+  "mixed_nash_exists"
+  "fulcrum_poa_bounded"
+  "constrained_poa_exact"
+  "budget_enforcement_grounds_game"
+  "rlm_depth_bounded"
 )
 
 for t in "${required[@]}"; do

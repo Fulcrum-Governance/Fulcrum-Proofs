@@ -21,6 +21,9 @@ models/tla/traces/*.trace
 models/tla/reports/*.log
 models/tla/tools/tla2tools.jar
 
+# Graphify build output
+graphify-out/
+
 # Bench/fault generated outputs
 benchmarks/reports/*.tmp.json
 fault/reports/*.tmp.json

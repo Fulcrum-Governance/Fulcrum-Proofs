@@ -130,3 +130,39 @@
 
 - `lake build Proofs.GameTheory.CoordinationEfficiency` passed from `proofs/lean`.
 - `bash proofs/lean/scripts/check_no_sorry.sh` passed with only the allowlisted mixed-Nash sorry.
+
+## 2026-05-06 — Repo Audit Fix Lane
+
+### Scope
+
+- Execute the bounded repo-audit fix spec on `fix/proofs-repo-audit-2026-05-06`.
+- Keep the lane limited to metadata, git hygiene, and proof-gate hardening.
+- Avoid `.lean` source edits and avoid `lake build`.
+
+### Built
+
+- Updated `CITATION.cff` to the live Zenodo DOI and public `1.0.0` release metadata.
+- Replaced the README DOI pending badge with the live Zenodo badge.
+- Added `graphify-out/` to `.gitignore`.
+- Updated `claims/claim_scope.yaml` to `updated_at: 2026-05-06`.
+- Hardened `proofs/lean/scripts/replay.sh` with verified trust, game theory, and RLM theorem requirements.
+- Moved `CODEX_SESSION_LOG.md` into `.claude/` to reduce root clutter.
+- Marked `Proven-with-sorry` as currently unused in the README status levels.
+
+### Decisions
+
+- The `governance-interception-layer` GitHub URL returned `200`, so no README link downgrade was needed.
+- Skipped `rlm_step_decreasing` in `replay.sh` because no theorem with that exact name exists in the current Lean sources.
+- Left `.claude/PROOFS-REPO-AUDIT-FIX-SPEC.md` untracked as a local handoff artifact.
+
+### Verification
+
+- `python3 -c "import yaml; yaml.safe_load(open('CITATION.cff')); print('CITATION OK')"`
+- `python3 -c "import yaml; yaml.safe_load(open('claims/claim_scope.yaml')); print('claim_scope OK')"`
+- Verified every `required=(...)` theorem in `proofs/lean/scripts/replay.sh` exists under `proofs/lean/Proofs/` with `rg`.
+
+### Next
+
+- Run the full spec validation sequence, including `check_no_sorry.sh`, before push.
+- Push `fix/proofs-repo-audit-2026-05-06` and leave the PR unmerged for review.
+- After this lane lands, open the deeper `Fulcrum-Proofs` authority-cleanup branch for the approved Phase 2 follow-through.

@@ -2,7 +2,15 @@ cff-version: 1.2.0
 message: "If you use Fulcrum-Proofs, please cite it using the metadata from this file."
 title: "Fulcrum-Proofs"
 type: software
-version: "0.1.0"
+version: "1.0.0"
+doi: "10.5281/zenodo.19900712"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.19900714"
+    description: "This version"
+  - type: doi
+    value: "10.5281/zenodo.19900712"
+    description: "All versions"
 date-released: 2026-05-03
 license: MIT
 repository-code: "https://github.com/Fulcrum-Governance/Fulcrum-Proofs"
@@ -11,11 +19,14 @@ authors:
   - family-names: Diefenbach
     given-names: Anthony
 preferred-citation:
-  type: report
-  title: "Formal Trust and Safety Guarantees for Autonomous Multi-Agent Systems"
+  type: article
+  title: "A Bounded, Machine-Checkable Governance Kernel for Trust-Gated Agent Execution"
   authors:
     - family-names: Diefenbach
       given-names: Anthony
+      affiliation: "Independent Researcher"
   year: 2026
-  publisher: "Fulcrum Governance"
-  notes: "Companion technical paper; DOI pending Zenodo integration and public release."
+  doi: "10.5281/zenodo.19900714"
+  url: "https://doi.org/10.5281/zenodo.19900714"
+  publisher: "Zenodo"
+  license: "CC-BY-4.0"
