@@ -7,6 +7,17 @@ description: >
   An auditor, YC reviewer, or acquirer can trace any claim to its evidence
   without interpretation. This is a DOCUMENT deliverable (v0.1) — CI
   enforcement of these linkages is post-YC work.
+authority_status: demoted
+demotion_reason: >
+  This file contains stale entries that contradict the current theorem state
+  in claims/theorem_inventory.yaml (the theorem-level canonical source).
+  Specifically: line 20 says "private" (repo is MIT public since ADR-001/002,
+  May 3); lines 138-140 reference "proven-with-sorry" and Kakutani axiom
+  (C-018 is sorry-free since April 27). This file remains for historical
+  traceability but is NOT the authority for theorem status. Reconciliation
+  is tracked as a Phase 2 follow-up.
+demoted_at: 2026-05-06
+superseded_by: claims/theorem_inventory.yaml
 
 source_authority:
   claim_statements: claims/claim_scope.yaml
@@ -17,7 +28,7 @@ repos:
   fulcrum-io: runtime control plane (BSL 1.1)
   governance-interception-layer: out-of-process enforcement boundary (Apache 2.0)
   fulcrum-trust: trust engine + RLM runtime (Apache 2.0)
-  Fulcrum-Proofs: formal core, claim ledger, benchmarks (private)
+  Fulcrum-Proofs: formal core, claim ledger, benchmarks (MIT)
 
 closures:
 
