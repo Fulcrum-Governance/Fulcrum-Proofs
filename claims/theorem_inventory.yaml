@@ -1,5 +1,5 @@
 version: 2
-updated_at: 2026-05-03
+updated_at: 2026-05-06
 theorems:
   - theorem_id: THM-BUDGET-LOCAL
     assumptions:
@@ -62,6 +62,22 @@ theorems:
       `ExistsNashEq` applied through a PMF ↔ stdSimplex bridge
       (`expectedPayoff_eq_mixed_g`). The prior `kakutani_fixed_point_theorem` axiom
       has been removed.
+  - theorem_id: THM-NASH-UNIQUENESS
+    assumptions:
+      - A-GAME-001: agents have finite action sets (4 actions)
+      - A-GAME-002: budget = 25 * agentCount (tight budget)
+      - A-GAME-003: violation penalty (20) > quality gain from noncompliance (1)
+      - A-GAME-006: agentCount in range 2..12
+    lean_module: Proofs/GameTheory/NashUniqueness.lean
+    dependencies: [THM-NASH-PURE-EXISTENCE, THM-NONCOMPLIANT-DOMINATED]
+    proof_status: proven
+    axiom_profile: [propext, Classical.choice, Quot.sound]
+    sorry_count: 0
+    notes: >
+      Proves all Nash equilibria under tight budget are the all-moderate profile
+      (nash_eq_allModerate). Used by fulcrum_poa_bounded and constrained_poa_exact
+      to close the PoA bounds. Exhaustive for agentCount in 2..12; the bound is
+      a parameter hypothesis, not a proof limitation.
   - theorem_id: THM-NONCOMPLIANT-DOMINATED
     assumptions: [A-GAME-003]
     lean_module: Proofs/GameTheory/NashExistence.lean
