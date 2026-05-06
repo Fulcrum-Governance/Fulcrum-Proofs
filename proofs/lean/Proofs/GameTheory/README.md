@@ -35,6 +35,12 @@ Exist  Nash    Uniqueness  Bridge
 | THM-POA-CONSTRAINED | `constrained_poa_exact` | CoordinationEfficiency.lean |
 | THM-BUDGET-GAME-BRIDGE | `budget_game_bridge` | BudgetGameBridge.lean |
 
+## Module Table
+
+| File | Role |
+|------|------|
+| NashUniqueness.lean | All Nash equilibria under tight budget are all-moderate (`agentCount ≤ 12`) |
+
 ## Known Gaps (0 sorry)
 
 ### ~~`mixed_nash_exists` (MixedNashExistence.lean)~~ — RESOLVED
@@ -64,6 +70,7 @@ The simulation artifact `benchmarks/raw/nash-convergence.json` computes optimal 
 | A-GAME-003 | Violation penalty (20) > quality gain from noncompliance (1) | NashExistence |
 | A-GAME-004 | Finite strategy sets (Fintype) | MixedNashExistence |
 | A-GAME-005 | Real-valued continuous payoffs | MixedNashExistence |
+| A-GAME-006 | agentCount in range 2..12 | NashUniqueness, CoordinationEfficiency, BudgetGameBridge |
 | A-MECH-001 | Proportional allocation with allocationUtility = -|allocation - trueNeed| | IncentiveCompatibility |
 
 ## Key Design Decision: Non-DSIC Result
