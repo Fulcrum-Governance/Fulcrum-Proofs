@@ -26,7 +26,7 @@ source_authority:
 
 repos:
   fulcrum-io: runtime control plane (BSL 1.1)
-  governance-interception-layer: out-of-process enforcement boundary (Apache 2.0)
+  Fulcrum-Boundary: out-of-process enforcement boundary (Apache 2.0)
   fulcrum-trust: trust engine + RLM runtime (Apache 2.0)
   Fulcrum-Proofs: formal core, claim ledger, benchmarks (MIT)
 

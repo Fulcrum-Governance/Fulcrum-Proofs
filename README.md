@@ -11,7 +11,7 @@ Fulcrum is a governance kernel inside the agent control plane (Forrester Decembe
 | Repo | Role | License |
 |------|------|---------|
 | **[fulcrum-io](https://github.com/Fulcrum-Governance/fulcrum-io)** | Runtime control plane: policy engine, envelopes, Foundry, MCP proxy, dashboard | BSL 1.1 |
-| **[governance-interception-layer](https://github.com/Fulcrum-Governance/governance-interception-layer)** | Out-of-process enforcement boundary: transport adapters, shared governance pipeline | Apache 2.0 |
+| **[Fulcrum-Boundary](https://github.com/Fulcrum-Governance/Fulcrum-Boundary)** | Out-of-process enforcement boundary: transport adapters, shared governance pipeline | Apache 2.0 |
 | **[fulcrum-trust](https://github.com/Fulcrum-Governance/fulcrum-trust)** | Trust engine: Beta(α,β) evaluator, circuit breaker, LangGraph adapter | Apache 2.0 |
 | **Fulcrum-Proofs** (this repo) | Formal core: Lean 4 proofs, TLA+ models, benchmark and audit evidence | MIT |
 
