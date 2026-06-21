@@ -114,3 +114,7 @@ Structured prove/review/golf loop for AI coding agents.
 - lean-lsp-mcp requires `lake build` to have been run at least once (warnings like sorry are OK)
 - External search tools (LeanSearch, Loogle) are rate-limited to 3 requests per 30 seconds
 - Set `LEAN_LOG_LEVEL=WARNING` to reduce noise in agent sessions
+
+## Commit attribution
+
+Never add AI, Claude, or Anthropic co-authorship or attribution: no `Co-Authored-By` trailer, no "Generated with Claude" lines, no AI credit anywhere (commit messages, PR titles/bodies, changelogs, code comments). Author as the repository owner only.
