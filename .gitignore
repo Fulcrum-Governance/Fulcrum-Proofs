@@ -45,3 +45,6 @@ __pycache__/
 .DS_Store
 .vscode/
 .idea/
+
+# Conductor app per-repo config (local, not shared)
+.conductor/
