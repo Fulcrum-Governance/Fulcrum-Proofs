@@ -244,7 +244,7 @@ Branch protection targets on `main`:
 
 ## Toolchain
 
-- Go 1.26.2
+- Go 1.26.3
 - Python 3.12+
 - Node 20+
 - Java 17+ (for TLC)
