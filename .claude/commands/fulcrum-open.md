@@ -20,12 +20,12 @@ Rules that follow:
 - **fulcrum-io** (`/Users/td/ConceptDev/Projects/Fulcrum`): Go runtime control plane — policy engine, envelope, foundry, MCP proxy, dashboard. **The product bible + architecture live here.**
 - **Fulcrum-Boundary** (`/Users/td/ConceptDev/Projects/Fulcrum-Boundary`): out-of-process enforcement boundary + transport adapters. Apache 2.0.
 - **fulcrum-trust** (`/Users/td/ConceptDev/Projects/fulcrum-trust`): Python trust engine — Beta(α,β), circuit breaker. Apache 2.0.
-- **Fulcrum-Proofs** (this repo): Lean 4 formal proofs (sorry-free) + TLA+ models + the claim ledger. Private.
+- **Fulcrum-Proofs** (this repo): Lean 4 formal proofs (sorry-free) + TLA+ models + the claim ledger. MIT, public.
 
 Load context before reasoning:
 1. Read **this repo's** `CLAUDE.md` and `AGENTS.md` (sorry status, claim lifecycle, the gates).
 2. This repo's claim truth: `claims/claim_scope.yaml`, `claims/claim_ledger.yaml`, `claims/theorem_inventory.yaml`. Canonical product truth lives in IO: `/Users/td/ConceptDev/Projects/Fulcrum/product/` (start at `product/INDEX.md`) and `/Users/td/ConceptDev/Projects/Fulcrum/docs/validation/claims-lock.md`.
-3. Cross-repo: use SocratiCode `codebase_search` — it indexes all four repos live. Read sibling files at the absolute paths above (they rest on `main` = clean reference).
+3. Cross-repo: use SocratiCode `codebase_search` — it indexes all four repos live (the primary checkouts, which rest on `main`). Your Conductor lane's own changes — committed to its branch or not — are NOT in the index; search reflects `main`, so read your lane's own files directly. Read sibling files at the absolute paths above (they rest on `main` = clean reference).
 
 ## 3. How to think (the partner I want)
 
