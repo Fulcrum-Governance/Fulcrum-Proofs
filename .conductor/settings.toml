@@ -1,0 +1,35 @@
+"$schema" = "https://conductor.build/schemas/settings.repo.schema.json"
+
+[scripts]
+# Warm the Lean build cache best-effort. NOTE: Lean .lake artifacts are NOT
+# shared across worktrees, so a fresh workspace rebuilds. Keep parallel proof
+# lanes few to avoid long rebuilds and CPU thrash.
+setup = "(cd proofs/lean && lake exe cache get) >/dev/null 2>&1 || true"
+# Run button = the sorry-free proof gate, the verification for this repo.
+run = "make proof-gate"
+run_mode = "nonconcurrent"
+
+[git]
+archive_on_merge = true
+delete_branch_on_archive = true
+worktree_push_auto_setup_remote = true
+
+[prompts]
+general = """
+You are in an isolated Conductor worktree for fulcrum-proofs, the Lean 4 formal-verification repo for Fulcrum's compositional invariant work (WLIC theorem class). Python tooling under the Makefile gates supports it.
+
+Rules for this lane:
+- This worktree is ONE lane for ONE task. Do not start unrelated work here; request a new workspace instead.
+- You are ALREADY in this lane's dedicated worktree and branch, which Conductor created. Do NOT create branches or worktrees, run `git checkout -b`, or switch to / start from `main`. This checkout IS your lane; work only here.
+- Proofs must be sorry-free. NEVER close a goal with `sorry`, `admit`, or by silently weakening a statement. Verify with `make proof-gate` before you call the work done.
+- Commit incrementally with clear, conventional-commit-style messages. Do not end a turn with a dirty tree.
+- Never add AI, Claude, or Anthropic co-authorship or attribution anywhere: commit messages, PR titles and bodies, changelogs, code comments. Author as the repo owner only.
+"""
+
+code_review = """
+Review for proof soundness: no `sorry`/`admit`, no silently weakened theorem statements, and the proof gate genuinely passing. Flag any goal closed by assumption rather than proof, and any drift between the Lean statements and the orchestrator contracts.
+"""
+
+create_pr = """
+Write the PR with a conventional-commit-style title, what was proved or changed and why, which theorems or gates are affected, and `make proof-gate` evidence. Keep it factual and tight. Never add AI attribution or 'Generated with' lines.
+"""
