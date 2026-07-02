@@ -1,8 +1,8 @@
 version: 1
-updated_at: 2026-04-02
+updated_at: 2026-07-02
 waivers:
   - claim_id: C-005
-    reason: "Resolved — C-005 proven 28/28 benchmark pass. Evidence: benchmarks/raw/c005-final-report.json"
+    reason: "Tested, not proven (correction 2026-07-02, per fulcrum-io CL5-010 and ADR-032): 28/28 signal detection in the cited offline-synthetic benchmark run (1K-1M corpora, depth-0, n=7 per corpus size); the runtime inference loop is not on the live cognitive path and the reproducible-harness requirement in the limitation memo remains unmet. Waiver expiry 2026-06-30 lapsed without renewal. Evidence: benchmarks/raw/c005-final-report.json"
     owner: research-validation
     approved_by: td
     expires_at: 2026-06-30
