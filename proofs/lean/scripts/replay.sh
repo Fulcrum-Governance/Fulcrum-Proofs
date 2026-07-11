@@ -45,6 +45,8 @@ required=(
   "thm_temporal_conservation_spec"
   "trust_monotone_decreasing"
   "trust_guaranteed_termination"
+  "capped_prior_strict_responsiveness"
+  "governed_kernel_pre_execution_safety"
   "mixed_nash_exists"
   "fulcrum_poa_bounded"
   "constrained_poa_exact"

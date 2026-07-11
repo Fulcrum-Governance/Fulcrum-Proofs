@@ -1,6 +1,8 @@
 import Proofs.BasicInvariants
 import Proofs.TemporalConservationSpec
 import Proofs.TrustTermination
+import Proofs.KernelVariants
+import Proofs.GovernedKernel
 import Proofs.RLMContracts
 import Proofs.GameTheory.Definitions
 import Proofs.GameTheory.FulcrumGame

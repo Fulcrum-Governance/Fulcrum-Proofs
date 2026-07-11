@@ -9,6 +9,30 @@ structure AgentBudget where
 structure FinancialAction where
   delta : Nat
 
+/-- Generic guarded resource update: a monotone counter may increase by
+    `delta` only when the post-state remains within `limit`. -/
+def applyGuardedResource (current limit delta : Nat) : Option Nat :=
+  let spent' := current + delta
+  if _h : spent' <= limit then
+    some spent'
+  else
+    none
+
+/-- Guarded monotone resource lemma: every successful guarded update
+    preserves the configured resource bound. -/
+theorem guarded_monotone_resource
+  (current limit delta next : Nat)
+  (hExec : applyGuardedResource current limit delta = some next) :
+  next <= limit := by
+  unfold applyGuardedResource at hExec
+  by_cases h : current + delta <= limit
+  case pos =>
+    simp [h] at hExec
+    rcases hExec with rfl
+    simpa using h
+  case neg =>
+    simp [h] at hExec
+
 def applyAction (b : AgentBudget) (a : FinancialAction) : Option AgentBudget :=
   let spent' := b.currentSpent + a.delta
   if h : spent' <= b.aggregateLimit then
