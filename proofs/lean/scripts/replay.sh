@@ -24,7 +24,14 @@ echo "[proof-gate] checking for forbidden placeholders"
 "$LEAN_DIR/scripts/check_no_sorry.sh" | tee "$REPORT_DIR/no-sorry-check.log"
 
 echo "[proof-gate] running lake build"
-lake build | tee "$REPORT_DIR/lake-build.log"
+# Explicit target: bare `lake build` was a no-op before the lakefile gained
+# @[default_target] ("0 jobs" green without elaborating a single proof).
+lake build Proofs | tee "$REPORT_DIR/lake-build.log"
+
+if grep -q "(0 jobs)" "$REPORT_DIR/lake-build.log" && [ ! -f .lake/build/lib/lean/Proofs.olean ]; then
+  echo "lake build did no work and no library olean exists — hollow gate" >&2
+  exit 1
+fi
 
 echo "[proof-gate] extracting theorem inventory"
 rg -n "^theorem\\s+" Proofs \
