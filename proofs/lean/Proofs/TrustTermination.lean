@@ -156,13 +156,16 @@ theorem trust_safety_invariant (s : TrustState) (h : wellFormed s) :
     - HALF_OPEN → OPEN (probe failed)
     - any → TERMINATED (admin override)
 
-    Deployed-runtime divergence (deliberate, documented): fulcrum-trust's
-    manager.py recovers OPEN → CLOSED directly; HALF_OPEN is reserved for an
-    operator out-of-band API (rationale block in manager.py; ledger item
-    F-015). That direct edge is NOT a ValidTransition of this model. In the
-    published D4's own words (§2.3), the implementation state machine is
-    "operationally related but formally unverified in this paper", not a
-    proved refinement. -/
+    Deployed-runtime correspondence (fulcrum-trust's manager.py, two regimes,
+    selected by `recovery_cooldown_seconds` — rationale block in manager.py;
+    ledger item F-015): with the cooldown unset (the default), recovery goes
+    OPEN → CLOSED directly and HALF_OPEN is reachable only via operator
+    out-of-band action — that direct edge is NOT a ValidTransition of this
+    model. With a cooldown configured (fulcrum-trust #28, FUL-195), recovery
+    walks OPEN → HALF_OPEN → CLOSED, which conforms to this model's
+    transitions. In either regime, in the published D4's own words (§2.3),
+    the implementation state machine is "operationally related but formally
+    unverified in this paper", not a proved refinement. -/
 inductive ValidTransition : CircuitBreakerState → CircuitBreakerState → Prop where
   | closedToOpen : ValidTransition .closed .open
   | openToHalfOpen : ValidTransition .open .halfOpen

@@ -7,9 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-07-11
+
 ### Added
+- `GovernedKernel.lean` and `KernelVariants.lean` ported byte-faithfully from the
+  published D4 Zenodo supplement (DOI 10.5281/zenodo.19900714) — the public repo
+  is now a superset of the published proof surface (deltas: import paths +
+  provenance headers).
+- `applyGuardedResource`/`guarded_monotone_resource` block in
+  `BasicInvariants.lean`, from the published supplement.
+- `CoordinationEfficiencyInt.lean`: integer-audit companion for the constrained
+  welfare/PoA core (List/Int, structural recursion; measured axiom profile
+  `[propext, Quot.sound]`, Classical.choice-free).
+- Kernel-level sorryAx probe that auto-enumerates all `Fulcrum.*` declarations,
+  a grep-invisible expected-failure fixture proving the gate bites, and
+  `check_central_axioms.lean` assertion mode — wired into `proof-gate.yml` as a
+  required probe-gate step.
+- Claims inventory entries with kernel-measured axiom profiles (C-024, C-025;
+  C-020 strengthened).
 - Public-flip readiness docs, integrity probes, and reproducibility gates for the
   Lean/TLA+/evidence stack.
+
+### Changed
+- Isolation axioms relabeled as tiered deployment assumptions quoting the
+  published paper's own language; `ValidTransition` now documents the deployed
+  recovery regimes (direct recovery by default; cooldown-gated
+  OPEN→HALF_OPEN→CLOSED probe when configured — fulcrum-trust #28).
+- C-005 (long-context governance accuracy) flipped `proven → tested` per the
+  lapsed waiver (CL5-010 / ADR-032).
+- `lake build` gate step made non-vacuous (three-layer guard); CI had been
+  passing with 0 jobs built.
+- `CITATION.cff` version reconciled to the tagged release series (was an
+  untagged `1.0.0`).
 
 ## [0.1.0] - 2026-05-03
 
@@ -34,4 +63,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   dependency and self-contained `lake build` flow.
 - Removed tracked workstation-path leaks from public-facing files and scripts.
 
+[0.2.0]: https://github.com/Fulcrum-Governance/Fulcrum-Proofs/releases/tag/v0.2.0
 [0.1.0]: https://github.com/Fulcrum-Governance/Fulcrum-Proofs/releases/tag/v0.1.0
