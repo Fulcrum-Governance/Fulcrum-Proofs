@@ -1,5 +1,5 @@
 version: 1
-updated_at: 2026-07-02
+updated_at: 2026-07-11
 waivers:
   - claim_id: C-005
     reason: "Tested, not proven (correction 2026-07-02, per fulcrum-io CL5-010 and ADR-032): 28/28 signal detection in the cited offline-synthetic benchmark run (1K-1M corpora, depth-0, n=7 per corpus size); the runtime inference loop is not on the live cognitive path and the reproducible-harness requirement in the limitation memo remains unmet. Waiver expiry 2026-06-30 lapsed without renewal. Evidence: benchmarks/raw/c005-final-report.json"
@@ -8,3 +8,4 @@ waivers:
     expires_at: 2026-06-30
     resolved_at: 2026-04-02
     limitations_ref: audits/final/c005-waiver-limitation.md
+    applied_at: 2026-07-11  # correction landed: claim_scope/claim_closure/claim_ledger now carry status tested

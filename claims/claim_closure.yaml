@@ -1,5 +1,5 @@
 version: 1
-updated_at: 2026-06-22
+updated_at: 2026-07-11
 description: >
   Claim closure manifest linking every public claim to its theorem IDs,
   runtime test evidence, CI jobs, and artifact paths. Created per PRD-003.
@@ -75,7 +75,7 @@ closures:
   - claim_id: C-005
     statement: Long-context recall quality over 10M+ token histories
     type: empirical
-    public_status: proven
+    public_status: tested
     runtime_evidence:
       - id: rt_c005_research_agent_py
         path: tests/proving-ground/scenarios/research_agent.py
@@ -120,6 +120,12 @@ closures:
       - THM-NOT-DSIC
       - THM-POA-BOUNDED
       - THM-POA-CONSTRAINED
+      - THM-POA-CONSTRAINED-INT
+      - THM-TRUST-CAP-BOUNDED
+      - THM-TRUST-DETECTION-BOUND
+      - THM-KERNEL-PRE-EXEC-SAFETY
+      - THM-KERNEL-HIGHRISK-ADMISSIBILITY
+      - THM-BUDGET-GUARDED
       - THM-BUDGET-GAME-BRIDGE
       - THM-TRUST-MONOTONE
       - THM-TRUST-THRESHOLD
@@ -373,8 +379,10 @@ closures:
     public_status: proven
     theorem_ids:
       - THM-POA-CONSTRAINED
+      - THM-POA-CONSTRAINED-INT
       - THM-POA-BOUNDED
       - THM-NASH-PURE-EXISTENCE
+      - THM-NASH-UNIQUENESS
     runtime_evidence:
       - id: constrained_poa_enumeration_n_2_to_12
         path: evidence/constrained_poa_results.json
@@ -522,3 +530,55 @@ closures:
       4 proven theorems + 1 axiom (THM-RLM-ISOLATION, sandbox integrity
       assumption). RLMContracts.lean mirrors Go internal/rlm/interfaces.go
       (see docs/formal-verification/CORRESPONDENCE.md in fulcrum-io).
+
+  - claim_id: C-024
+    statement: Capped-prior trust variant has a uniform detection-latency bound
+      (hardened model variant, not an implementation claim)
+    type: formal
+    public_status: proven
+    theorem_ids:
+      - THM-TRUST-DETECTION-BOUND
+      - THM-TRUST-CAP-BOUNDED
+    ci_jobs:
+      - name: proof-gate.yml
+        repo: Fulcrum-Proofs
+    artifacts:
+      - path: proofs/lean/Proofs/KernelVariants.lean
+        type: lean_proof
+    notes: >
+      Published as D4 Theorem 3.9 (Zenodo DOI 10.5281/zenodo.19900714);
+      ported byte-faithfully into the repo 2026-07-11. Proved for the
+      discrete capped Lean model only — the paper's own scope line ("a
+      hardened model variant, not a claim about the current implementation")
+      and the CORRESPONDENCE note on THM-TRUST-DETECTION-BOUND govern every
+      public use. The deployed Python estimator's raw-model constant differs
+      (θ=0.3, α_max=20: Lean sufficient 210 vs raw minimal ≈47).
+      fulcrum-trust's alpha_max knob (T1a lane) is Implemented, not Proved.
+
+  - claim_id: C-025
+    statement: The D4 kernel-supplement Lean modules are in the public repo and CI-replayed
+    type: hybrid
+    public_status: proven
+    theorem_ids:
+      - THM-KERNEL-PRE-EXEC-SAFETY
+      - THM-KERNEL-HIGHRISK-ADMISSIBILITY
+      - THM-TRUST-DETECTION-BOUND
+      - THM-TRUST-CAP-BOUNDED
+      - THM-BUDGET-GUARDED
+    ci_jobs:
+      - name: proof-gate.yml
+        repo: Fulcrum-Proofs
+    artifacts:
+      - path: proofs/lean/Proofs/GovernedKernel.lean
+        type: lean_proof
+      - path: proofs/lean/Proofs/KernelVariants.lean
+        type: lean_proof
+    notes: >
+      Closes the supplement-vs-repo gap: GovernedKernel.lean and
+      KernelVariants.lean (published only inside d4-kernel-supplement.zip,
+      Zenodo DOI 10.5281/zenodo.19900714, never previously in this repo's
+      git history) are now in-tree with declarations verbatim (deltas:
+      import paths + provenance headers), built by lake, swept by the
+      kernel-level sorryAx probe, and profile-asserted by
+      check_central_axioms.lean. The supplement zip remains authoritative
+      for the published bytes.

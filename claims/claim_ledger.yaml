@@ -1,5 +1,5 @@
 version: 2
-updated_at: 2026-05-01
+updated_at: 2026-07-11
 entries:
 - claim_id: C-004
   type: empirical
@@ -13,10 +13,12 @@ entries:
     output.
 - claim_id: C-005
   type: empirical
-  status: proven
+  status: tested
   evidence_refs:
   - benchmarks/raw/c005-final-report.json
-  notes: 28/28 signals detected across 4 corpus sizes (1K-1M tokens). Zero accuracy
+  notes: Status corrected to tested 2026-07-11 per claims/waivers.yaml (CL5-010, ADR-032);
+    offline-synthetic benchmark, runtime inference loop not on the live cognitive path,
+    reproducible-harness requirement unmet. 28/28 signals detected across 4 corpus sizes (1K-1M tokens). Zero accuracy
     degradation. Recursive inference loop with LLM-driven Python navigation code in
     sandboxed Docker. 7 signal types (gratitude loop, budget overrun, trust oscillation,
     tool misuse, cost plateau spike, silent drift, healthy convergence).
@@ -137,3 +139,22 @@ entries:
     step decreasing (termination measure), answer monotonicity, token budget enforcement
     (all proven). Context partition isolation axiomatized (sandbox property). Models
     inference loop from arXiv:2512.24601.
+- claim_id: C-024
+  type: formal
+  status: proven
+  evidence_refs:
+  - proofs/lean/Proofs/KernelVariants.lean
+  notes: D4 Theorem 3.9 ported from the Zenodo supplement (DOI 10.5281/zenodo.19900714).
+    Proved for the discrete capped Lean model only; the CORRESPONDENCE note on
+    THM-TRUST-DETECTION-BOUND is mandatory wherever the constant is cited. Hardened
+    model variant, not an implementation claim.
+- claim_id: C-025
+  type: hybrid
+  status: proven
+  evidence_refs:
+  - proofs/lean/Proofs/GovernedKernel.lean
+  - proofs/lean/Proofs/KernelVariants.lean
+  - proofs/lean/reports/probe-gate.log
+  notes: Supplement-vs-repo gap closed 2026-07-11 — published kernel modules in-tree
+    with declarations verbatim, lake-built, sorryAx-swept at kernel level, and
+    axiom-profiles asserted against theorem_inventory.yaml.

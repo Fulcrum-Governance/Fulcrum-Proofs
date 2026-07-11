@@ -1,5 +1,5 @@
 version: 2
-updated_at: 2026-05-06
+updated_at: 2026-07-11
 theorems:
   - theorem_id: THM-BUDGET-LOCAL
     assumptions:
@@ -117,6 +117,27 @@ theorems:
       tightened constrained optimum and PoA=1 result. Both declarations are
       sorry-free; computational evidence for n=2..12 is recorded in
       evidence/constrained_poa_results.json.
+  - theorem_id: THM-POA-CONSTRAINED-INT
+    assumptions:
+      - A-GAME-001: agents have finite action sets (4 actions)
+      - A-GAME-002: budget = 25 * agentCount (tight budget)
+    lean_module: Proofs/GameTheory/CoordinationEfficiencyInt.lean
+    dependencies: []
+    proof_status: proven
+    axiom_profile: [propext, Quot.sound]
+    sorry_count: 0
+    notes: >
+      Integer-audit companion to THM-POA-CONSTRAINED (T2-B).
+      constrained_welfare_optimal_int and constrained_poa_exact_int state the
+      budget-feasible welfare optimum and the division-free PoA=1 form over
+      List/Int by structural recursion — no reals, no Finset, no funext in the
+      statements. Classical.choice-free; Quot.sound enters only via omega's
+      reflective soundness machinery, not via any quotient-typed statement.
+      Carries NO Nash quantifier (equilibrium uniqueness remains
+      THM-NASH-UNIQUENESS, kernel-3), and unlike the ℝ theorem needs no
+      n ≤ 12 hypothesis. netQuality15_spec pins the scaled numerals to the
+      game model's own definitions. The ℝ theorem constrained_poa_exact is
+      unchanged and keeps its profile.
   - theorem_id: THM-BUDGET-GAME-BRIDGE
     assumptions: [A-BUDGET-001]
     lean_module: Proofs/GameTheory/BudgetGameBridge.lean
@@ -172,6 +193,88 @@ theorems:
     axiom_profile: []
     notes: Valid transition relation with terminated as absorbing state.
       Proves no_closed_to_halfOpen (must go through open first).
+  - theorem_id: THM-TRUST-CAP-BOUNDED
+    assumptions:
+      - A-TRUST-006: successes update via cappedSuccessUpdate with cap αMax
+    lean_module: Proofs/KernelVariants.lean
+    dependencies: []
+    proof_status: proven
+    axiom_profile: [propext]
+    sorry_count: 0
+    provenance: Ported from d4-kernel-supplement.zip (Zenodo DOI 10.5281/zenodo.19900714),
+      declarations verbatim (import paths + provenance header only).
+    notes: capped_success_update_bounded — the capped-success update never exceeds αMax.
+  - theorem_id: THM-TRUST-DETECTION-BOUND
+    assumptions:
+      - A-TRUST-001
+      - A-TRUST-003
+      - A-TRUST-006: successes update via cappedSuccessUpdate with cap αMax
+    lean_module: Proofs/KernelVariants.lean
+    dependencies: [THM-TRUST-THRESHOLD, THM-TRUST-CAP-BOUNDED]
+    proof_status: proven
+    axiom_profile: [propext, Classical.choice, Quot.sound]
+    sorry_count: 0
+    provenance: >
+      Ported byte-faithfully from d4-kernel-supplement.zip, Zenodo DOI
+      10.5281/zenodo.19900714 — the published D4 Theorem 3.9
+      (capped_prior_strict_responsiveness).
+    notes: >
+      Uniform detection-latency bound for the capped model — threshold
+      crossing within q·(αMax+1) failures, independent of benign-phase
+      length. CORRESPONDENCE (mandatory wherever cited): Proved for the
+      discrete capped Lean model (Laplace (α+1)/(α+β+2) over Nat); the Lean
+      witness is sufficient, not minimal. The deployed Python raw estimator
+      (α/(α+β) over float, fulcrum-trust) has the tighter minimal bound
+      β > α(q−p)/p — for θ=0.3 and α_max=20: Lean sufficient bound 210,
+      raw-model minimal ≈47. Never present the Lean constant as operational
+      detection latency without this note; the paper itself labels Thm 3.9
+      "a hardened model variant, not a claim about the current
+      implementation". Hoeffding/Mui statistical latency remains
+      Tested/analytical, never Lean-proved.
+  - theorem_id: THM-KERNEL-PRE-EXEC-SAFETY
+    assumptions:
+      - A-TRUST-004
+      - A-BUDGET-001: applyAction returns some new budget only if threshold condition holds
+    lean_module: Proofs/GovernedKernel.lean
+    dependencies: [THM-BUDGET-LOCAL, THM-CIRCUIT-TRANSITIONS]
+    proof_status: proven
+    axiom_profile: [propext]
+    sorry_count: 0
+    provenance: Ported from d4-kernel-supplement.zip (Zenodo DOI 10.5281/zenodo.19900714),
+      declarations verbatim (import paths + provenance header only).
+    notes: >
+      open_circuit_blocks_before_budget, governed_execution_preserves_budget,
+      governed_kernel_pre_execution_safety — the trust gate dominates the
+      spend path (open circuit blocks before any budget mutation) and every
+      successful governed execution preserves the budget invariant.
+  - theorem_id: THM-KERNEL-HIGHRISK-ADMISSIBILITY
+    assumptions:
+      - A-TRUST-004
+      - A-KERNEL-001: RiskPolicy orders the high-risk threshold strictly above standard
+    lean_module: Proofs/GovernedKernel.lean
+    dependencies: [THM-KERNEL-PRE-EXEC-SAFETY]
+    proof_status: proven
+    axiom_profile: [propext]
+    sorry_count: 0
+    provenance: Ported from d4-kernel-supplement.zip (Zenodo DOI 10.5281/zenodo.19900714) —
+      backs the published D4 Theorem 4.3 (risk-calibrated admissibility).
+    notes: >
+      high_risk_execution_requires_stronger_trust and
+      high_risk_execution_kernel_guarantee — a high-risk action can only
+      execute when the stricter trust threshold held, and the spend bound is
+      still preserved.
+  - theorem_id: THM-BUDGET-GUARDED
+    assumptions:
+      - A-BUDGET-002: arithmetic over Nat
+    lean_module: Proofs/BasicInvariants.lean
+    dependencies: []
+    proof_status: proven
+    axiom_profile: [propext]
+    sorry_count: 0
+    provenance: Ported from d4-kernel-supplement.zip (Zenodo DOI 10.5281/zenodo.19900714),
+      declarations verbatim; restores supplement alignment of BasicInvariants.lean.
+    notes: guarded_monotone_resource — every successful guarded resource update
+      stays within the configured limit (generic form of the budget guard).
   - theorem_id: THM-RLM-DEPTH-BOUNDED
     assumptions:
       - A-RLM-001: RLM state tracks recursion depth with maxDepth invariant
@@ -211,6 +314,18 @@ theorems:
     lean_module: Proofs/RLMContracts.lean
     dependencies: []
     proof_status: axiom
+    tier: deployment-assumption
     axiom_profile: [Fulcrum.RLM.canAccess, Fulcrum.RLM.context_partition_isolation]
-    notes: Axiomatized — systems property of Docker sandbox, not provable from pure math.
-      Any correct sandbox implementation must satisfy this contract.
+    notes: >
+      Deployment assumption — a systems property of the runtime sandbox, never
+      Proved. The published D4 frames it the same way (Appendix B: "Isolation
+      remains an assumption. Context partition isolation is axiomatized rather
+      than derived: the proofs specify what a correct sandbox must enforce,
+      but they do not prove that any given container or microVM implementation
+      actually provides that isolation."; §6 Limitations echoes this; DOI
+      10.5281/zenodo.19900714). Hardware-attested isolation (SEV-SNP/TDX TEEs,
+      gVisor/Firecracker microVMs) shifts the trust basis of this axiom rather
+      than eliminating it. No artifact may claim "formally verified
+      isolation". These two axioms are the entire first-party axiom surface —
+      the repo is deliberately not "axiom-free"; "0 sorrys" remains the
+      enforced invariant.

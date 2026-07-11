@@ -1,8 +1,8 @@
 version: 2
-updated_at: 2026-05-06
+updated_at: 2026-07-11
 policy:
   allow_only_closeable_claims: true
-  c005_status: proven
+  c005_status: tested
 claims:
   - claim_id: C-004
     statement: Durable governed path latency characteristics
@@ -16,7 +16,7 @@ claims:
   - claim_id: C-005
     statement: Long-context recall quality over 10M+ token histories
     type: empirical
-    status: proven
+    status: tested
     closure_criteria:
       - dataset_and_protocol_defined
       - reproducible_results_with_confidence
@@ -148,4 +148,24 @@ claims:
     notes: Interface contracts in RLMContracts.lean. 4 proven theorems + 1 axiom
       (isolation). Mirrors Go internal/rlm/interfaces.go structure. Step function
       models inference loop with termination measure on partitionsRemaining.
+    owner: formal-systems
+  - claim_id: C-024
+    statement: Capped-prior trust variant has a uniform detection-latency bound
+      (hardened model variant, not an implementation claim)
+    type: formal
+    status: proven
+    closure_criteria:
+      - lake_build_passes
+      - sorry_free
+      - axiom_profile_recorded
+      - correspondence_note_present
+    owner: formal-systems
+  - claim_id: C-025
+    statement: The D4 kernel-supplement Lean modules are in the public repo and CI-replayed
+    type: hybrid
+    status: proven
+    closure_criteria:
+      - supplement_declarations_verbatim
+      - lake_build_passes
+      - probe_gate_profiles_asserted
     owner: formal-systems
