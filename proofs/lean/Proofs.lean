@@ -12,5 +12,6 @@ import Proofs.GameTheory.NashUniqueness
 import Proofs.GameTheory.MixedNashExistence
 import Proofs.GameTheory.IncentiveCompatibility
 import Proofs.GameTheory.CoordinationEfficiency
+import Proofs.GameTheory.CoordinationEfficiencyInt
 import Proofs.GameTheory.BudgetGameBridge
 import Proofs.GameTheory.HeterogeneousBudget

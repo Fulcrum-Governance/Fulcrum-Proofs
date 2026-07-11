@@ -2,7 +2,10 @@ import Lean
 import Proofs.BasicInvariants
 import Proofs.RLMContracts
 import Proofs.TrustTermination
+import Proofs.KernelVariants
+import Proofs.GovernedKernel
 import Proofs.GameTheory.CoordinationEfficiency
+import Proofs.GameTheory.CoordinationEfficiencyInt
 import Proofs.GameTheory.NashUniqueness
 import Proofs.GameTheory.MixedNashExistence
 
@@ -43,7 +46,27 @@ def expectedProfiles : Array (Name × Array Name) := #[
   (``Fulcrum.RLM.canAccess,
     #[``Fulcrum.RLM.canAccess]),
   (``Fulcrum.RLM.context_partition_isolation,
-    #[``Fulcrum.RLM.canAccess, ``Fulcrum.RLM.context_partition_isolation])
+    #[``Fulcrum.RLM.canAccess, ``Fulcrum.RLM.context_partition_isolation]),
+  -- Ported kernel-supplement modules (Zenodo DOI 10.5281/zenodo.19900714)
+  (``Fulcrum.capped_success_update_bounded, #[``propext]),
+  (``Fulcrum.capped_prior_strict_responsiveness,
+    #[``propext, ``Classical.choice, ``Quot.sound]),
+  (``Fulcrum.open_circuit_blocks_before_budget, #[``propext]),
+  (``Fulcrum.governed_execution_preserves_budget, #[``propext]),
+  (``Fulcrum.governed_kernel_pre_execution_safety, #[``propext]),
+  (``Fulcrum.high_risk_execution_requires_stronger_trust, #[``propext]),
+  (``Fulcrum.high_risk_execution_kernel_guarantee, #[``propext]),
+  (``Fulcrum.guarded_monotone_resource, #[``propext]),
+  -- Integer-audit companion (choice-free; Quot.sound via omega reflection)
+  (``Fulcrum.GameTheory.netQuality15_spec, #[``propext]),
+  (``Fulcrum.GameTheory.netQuality15_le_linear, #[``propext, ``Quot.sound]),
+  (``Fulcrum.GameTheory.welfare15_le_linear, #[``propext, ``Quot.sound]),
+  (``Fulcrum.GameTheory.constrained_welfare_optimal_int,
+    #[``propext, ``Quot.sound]),
+  (``Fulcrum.GameTheory.allModerate_welfare15, #[``propext, ``Quot.sound]),
+  (``Fulcrum.GameTheory.allModerate_cost_int, #[``propext, ``Quot.sound]),
+  (``Fulcrum.GameTheory.constrained_poa_exact_int,
+    #[``propext, ``Quot.sound])
 ]
 
 elab "#assert_axiom_profiles" : command => do
@@ -71,3 +94,7 @@ elab "#assert_axiom_profiles" : command => do
 #print axioms Fulcrum.budget_safety_guarantee
 #print axioms Fulcrum.RLM.canAccess
 #print axioms Fulcrum.RLM.context_partition_isolation
+#print axioms Fulcrum.capped_prior_strict_responsiveness
+#print axioms Fulcrum.governed_kernel_pre_execution_safety
+#print axioms Fulcrum.high_risk_execution_kernel_guarantee
+#print axioms Fulcrum.GameTheory.constrained_poa_exact_int
