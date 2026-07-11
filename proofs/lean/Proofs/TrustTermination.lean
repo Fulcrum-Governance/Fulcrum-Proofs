@@ -1,9 +1,10 @@
 /-
-  Trust Termination Theorem
+  Trust Threshold-Crossing Theorem Family
 
-  Formalizes the behavioral guarantee that Fulcrum's Beta-distribution
-  trust model (implemented in fulcrum-trust Python package) ensures
-  agent termination when unproductive interactions accumulate.
+  Formalizes the discrete behavioral guarantee used in the paper's core trust
+  theorem family: in a Nat-valued Beta trust model, sustained failure
+  forces threshold crossing in finite steps and the abstract circuit
+  breaker opens when trust falls below the configured threshold.
 
   The trust score uses Laplace-smoothed Beta distribution mean:
     Trust(α, β) = (α + 1) / (α + β + 2)
@@ -14,8 +15,11 @@
   is equivalent to:
     (α + 1) * (α' + β' + 2) < (α' + 1) * (α + β + 2)
 
-  Reference implementation: fulcrum-trust/fulcrum_trust/evaluator.py
-  Circuit breaker:          fulcrum-trust/fulcrum_trust/manager.py
+  This file should not be read as a proof of the shipped Python runtime.
+  The runtime extends the model with float-valued counters, partial
+  outcomes, and bidirectional decay.
+  (Wording aligned with the released D4 supplement, Zenodo DOI
+  10.5281/zenodo.19900714.)
 -/
 
 import Mathlib.Data.Nat.Basic
@@ -43,9 +47,9 @@ def trustLt (α β α' β' : Nat) : Prop :=
 def trustBelowThreshold (α β p q : Nat) : Prop :=
   trustNum α * q < p * trustDen α β
 
-/-- Circuit breaker states matching fulcrum-trust Python implementation.
-    CLOSED: normal operation.  OPEN: terminated.
-    HALF_OPEN: recovery probe. TERMINATED: admin override. -/
+/-- Abstract circuit-breaker states used by the discrete proof model.
+    CLOSED: normal operation. OPEN: circuit opened on threshold crossing.
+    HALF_OPEN: recovery probe. TERMINATED: administrative override. -/
 inductive CircuitBreakerState where
   | closed
   | open
@@ -145,13 +149,23 @@ theorem trust_safety_invariant (s : TrustState) (h : wellFormed s) :
 -- Theorem D: Circuit Breaker State Machine
 -- ═══════════════════════════════════════════════════════════════════════
 
-/-- Valid state transitions for the trust circuit breaker.
-    Matches fulcrum-trust/manager.py evaluate() logic:
+/-- Valid state transitions for the abstract 4-state circuit-breaker model:
     - CLOSED → OPEN (trust drops below threshold)
     - OPEN → HALF_OPEN (recovery probe initiated)
     - HALF_OPEN → CLOSED (probe succeeded, trust restored)
     - HALF_OPEN → OPEN (probe failed)
-    - any → TERMINATED (admin override) -/
+    - any → TERMINATED (admin override)
+
+    Deployed-runtime correspondence (fulcrum-trust's manager.py, two regimes,
+    selected by `recovery_cooldown_seconds` — rationale block in manager.py;
+    ledger item F-015): with the cooldown unset (the default), recovery goes
+    OPEN → CLOSED directly and HALF_OPEN is reachable only via operator
+    out-of-band action — that direct edge is NOT a ValidTransition of this
+    model. With a cooldown configured (fulcrum-trust #28, FUL-195), recovery
+    walks OPEN → HALF_OPEN → CLOSED, which conforms to this model's
+    transitions. In either regime, in the published D4's own words (§2.3),
+    the implementation state machine is "operationally related but formally
+    unverified in this paper", not a proved refinement. -/
 inductive ValidTransition : CircuitBreakerState → CircuitBreakerState → Prop where
   | closedToOpen : ValidTransition .closed .open
   | openToHalfOpen : ValidTransition .open .halfOpen
@@ -195,7 +209,9 @@ theorem trust_cumulative_degradation (α β₁ β₂ : Nat) (h : β₁ < β₂) 
   nlinarith
 
 /-- Combining reachability with monotonicity: for any starting state
-    and any threshold, continued failures guarantee termination. -/
+    and any threshold, continued failures guarantee threshold crossing
+    in finite time. The historical theorem name keeps the existing claim
+    registry terminology. -/
 theorem trust_guaranteed_termination (α β₀ p q : Nat)
     (hp : 0 < p) (hq : 0 < q) (hpq : p < q) :
     ∃ n : Nat, trustBelowThreshold α (β₀ + n) p q := by
@@ -208,9 +224,9 @@ theorem trust_guaranteed_termination (α β₀ p q : Nat)
 -- Theorem E: Decay Preserves Termination
 -- ═══════════════════════════════════════════════════════════════════════
 
-/-- Time decay does not prevent termination: if failures continue
-    to accumulate, decay on historical interactions makes termination
-    reach faster, not slower.
+/-- Simplified unidirectional decay does not prevent threshold crossing:
+    if failures continue to accumulate, scaling historical successes
+    downward still preserves reachability of the threshold condition.
 
     Decay is modeled as scaling α by a rational factor r_num/r_den
     where 0 < r_num < r_den (i.e., 0 < r < 1). The decayed trust state
@@ -219,7 +235,8 @@ theorem trust_guaranteed_termination (α β₀ p q : Nat)
 
     This theorem shows that for any decayed α (r_num * α / r_den),
     there still exists n additional failures that push trust below
-    the threshold — termination is guaranteed regardless of decay. -/
+    the threshold. It does not establish correspondence with the shipped
+    runtime's bidirectional decay mechanism. -/
 theorem decay_preserves_termination (α β₀ p q : Nat)
     (r_num r_den : Nat)
     (_hr_pos : 0 < r_num) (_hr_lt : r_num < r_den)

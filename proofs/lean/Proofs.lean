@@ -1,6 +1,8 @@
 import Proofs.BasicInvariants
 import Proofs.TemporalConservationSpec
 import Proofs.TrustTermination
+import Proofs.KernelVariants
+import Proofs.GovernedKernel
 import Proofs.RLMContracts
 import Proofs.GameTheory.Definitions
 import Proofs.GameTheory.FulcrumGame
@@ -10,5 +12,6 @@ import Proofs.GameTheory.NashUniqueness
 import Proofs.GameTheory.MixedNashExistence
 import Proofs.GameTheory.IncentiveCompatibility
 import Proofs.GameTheory.CoordinationEfficiency
+import Proofs.GameTheory.CoordinationEfficiencyInt
 import Proofs.GameTheory.BudgetGameBridge
 import Proofs.GameTheory.HeterogeneousBudget

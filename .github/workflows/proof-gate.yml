@@ -32,6 +32,9 @@ jobs:
       - name: Run proof replay
         run: make proof-gate
 
+      - name: Run probe gate (kernel-level sorryAx + axiom profiles)
+        run: make probe-gate
+
       - name: Upload proof artifacts
         if: always()
         uses: actions/upload-artifact@v4

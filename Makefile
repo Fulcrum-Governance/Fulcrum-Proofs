@@ -29,6 +29,9 @@ orchestrator-run:
 proof-gate:
 	./proofs/lean/scripts/replay.sh
 
+probe-gate:
+	./proofs/lean/scripts/probe_gate.sh
+
 model-gate:
 	./models/tla/scripts/run_tlc.sh
 

@@ -2,18 +2,21 @@
   RLM Interface Contracts
 
   Type signatures and invariants that define correctness criteria for
-  Recursive Language Model (RLM) implementations (arXiv:2512.24601).
+  abstract Recursive Language Model (RLM) step functions
+  (arXiv:2512.24601).
 
-  These are *interface contracts* — they specify what a correct RLM
-  implementation must satisfy without requiring the full implementation
-  to exist. An acquirer's formal methods engineer can verify that these
-  contracts match the Go interfaces in internal/rlm/interfaces.go.
+  These are *interface contracts*: they specify what a correct RLM
+  implementation must satisfy without claiming end-to-end verification of
+  a deployed implementation. In the paper they appear only as supporting
+  appendix material.
 
   Contracts proven from definitions: depth bounded, step decreasing,
   answer monotonicity. Isolation is axiomatized (sandbox property,
-  not provable from pure math).
-
-  Reference: internal/rlm/interfaces.go (Go), internal/rlm/inference/loop.go
+  not provable from pure math): a deployment assumption whose trust basis
+  a TEE/microVM runtime shifts but does not eliminate — see
+  THM-RLM-ISOLATION in claims/theorem_inventory.yaml.
+  (Wording aligned with the released D4 supplement, Zenodo DOI
+  10.5281/zenodo.19900714.)
 -/
 
 import Mathlib.Data.Nat.Basic
