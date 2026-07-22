@@ -176,6 +176,8 @@ The `proofs/lean/Proofs/GameTheory/` directory contains a Lean 4 + Mathlib4 form
 | `TemporalConservationSpec.lean` | 3 (temporal conservation, revocation) | Yes |
 | `TrustTermination.lean` | 10 (trust model, circuit breaker) | Yes |
 | `RLMContracts.lean` | 8 (4 proven + 1 axiom + helpers) | Yes (1 axiom) |
+| `GovernedKernel.lean` | 5 (governed execution safety, risk-tiered admissibility) | Yes |
+| `KernelVariants.lean` | 2 (capped-prior bound, strict responsiveness) | Yes |
 | `GameTheory/*.lean` | 10+ (Nash, PoA, incentives, bridge) | Yes |
 
 ### Remaining Sorry Holes (0 of 16 original)
