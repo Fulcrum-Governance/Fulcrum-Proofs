@@ -1,6 +1,6 @@
 # Fulcrum-Proofs — Agent Context
 
-**Last updated:** 2026-05-27
+**Last updated:** 2026-07-28
 
 ---
 
@@ -54,7 +54,10 @@ All theorems are sorry-free, including:
 - `trust_guaranteed_termination` + 9 companion theorems (TrustTermination.lean)
 - 4 RLM interface contracts + 1 axiom (RLMContracts.lean)
 
-**Total proof portfolio:** 20+ sorry-free theorems across 5 files, 23 claims (C-004 through C-023).
+**Proof portfolio:** sorry-free theorems across the first-party Lean modules inventoried in
+`claims/theorem_inventory.yaml`; claims C-004 through C-025 per `claims/claim_scope.yaml`. The vendored
+`proofs/lean/vendor/Gametheory/` dependency is upstream code whose proof integrity is inherited, not
+re-verified by `check_no_sorry.sh`.
 
 ## Branch Protection (Strict)
 
@@ -64,6 +67,20 @@ All changes must go through PRs. 6 CI gates required:
 - `bench-gate`, `fault-gate`, `evidence-gate`, `audit-gate` — fast (<15s each)
 
 Bot review threads (Codex, Qodo) must be resolved before merge. Use GraphQL `resolveReviewThread` mutation if needed.
+
+## Release Lineage
+
+Latest tag: **`v0.2.0`**. Both tags are lightweight; only `v0.2.0` has a GitHub Release.
+
+| Tag | Date | What changed |
+|-----|------|--------------|
+| `v0.1.0` | 2026-05-03 | Public-flip readiness: `proofs/reproduce.sh` one-shot verification entrypoint, `probes/check_central_axioms.lean` + `expected_axioms.md` axiom-surface baseline, initial `CITATION.cff`, `HYPOTHESES.md`, README badges, `axiom_profile` metadata across the theorem inventory, portable contract-sync/evidence paths. |
+| `v0.2.0` | 2026-07-11 | Published-supplement parity + kernel-level probe gate: `GovernedKernel.lean` and `KernelVariants.lean` ported from the published D4 Zenodo supplement, `CoordinationEfficiencyInt.lean` integer-audit companion, sorryAx probe wired into `proof-gate.yml` as a required step, claims C-024/C-025 added, C-005 flipped `proven → tested` per the lapsed waiver. Archived at DOI `10.5281/zenodo.21314452`. |
+
+> **Trap:** `v0.3.0` belongs to **`fulcrum-trust`** (PyPI), a different repo. Do not "correct" Proofs
+> upward — Proofs' latest tag is `v0.2.0`.
+
+Per-release detail lives in [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Claim Lifecycle
 
