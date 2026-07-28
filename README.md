@@ -1,6 +1,6 @@
 # Fulcrum-Proofs
 
-[![proof-gate](https://github.com/Fulcrum-Governance/Fulcrum-Proofs/actions/workflows/proof-gate.yml/badge.svg)](https://github.com/Fulcrum-Governance/Fulcrum-Proofs/actions/workflows/proof-gate.yml) [![Lean 4.29.0-rc4](https://img.shields.io/badge/Lean-v4.29.0--rc4-0f766e)](https://github.com/leanprover/lean4/releases/tag/v4.29.0-rc4) [![mathlib 06e9473](https://img.shields.io/badge/mathlib-06e9473-1d4ed8)](https://github.com/leanprover-community/mathlib4/tree/06e947358d88e36af006f915f79a04a10fd43cc4) [![License: MIT](https://img.shields.io/badge/License-MIT-f59e0b.svg)](LICENSE) [![sorry count: 0](https://img.shields.io/badge/sorry-0-15803d)](proofs/lean/scripts/check_no_sorry.sh) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19900714.svg)](https://doi.org/10.5281/zenodo.19900714)
+[![proof-gate](https://github.com/Fulcrum-Governance/Fulcrum-Proofs/actions/workflows/proof-gate.yml/badge.svg)](https://github.com/Fulcrum-Governance/Fulcrum-Proofs/actions/workflows/proof-gate.yml) [![Lean 4.29.0-rc4](https://img.shields.io/badge/Lean-v4.29.0--rc4-0f766e)](https://github.com/leanprover/lean4/releases/tag/v4.29.0-rc4) [![mathlib 06e9473](https://img.shields.io/badge/mathlib-06e9473-1d4ed8)](https://github.com/leanprover-community/mathlib4/tree/06e947358d88e36af006f915f79a04a10fd43cc4) [![License: MIT](https://img.shields.io/badge/License-MIT-f59e0b.svg)](LICENSE) [![sorry count: 0](https://img.shields.io/badge/sorry-0-15803d)](proofs/lean/scripts/check_no_sorry.sh) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21314451.svg)](https://doi.org/10.5281/zenodo.21314451)
 
 Formal governance proofs for the agent control plane — the proof and evidence repository grounding the Fulcrum governance kernel's invariants.
 
@@ -64,7 +64,7 @@ This repository is contract-coupled to the `Fulcrum` repository:
 ## Repository Layout
 
 - `claims/`: canonical claim sources for this repo. Internal authority order:
-  - `claims/theorem_inventory.yaml` (v2, last updated 2026-05-03) — **theorem-level
+  - `claims/theorem_inventory.yaml` (v2, last updated 2026-07-11) — **theorem-level
     canonical source**. Reflects current proof state (`sorry_count`, `status`,
     `theorem_id`) and takes precedence over `claim_ledger.yaml` for any
     theorem-status question. Closes contradiction-ledger F-042.
@@ -179,6 +179,7 @@ The `proofs/lean/Proofs/GameTheory/` directory contains a Lean 4 + Mathlib4 form
 | `GovernedKernel.lean` | 5 (governed execution safety, risk-tiered admissibility) | Yes |
 | `KernelVariants.lean` | 2 (capped-prior bound, strict responsiveness) | Yes |
 | `GameTheory/*.lean` | 10+ (Nash, PoA, incentives, bridge) | Yes |
+| `GameTheory/CoordinationEfficiencyInt.lean` | 7 (integer-audit companion: constrained welfare optimum, division-free PoA=1) | Yes |
 
 ### Remaining Sorry Holes (0 of 16 original)
 

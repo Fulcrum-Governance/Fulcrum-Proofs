@@ -3,13 +3,13 @@ message: "If you use Fulcrum-Proofs, please cite it using the metadata from this
 title: "Fulcrum-Proofs"
 type: software
 version: "0.2.0"
-doi: "10.5281/zenodo.19900712"
+doi: "10.5281/zenodo.21314451"
 identifiers:
   - type: doi
-    value: "10.5281/zenodo.19900714"
+    value: "10.5281/zenodo.21314452"
     description: "This version"
   - type: doi
-    value: "10.5281/zenodo.19900712"
+    value: "10.5281/zenodo.21314451"
     description: "All versions"
 date-released: 2026-07-11
 license: MIT
@@ -26,7 +26,9 @@ preferred-citation:
       given-names: Anthony
       affiliation: "Independent Researcher"
   year: 2026
-  doi: "10.5281/zenodo.19900714"
-  url: "https://doi.org/10.5281/zenodo.19900714"
-  publisher: "Zenodo"
+  version: "d4-kernel-preprint-v2-2026-07-22"
+  doi: "10.5281/zenodo.21488065"
+  url: "https://doi.org/10.5281/zenodo.21488065"
+  publisher:
+    name: "Zenodo"
   license: "CC-BY-4.0"
