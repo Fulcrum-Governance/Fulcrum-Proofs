@@ -14,11 +14,11 @@
     integer, division-free form of "constrained PoA = 1"
     (welfare ratios compare as `welfare15 l ≤ welfare15 allModerate`).
   - They carry NO Nash quantifier. That all-moderate is the unique
-    equilibrium remains proved only in the ℝ development
-    (nash_eq_allModerate, axiom profile [propext, Classical.choice,
-    Quot.sound]); the ℝ theorem constrained_poa_exact is unchanged and
-    keeps that profile.
-  - Unlike the ℝ theorem, no `n ≤ 12` hypothesis is needed here: the
+    equilibrium is part of the canonical exact theorem at profile [propext].
+    The noncanonical Real compatibility theorem
+    constrained_poa_exact_real_compat retains the legacy profile
+    [propext, Classical.choice, Quot.sound].
+  - Unlike the canonical full claim, no `n ≤ 12` hypothesis is needed here: the
     welfare core is universal in the roster size.
 
   netQuality15 is case-defined for kernel-friendly reduction;

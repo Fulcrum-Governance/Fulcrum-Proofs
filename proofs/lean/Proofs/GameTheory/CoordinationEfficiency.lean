@@ -17,6 +17,7 @@ import Proofs.GameTheory.FulcrumGame
 import Proofs.GameTheory.NashExistence
 import Proofs.GameTheory.NashUniqueness
 import Proofs.GameTheory.SumUpdateLemmas
+import Proofs.GameTheory.CoordinationEfficiencyExact
 
 set_option autoImplicit false
 
@@ -139,9 +140,10 @@ theorem constrained_welfare_optimal (params : BudgetParams)
             exact_mod_cast hCostBoundNat
           nlinarith
 
-/-- Under tight budget, the Price of Anarchy is 1 against the constrained
-    welfare optimum among budget-feasible profiles. -/
-theorem constrained_poa_exact (params : BudgetParams)
+/-- Noncanonical Real-valued compatibility/provenance theorem. Under tight
+    budget, the Price of Anarchy is 1 against the constrained welfare optimum
+    among budget-feasible profiles. -/
+theorem constrained_poa_exact_real_compat (params : BudgetParams)
     (hBudget : params.totalBudget = 25 * params.agentCount)
     (hSmall : params.agentCount ≤ 12) :
     ConstrainedPriceOfAnarchyBounded
