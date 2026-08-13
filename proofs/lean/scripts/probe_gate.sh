@@ -30,4 +30,7 @@ lake env lean probes/check_sorry.lean 2>&1 | tee -a "$LOG"
 echo "[probe-gate] axiom-profile assertions vs claims/theorem_inventory.yaml" | tee -a "$LOG"
 lake env lean probes/check_central_axioms.lean 2>&1 | tee -a "$LOG"
 
+echo "[probe-gate] FUL-502 canonical/correspondence axiom profiles" | tee -a "$LOG"
+lake env lean probes/check_exact_poa_axioms.lean 2>&1 | tee -a "$LOG"
+
 echo "probe gate complete" | tee -a "$LOG"
