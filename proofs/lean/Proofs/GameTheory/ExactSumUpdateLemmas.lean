@@ -18,6 +18,17 @@ namespace Fulcrum.GameTheory
     (exactRoster profile)[i.val]'(by simpa [exactRoster] using i.isLt) = profile i := by
   simp [exactRoster]
 
+/-- A unilateral update takes the replacement action at the changed index. -/
+@[simp] theorem exactUpdate_same {n : Nat} (profile : ExactProfile n)
+    (i : Fin n) (a : AgentAction) : exactUpdate profile i a i = a := by
+  exact Function.update_self i a profile
+
+/-- A unilateral update preserves every unchanged index. -/
+@[simp] theorem exactUpdate_of_ne {n : Nat} (profile : ExactProfile n)
+    (i j : Fin n) (a : AgentAction) (h : j ≠ i) :
+    exactUpdate profile i a j = profile j := by
+  exact Function.update_of_ne h a profile
+
 /-- Structural sum of a constant natural-valued profile. -/
 theorem structuralSum_const (c n : Nat) :
     structuralSum (fun _ : Unit => c) (fun _ : Fin n => ()) = c * n := by
