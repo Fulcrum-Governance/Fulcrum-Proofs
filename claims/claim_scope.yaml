@@ -111,8 +111,8 @@ claims:
     notes: The canonical exact-data `constrained_poa_exact` is a six-clause
       compound theorem at exactly `[propext]` for every positive count 1..12.
       `constrained_poa_exact_real_compat` preserves the legacy Real result as
-      noncanonical compatibility evidence; fourteen named declarations prove
-      exact/Real correspondence downstream. Separate exhaustive empirical
+      noncanonical compatibility evidence; fourteen named obligation families
+      prove exact/Real correspondence downstream. Separate exhaustive empirical
       count-equivalence evidence remains n=2..12 in
       `evidence/constrained_poa_results.json`. The integer result is an additive
       welfare-only companion with no Nash quantifier. The unconstrained

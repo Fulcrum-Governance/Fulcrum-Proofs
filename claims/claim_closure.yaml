@@ -452,7 +452,7 @@ closures:
       clauses at exactly `[propext]` for every positive n=1..12. The legacy
       Real result survives as separately inventoried
       `constrained_poa_exact_real_compat`, and fourteen named downstream
-      declarations prove representation correspondence. The Int theorem is a
+      obligation families prove representation correspondence. The Int theorem is a
       welfare-only companion with no Nash quantifier. Independent empirical
       enumeration remains n=2..12. The unconstrained reference bound PoA ≤ 9/7
       remains sorry-free via `fulcrum_poa_bounded` and legacy Nash uniqueness.

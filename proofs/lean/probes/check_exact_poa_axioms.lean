@@ -176,4 +176,3 @@ elab "#assert_exact_poa_axiom_profiles" : command => do
 #print axioms Fulcrum.GameTheory.exactWelfare_value
 #print axioms Fulcrum.GameTheory.exactFullClaim_iff_realFullClaim
 #print axioms Fulcrum.GameTheory.exactCompleteDomain_iff_realCompleteDomain
-
