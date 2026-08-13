@@ -64,7 +64,7 @@ This repository is contract-coupled to the `Fulcrum` repository:
 ## Repository Layout
 
 - `claims/`: canonical claim sources for this repo. Internal authority order:
-  - `claims/theorem_inventory.yaml` (v2, last updated 2026-07-11) — **theorem-level
+  - `claims/theorem_inventory.yaml` (v3, last updated 2026-08-12) — **theorem-level
     canonical source**. Reflects current proof state (`sorry_count`, `status`,
     `theorem_id`) and takes precedence over `claim_ledger.yaml` for any
     theorem-status question. Closes contradiction-ledger F-042.
@@ -156,16 +156,23 @@ The `proofs/lean/Proofs/GameTheory/` directory contains a Lean 4 + Mathlib4 form
 | `NashExistence.lean` | All-moderate is Nash; noncompliant is strictly dominated |
 | `MixedNashExistence.lean` | Mixed-strategy Nash via PMF↔stdSimplex bridge to math-xmum/Brouwer `ExistsNashEq` |
 | `IncentiveCompatibility.lean` | Proportional allocation is **not** DSIC (counterexample) |
-| `CoordinationEfficiency.lean` | Social welfare bounds and Price of Anarchy |
+| `ExactDefinitions.lean` | Canonical exact signed-Nat game, Nash, welfare, and relational PoA surfaces |
+| `ExactSumUpdateLemmas.lean` | Kernel-1 structural sums, lookup, roster, count, and update identities |
+| `ExactNashExistence.lean` | Kernel-1 all-moderate value and Nash existence |
+| `ExactNashUniqueness.lean` | Kernel-1 structural uniqueness for every positive count 1..12 |
+| `CoordinationEfficiencyExact.lean` | Canonical six-clause `constrained_poa_exact`, exactly `[propext]` |
+| `CoordinationEfficiency.lean` | Legacy Real bounds and noncanonical `constrained_poa_exact_real_compat` |
+| `CoordinationCorrespondence.lean` | Fourteen named, separately measured exact/Real correspondence obligations |
+| `CoordinationEfficiencyInt.lean` | Additive welfare-only companion with no Nash quantifier |
 | `BudgetGameBridge.lean` | Connects `budget_safety_guarantee` to game model |
 
 ### Claims (C-018 through C-021)
 
 | Claim | Statement | Status |
 |-------|-----------|--------|
-| C-018 | Coordination game admits a Nash equilibrium | Proven (sorry-free; mixed Nash via Brouwer-via-Scarf for arbitrary finite games; pure-strategy uniqueness verified for agentCount ≤ 12) |
+| C-018 | Coordination game admits a Nash equilibrium | Proven (sorry-free; mixed Nash via Brouwer-via-Scarf; exact pure Nash existence and uniqueness cover every positive agentCount 1..12) |
 | C-019 | Proportional allocation is **not** DSIC under current utility | Proven |
-| C-020 | Constrained Price of Anarchy is 1.0 under tight budget | Proven (formal constrained PoA = 1.0 for agentCount ≤ 12; unconstrained reference upper bound PoA ≤ 9/7) |
+| C-020 | Constrained Price of Anarchy is 1.0 under tight budget | Proven (canonical full exact claim at `[propext]` for every positive agentCount 1..12; separate empirical enumeration 2..12; unconstrained reference upper bound PoA ≤ 9/7) |
 | C-021 | Budget enforcement grounds the game model | Proven |
 
 ### Proof Portfolio Summary
@@ -180,6 +187,8 @@ The `proofs/lean/Proofs/GameTheory/` directory contains a Lean 4 + Mathlib4 form
 | `KernelVariants.lean` | 2 (capped-prior bound, strict responsiveness) | Yes |
 | `GameTheory/*.lean` | 10+ (Nash, PoA, incentives, bridge) | Yes |
 | `GameTheory/CoordinationEfficiencyInt.lean` | 7 (integer-audit companion: constrained welfare optimum, division-free PoA=1) | Yes |
+| `GameTheory/CoordinationEfficiencyExact.lean` | Canonical claim-complete constrained PoA at kernel-1 | Yes |
+| `GameTheory/CoordinationCorrespondence.lean` | Fourteen named exact/Real correspondence obligation families | Yes |
 
 ### Remaining Sorry Holes (0 of 16 original)
 
@@ -191,7 +200,7 @@ All originally-tracked sorry holes are closed. The zero-sorry claim covers all f
 
 The original plan assumed proportional allocation is DSIC. Mathematical review found this is **false** under the utility model `allocationUtility = -|allocation - trueNeed|`: under budget sufficiency, agents can profitably under-report to move their allocation closer to their true need. The Lean files now prove this negative result via an explicit two-agent counterexample (n=2, budget=20, needs=(5,5)).
 
-For the audited simulation instance (`n=5`, `budget=125`), best-response dynamics converge to the welfare-optimal all-moderate profile, so realized PoA is `1.0`. The Lean theorem still states the general upper bound `PoA ≤ 9/7`.
+For the audited simulation instance (`n=5`, `budget=125`), best-response dynamics converge to the welfare-optimal all-moderate profile, so realized PoA is `1.0`. This empirical result is separate from the canonical exact theorem for every positive `n=1..12`. The legacy unconstrained Lean theorem still states the general upper bound `PoA ≤ 9/7`.
 
 See `proofs/lean/Proofs/GameTheory/README.md` for a detailed module guide and assumption register.
 

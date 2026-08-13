@@ -1,5 +1,5 @@
-version: 2
-updated_at: 2026-07-11
+version: 3
+updated_at: 2026-08-12
 theorems:
   - theorem_id: THM-BUDGET-LOCAL
     assumptions:
@@ -67,7 +67,7 @@ theorems:
       - A-GAME-001: agents have finite action sets (4 actions)
       - A-GAME-002: budget = 25 * agentCount (tight budget)
       - A-GAME-003: violation penalty (20) > quality gain from noncompliance (1)
-      - A-GAME-006: agentCount in range 2..12
+      - A-GAME-006: positive agentCount in range 1..12
     lean_module: Proofs/GameTheory/NashUniqueness.lean
     dependencies: [THM-NASH-PURE-EXISTENCE, THM-NONCOMPLIANT-DOMINATED]
     proof_status: proven
@@ -75,9 +75,37 @@ theorems:
     sorry_count: 0
     notes: >
       Proves all Nash equilibria under tight budget are the all-moderate profile
-      (nash_eq_allModerate). Used by fulcrum_poa_bounded and constrained_poa_exact
-      to close the PoA bounds. Exhaustive for agentCount in 2..12; the bound is
-      a parameter hypothesis, not a proof limitation.
+      (`nash_eq_allModerate`). Used by `fulcrum_poa_bounded` and the legacy
+      Real compatibility theorem. The formal domain is every positive
+      `agentCount` in 1..12; separate computational evidence enumerates 2..12.
+  - theorem_id: THM-NASH-PURE-EXISTENCE-EXACT
+    assumptions:
+      - A-GAME-001: agents have finite action sets (4 actions)
+      - A-GAME-002: budget = 25 * agentCount (tight budget)
+      - A-GAME-006: positive agentCount in range 1..12
+    lean_module: Proofs/GameTheory/ExactNashExistence.lean
+    dependencies: []
+    proof_status: proven
+    axiom_profile: [propext]
+    sorry_count: 0
+    notes: >
+      `exactAllModerate_isNash` proves pure Nash existence on the exact-data
+      representation for every existing positive BudgetParams with
+      `agentCount ≤ 12`; there is no lower-bound hypothesis beyond positivity.
+  - theorem_id: THM-NASH-UNIQUENESS-EXACT
+    assumptions:
+      - A-GAME-001: agents have finite action sets (4 actions)
+      - A-GAME-002: budget = 25 * agentCount (tight budget)
+      - A-GAME-003: violation penalty (20) > quality gain from noncompliance (1)
+      - A-GAME-006: positive agentCount in range 1..12
+    lean_module: Proofs/GameTheory/ExactNashUniqueness.lean
+    dependencies: [THM-NASH-PURE-EXISTENCE-EXACT]
+    proof_status: proven
+    axiom_profile: [propext]
+    sorry_count: 0
+    notes: >
+      `exactNash_eq_allModerate` is the structural, non-enumerative exclusion
+      proof for every exact pure Nash profile over all positive counts 1..12.
   - theorem_id: THM-NONCOMPLIANT-DOMINATED
     assumptions: [A-GAME-003]
     lean_module: Proofs/GameTheory/NashExistence.lean
@@ -106,17 +134,45 @@ theorems:
       Fully proven via NashUniqueness.lean (PR #6). All-moderate is the unique Nash
       equilibrium under tight budget; PoA ≤ 9/7 bound is sorry-free.
   - theorem_id: THM-POA-CONSTRAINED
-    assumptions: [A-GAME-001, A-GAME-002]
+    assumptions: [A-GAME-001, A-GAME-002, A-GAME-006]
+    lean_module: Proofs/GameTheory/CoordinationEfficiencyExact.lean
+    dependencies: [THM-NASH-PURE-EXISTENCE-EXACT, THM-NASH-UNIQUENESS-EXACT]
+    proof_status: proven
+    axiom_profile: [propext]
+    sorry_count: 0
+    notes: >
+      Canonical claim-complete `constrained_poa_exact`. Its exact-data
+      `ExactFullClaim` explicitly includes all-moderate Nash existence,
+      pointwise uniqueness of every pure Nash profile, feasibility, exact
+      `7*n` welfare attainment (encoded as numerator `7*n*n`), welfare
+      optimality over every feasible profile, and every Nash/feasible
+      relational PoA comparison at exactly one. Formal domain: every positive
+      count 1..12. Kernel-measured profile: exactly `[propext]`.
+  - theorem_id: THM-POA-CONSTRAINED-REAL-COMPAT
+    assumptions: [A-GAME-001, A-GAME-002, A-GAME-006]
     lean_module: Proofs/GameTheory/CoordinationEfficiency.lean
-    dependencies: [THM-NASH-PURE-EXISTENCE, THM-POA-BOUNDED]
+    dependencies: [THM-POA-CONSTRAINED, THM-NASH-UNIQUENESS, THM-POA-BOUNDED]
     proof_status: proven
     axiom_profile: [propext, Classical.choice, Quot.sound]
     sorry_count: 0
     notes: >
-      `constrained_welfare_optimal` and `constrained_poa_exact` state the
-      tightened constrained optimum and PoA=1 result. Both declarations are
-      sorry-free; computational evidence for n=2..12 is recorded in
-      evidence/constrained_poa_results.json.
+      `constrained_poa_exact_real_compat` preserves the legacy Real-valued
+      theorem as noncanonical compatibility/provenance evidence. It does not
+      enter the canonical exact theorem's dependency closure.
+  - theorem_id: THM-POA-CONSTRAINED-CORRESPONDENCE
+    assumptions: [A-GAME-001, A-GAME-002, A-GAME-006]
+    lean_module: Proofs/GameTheory/CoordinationCorrespondence.lean
+    dependencies: [THM-POA-CONSTRAINED, THM-POA-CONSTRAINED-REAL-COMPAT]
+    proof_status: proven
+    axiom_profile: [propext, Classical.choice, Quot.sound]
+    sorry_count: 0
+    notes: >
+      Fourteen named machine-checked obligation families connect action data,
+      every `List.ofFn` index, totals, signed order, overflow/no-overflow
+      payoffs, bidirectional payoff order, unilateral updates, feasibility,
+      Nash, welfare, all-moderate identities, full six-clause claims, and the
+      complete positive 1..12 domain. The correspondence is downstream and
+      separately measured.
   - theorem_id: THM-POA-CONSTRAINED-INT
     assumptions:
       - A-GAME-001: agents have finite action sets (4 actions)
@@ -133,11 +189,12 @@ theorems:
       List/Int by structural recursion — no reals, no Finset, no funext in the
       statements. Classical.choice-free; Quot.sound enters only via omega's
       reflective soundness machinery, not via any quotient-typed statement.
-      Carries NO Nash quantifier (equilibrium uniqueness remains
-      THM-NASH-UNIQUENESS, kernel-3), and unlike the ℝ theorem needs no
+      Carries NO Nash quantifier (canonical exact equilibrium uniqueness is
+      THM-NASH-UNIQUENESS-EXACT, kernel-1; legacy Real uniqueness remains
+      kernel-3), and unlike the canonical full claim needs no
       n ≤ 12 hypothesis. netQuality15_spec pins the scaled numerals to the
-      game model's own definitions. The ℝ theorem constrained_poa_exact is
-      unchanged and keeps its profile.
+      game model's own definitions. This additive companion is not a
+      substitute for the canonical Nash-quantified claim.
   - theorem_id: THM-BUDGET-GAME-BRIDGE
     assumptions: [A-BUDGET-001]
     lean_module: Proofs/GameTheory/BudgetGameBridge.lean

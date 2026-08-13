@@ -1,6 +1,6 @@
 # Fulcrum-Proofs — Agent Context
 
-**Last updated:** 2026-07-28
+**Last updated:** 2026-08-12
 
 ---
 
@@ -50,7 +50,10 @@ All theorems are sorry-free, including:
   PMF ↔ stdSimplex bridge. Vendored dependency:
   `proofs/lean/vendor/Gametheory/`.
 - `fulcrum_poa_bounded` (PoA ≤ 9/7, NashUniqueness.lean)
-- `constrained_poa_exact` (CoordinationEfficiency.lean)
+- `constrained_poa_exact` (CoordinationEfficiencyExact.lean) — canonical
+  claim-complete exact-data theorem, measured exactly `[propext]`
+- `constrained_poa_exact_real_compat` (CoordinationEfficiency.lean) —
+  noncanonical legacy Real compatibility/provenance theorem
 - `trust_guaranteed_termination` + 9 companion theorems (TrustTermination.lean)
 - 4 RLM interface contracts + 1 axiom (RLMContracts.lean)
 

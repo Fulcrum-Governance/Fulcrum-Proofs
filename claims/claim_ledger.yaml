@@ -1,5 +1,5 @@
 version: 2
-updated_at: 2026-07-11
+updated_at: 2026-08-12
 entries:
 - claim_id: C-004
   type: empirical
@@ -82,6 +82,8 @@ entries:
   - proofs/lean/Proofs/GameTheory/MixedNashExistence.lean
   - proofs/lean/Proofs/GameTheory/NashUniqueness.lean
   - proofs/lean/Proofs/GameTheory/CoordinationEfficiency.lean
+  - proofs/lean/Proofs/GameTheory/ExactNashExistence.lean
+  - proofs/lean/Proofs/GameTheory/ExactNashUniqueness.lean
   - benchmarks/raw/nash-convergence.json
   notes: |
     Pure-strategy Nash and mixed-strategy Nash are both sorry-free. Mixed Nash existence
@@ -102,16 +104,26 @@ entries:
   type: hybrid
   status: proven
   evidence_refs:
+  - proofs/lean/Proofs/GameTheory/ExactDefinitions.lean
+  - proofs/lean/Proofs/GameTheory/ExactSumUpdateLemmas.lean
+  - proofs/lean/Proofs/GameTheory/ExactNashExistence.lean
+  - proofs/lean/Proofs/GameTheory/ExactNashUniqueness.lean
+  - proofs/lean/Proofs/GameTheory/CoordinationEfficiencyExact.lean
+  - proofs/lean/Proofs/GameTheory/CoordinationCorrespondence.lean
   - proofs/lean/Proofs/GameTheory/CoordinationEfficiency.lean
+  - proofs/lean/Proofs/GameTheory/CoordinationEfficiencyInt.lean
   - evidence/constrained_poa_results.json
   - models/tla/reports/tlc-AgentCoordination.log
   - models/tla/reports/tlc-AgentCoordinationSmall.log
   - benchmarks/raw/nash-convergence.json
-  notes: Three-axis closure. Lean now proves `constrained_welfare_optimal`,
-    `constrained_poa_exact`, and the reference `fulcrum_poa_bounded` sorry-free.
-    TLC exhaustive verification of 6 invariants across 2,972 states. Simulation
-    confirms 100% convergence to all-moderate; exhaustive C-020 enumeration
-    covers n=2..12 with constrained PoA = 1.0.
+  notes: Three-axis closure. The canonical exact-data `constrained_poa_exact`
+    proves the complete six-clause claim for every positive n=1..12 at exactly
+    `[propext]`. The separately measured Real compatibility theorem and fourteen
+    named correspondence obligation families retain kernel-3 downstream. The
+    integer result remains welfare-only with no Nash quantifier. TLC exhaustively
+    verifies 6 invariants across 2,972 states. Simulation confirms 100%
+    convergence to all-moderate; the separate empirical enumeration covers
+    n=2..12 with constrained PoA = 1.0.
 - claim_id: C-021
   type: formal
   status: proven

@@ -1,5 +1,5 @@
 version: 1
-updated_at: 2026-07-11
+updated_at: 2026-08-12
 description: >
   Claim closure manifest linking every public claim to its theorem IDs,
   runtime test evidence, CI jobs, and artifact paths. Created per PRD-003.
@@ -21,8 +21,9 @@ reconciliation_note: >
   Reconciled 2026-06-22 (the deferred Phase 2 follow-up). The repos map already
   reads "(MIT)" (see repos: below). C-009 now describes THM-NASH-MIXED-EXISTENCE
   as sorry-free with the kakutani_fixed_point_theorem axiom removed, and
-  enumerates all 21 canonical theorem IDs (THM-NASH-UNIQUENESS and
-  THM-POA-CONSTRAINED added). Every closure row now agrees with
+  enumerated the then-current 21 theorem IDs (THM-NASH-UNIQUENESS and
+  THM-POA-CONSTRAINED added). FUL-502 subsequently added the exact Nash,
+  Real-compatibility, and correspondence IDs. Every closure row now agrees with
   claims/theorem_inventory.yaml, which remains the canonical source for theorem
   status; this file links claims to evidence and is consistent with it.
 superseded_by: claims/theorem_inventory.yaml
@@ -116,10 +117,14 @@ closures:
       - THM-NASH-PURE-EXISTENCE
       - THM-NASH-MIXED-EXISTENCE
       - THM-NASH-UNIQUENESS
+      - THM-NASH-PURE-EXISTENCE-EXACT
+      - THM-NASH-UNIQUENESS-EXACT
       - THM-NONCOMPLIANT-DOMINATED
       - THM-NOT-DSIC
       - THM-POA-BOUNDED
       - THM-POA-CONSTRAINED
+      - THM-POA-CONSTRAINED-REAL-COMPAT
+      - THM-POA-CONSTRAINED-CORRESPONDENCE
       - THM-POA-CONSTRAINED-INT
       - THM-TRUST-CAP-BOUNDED
       - THM-TRUST-DETECTION-BOUND
@@ -315,7 +320,9 @@ closures:
     public_status: proven
     theorem_ids:
       - THM-NASH-PURE-EXISTENCE
+      - THM-NASH-PURE-EXISTENCE-EXACT
       - THM-NASH-MIXED-EXISTENCE
+      - THM-NASH-UNIQUENESS-EXACT
       - THM-NONCOMPLIANT-DOMINATED
     runtime_evidence:
       - id: rt_nash_convergence_sim
@@ -338,6 +345,10 @@ closures:
         type: lean_proof
       - path: proofs/lean/Proofs/GameTheory/MixedNashExistence.lean
         type: lean_proof
+      - path: proofs/lean/Proofs/GameTheory/ExactNashExistence.lean
+        type: lean_proof
+      - path: proofs/lean/Proofs/GameTheory/ExactNashUniqueness.lean
+        type: lean_proof
       - path: benchmarks/raw/nash-convergence.json
         type: benchmark_report
     external_dependencies:
@@ -352,7 +363,8 @@ closures:
       via Scarf's Lemma) through a PMF ↔ stdSimplex bridge in
       MixedNashExistence.lean. The previous `kakutani_fixed_point_theorem`
       axiom has been removed. No allowlisted sorry occurrences remain in
-      no-sorry-check.log.
+      no-sorry-check.log. The exact pure-Nash cone is structural, kernel-1,
+      and covers every positive agent count 1..12.
 
   - claim_id: C-019
     statement: Under allocationUtility = -|allocation - trueNeed|, proportional allocation is not dominant-strategy incentive-compatible
@@ -374,15 +386,19 @@ closures:
       plus proof-gate replay.
 
   - claim_id: C-020
-    statement: Constrained Price of Anarchy is 1.0 under tight-budget optimality
+    statement: Constrained Price of Anarchy is 1.0 under tight-budget optimality for every positive agent count 1..12
     type: hybrid
     public_status: proven
     theorem_ids:
       - THM-POA-CONSTRAINED
+      - THM-POA-CONSTRAINED-REAL-COMPAT
+      - THM-POA-CONSTRAINED-CORRESPONDENCE
       - THM-POA-CONSTRAINED-INT
       - THM-POA-BOUNDED
       - THM-NASH-PURE-EXISTENCE
       - THM-NASH-UNIQUENESS
+      - THM-NASH-PURE-EXISTENCE-EXACT
+      - THM-NASH-UNIQUENESS-EXACT
     runtime_evidence:
       - id: constrained_poa_enumeration_n_2_to_12
         path: evidence/constrained_poa_results.json
@@ -403,8 +419,24 @@ closures:
       - name: model-gate.yml
         repo: Fulcrum-Proofs
     artifacts:
+      - path: proofs/lean/Proofs/GameTheory/ExactDefinitions.lean
+        type: lean_proof
+      - path: proofs/lean/Proofs/GameTheory/ExactSumUpdateLemmas.lean
+        type: lean_proof
+      - path: proofs/lean/Proofs/GameTheory/ExactNashExistence.lean
+        type: lean_proof
+      - path: proofs/lean/Proofs/GameTheory/ExactNashUniqueness.lean
+        type: lean_proof
+      - path: proofs/lean/Proofs/GameTheory/CoordinationEfficiencyExact.lean
+        type: lean_proof
+      - path: proofs/lean/Proofs/GameTheory/CoordinationCorrespondence.lean
+        type: lean_proof
       - path: proofs/lean/Proofs/GameTheory/CoordinationEfficiency.lean
         type: lean_proof
+      - path: proofs/lean/Proofs/GameTheory/CoordinationEfficiencyInt.lean
+        type: lean_proof
+      - path: proofs/lean/probes/check_exact_poa_axioms.lean
+        type: proof_integrity_probe
       - path: proofs/lean/Proofs/GameTheory/NashUniqueness.lean
         type: lean_proof
       - path: evidence/constrained_poa_results.json
@@ -416,10 +448,14 @@ closures:
       - path: benchmarks/raw/nash-convergence.json
         type: benchmark_report
     notes: >
-      Constrained PoA = 1.0 is proven in Lean by `constrained_welfare_optimal`
-      and `constrained_poa_exact`, and independently backed by exhaustive
-      enumeration for n=2..12. The unconstrained reference bound PoA ≤ 9/7
-      remains sorry-free via `fulcrum_poa_bounded` and Nash uniqueness.
+      Canonical exact-data `constrained_poa_exact` proves all six protected
+      clauses at exactly `[propext]` for every positive n=1..12. The legacy
+      Real result survives as separately inventoried
+      `constrained_poa_exact_real_compat`, and fourteen named downstream
+      declarations prove representation correspondence. The Int theorem is a
+      welfare-only companion with no Nash quantifier. Independent empirical
+      enumeration remains n=2..12. The unconstrained reference bound PoA ≤ 9/7
+      remains sorry-free via `fulcrum_poa_bounded` and legacy Nash uniqueness.
 
   - claim_id: C-021
     statement: Budget enforcement grounds the coordination game model
