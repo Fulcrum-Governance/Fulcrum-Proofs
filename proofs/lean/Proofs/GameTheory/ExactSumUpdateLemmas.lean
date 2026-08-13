@@ -39,6 +39,60 @@ theorem structuralSum_const (c n : Nat) :
       rw [ih, Nat.mul_succ]
       exact Nat.add_comm _ _
 
+/-- Structural sum of any constant profile. -/
+theorem structuralSum_const_value {α : Type} (f : α → Nat) (a : α) (n : Nat) :
+    structuralSum f (fun _ : Fin n => a) = f a * n := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+      simp only [structuralSum]
+      rw [ih, Nat.mul_succ]
+      exact Nat.add_comm _ _
+
+/-- A structurally summed constant function is independent of roster values. -/
+theorem structuralSum_const_fn {α : Type} (c : Nat) {n : Nat}
+    (profile : Fin n → α) :
+    structuralSum (fun _ : α => c) profile = c * n := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+      simp only [structuralSum]
+      rw [ih, Nat.mul_succ]
+      exact Nat.add_comm _ _
+
+/-- Structural aggregation respects composition with the profile values. -/
+theorem structuralSum_comp {α β : Type} (f : α → Nat) (g : β → α)
+    {n : Nat} (profile : Fin n → β) :
+    structuralSum (fun value => f (g value)) profile =
+      structuralSum f (fun i => g (profile i)) := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+    simp only [structuralSum]
+    exact congrArg (Nat.add (f (g (profile 0))))
+      (ih (fun i : Fin n => profile i.succ))
+
+/-- Aggregation over indices agrees with aggregation over the indexed profile. -/
+theorem structuralSum_index {α : Type} (f : α → Nat) {n : Nat}
+    (profile : Fin n → α) :
+    structuralSum (fun i => f (profile i)) (fun i : Fin n => i) =
+      structuralSum f profile := by
+  exact structuralSum_comp f profile (fun i : Fin n => i)
+
+/-- Structural sums agree when their summands agree at every index. -/
+theorem structuralSum_pointwise {α β : Type} (f : α → Nat) (g : β → Nat)
+    {n : Nat} (profile₁ : Fin n → α) (profile₂ : Fin n → β)
+    (h : ∀ i, f (profile₁ i) = g (profile₂ i)) :
+    structuralSum f profile₁ = structuralSum g profile₂ := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+      simp only [structuralSum]
+      rw [h 0]
+      exact congrArg (Nat.add (g (profile₂ 0)))
+        (ih (fun i : Fin n => profile₁ i.succ)
+          (fun i : Fin n => profile₂ i.succ) (fun i => h i.succ))
+
 /-- Structural sums agree when their profiles agree pointwise. -/
 theorem structuralSum_congr {α : Type} (f : α → Nat) {n : Nat}
     (profile₁ profile₂ : Fin n → α) (h : ∀ i, profile₁ i = profile₂ i) :
@@ -52,6 +106,40 @@ theorem structuralSum_congr {α : Type} (f : α → Nat) {n : Nat}
       exact congrArg (Nat.add (f (profile₂ 0)))
         (ih (fun i : Fin n => profile₁ i.succ)
           (fun i : Fin n => profile₂ i.succ) (fun i => h i.succ))
+
+/-- Structural aggregation preserves pointwise natural-number bounds. -/
+theorem structuralSum_le {α : Type} (f g : α → Nat) {n : Nat}
+    (profile : Fin n → α) (h : ∀ a, f a ≤ g a) :
+    structuralSum f profile ≤ structuralSum g profile := by
+  induction n with
+  | zero => exact Nat.le_refl 0
+  | succ n ih =>
+      simp only [structuralSum]
+      exact Nat.add_le_add (h (profile 0))
+        (ih (fun i : Fin n => profile i.succ))
+
+/-- Structural aggregation distributes over pointwise addition. -/
+theorem structuralSum_add {α : Type} (f g : α → Nat) {n : Nat}
+    (profile : Fin n → α) :
+    structuralSum (fun a => f a + g a) profile =
+      structuralSum f profile + structuralSum g profile := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+      simp only [structuralSum]
+      rw [ih]
+      exact Nat.add_add_add_comm _ _ _ _
+
+/-- Structural aggregation commutes with a constant left factor. -/
+theorem structuralSum_mul_left {α : Type} (factor : Nat) (f : α → Nat)
+    {n : Nat} (profile : Fin n → α) :
+    structuralSum (fun a => factor * f a) profile =
+      factor * structuralSum f profile := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+      simp only [structuralSum]
+      rw [ih, Nat.mul_add]
 
 /-- Updating a successor index commutes pointwise with taking the profile tail. -/
 theorem structuralUpdate_tail {α : Type} {n : Nat} (profile : Fin (n + 1) → α)
