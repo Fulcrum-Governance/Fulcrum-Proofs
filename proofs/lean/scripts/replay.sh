@@ -57,6 +57,9 @@ required=(
   "mixed_nash_exists"
   "fulcrum_poa_bounded"
   "constrained_poa_exact"
+  "constrained_poa_exact_real_compat"
+  "exactFullClaim_iff_realFullClaim"
+  "exactCompleteDomain_iff_realCompleteDomain"
   "budget_enforcement_grounds_game"
   "rlm_depth_bounded"
 )

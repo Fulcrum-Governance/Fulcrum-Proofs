@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Exact signed-Nat coordination-game owner modules with structural roster,
+  sum/update, Nash existence/uniqueness, feasibility, exact welfare, and
+  relational PoA proofs for every positive agent count `1..12`.
+- Fourteen named machine-checked exact/Real correspondence obligation families,
+  kept downstream of the canonical dependency cone and separately profiled.
+- A fail-closed FUL-502 probe asserting 100 canonical, compatibility, and
+  correspondence declaration profiles.
+
+### Changed
+- Migrated canonical `constrained_poa_exact` to the complete six-clause
+  exact-data claim at exactly `[propext]`: Nash existence, pointwise uniqueness,
+  feasibility, exact `7*n` attainment, feasible welfare optimality, and every
+  Nash/feasible relational comparison at PoA one.
+- Renamed the previous Real theorem to
+  `constrained_poa_exact_real_compat` and retained it as noncanonical
+  compatibility/provenance evidence at kernel-3.
+- Clarified that `constrained_poa_exact_int` is an additive welfare-only
+  companion with no Nash quantifier, and separated the formal `1..12` domain
+  from the existing empirical `2..12` enumeration.
+
 ## [0.2.0] - 2026-07-11
 
 ### Added

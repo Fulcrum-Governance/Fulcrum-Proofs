@@ -5,6 +5,7 @@ import Proofs.TrustTermination
 import Proofs.KernelVariants
 import Proofs.GovernedKernel
 import Proofs.GameTheory.CoordinationEfficiency
+import Proofs.GameTheory.CoordinationCorrespondence
 import Proofs.GameTheory.CoordinationEfficiencyInt
 import Proofs.GameTheory.NashUniqueness
 import Proofs.GameTheory.MixedNashExistence
@@ -33,7 +34,15 @@ def axiomsOfCentral (env : Environment) (constName : Name) : Array Name :=
 def expectedProfiles : Array (Name × Array Name) := #[
   (``Fulcrum.GameTheory.constrained_welfare_optimal,
     #[``propext, ``Classical.choice, ``Quot.sound]),
-  (``Fulcrum.GameTheory.constrained_poa_exact,
+  -- Canonical exact-data claim: complete six-clause result, kernel-1.
+  (``Fulcrum.GameTheory.constrained_poa_exact, #[``propext]),
+  -- Noncanonical Real compatibility/provenance theorem.
+  (``Fulcrum.GameTheory.constrained_poa_exact_real_compat,
+    #[``propext, ``Classical.choice, ``Quot.sound]),
+  -- Downstream correspondence roots; never imported by the canonical cone.
+  (``Fulcrum.GameTheory.exactFullClaim_iff_realFullClaim,
+    #[``propext, ``Classical.choice, ``Quot.sound]),
+  (``Fulcrum.GameTheory.exactCompleteDomain_iff_realCompleteDomain,
     #[``propext, ``Classical.choice, ``Quot.sound]),
   (``Fulcrum.GameTheory.fulcrum_poa_bounded,
     #[``propext, ``Classical.choice, ``Quot.sound]),
@@ -88,6 +97,9 @@ elab "#assert_axiom_profiles" : command => do
 
 #print axioms Fulcrum.GameTheory.constrained_welfare_optimal
 #print axioms Fulcrum.GameTheory.constrained_poa_exact
+#print axioms Fulcrum.GameTheory.constrained_poa_exact_real_compat
+#print axioms Fulcrum.GameTheory.exactFullClaim_iff_realFullClaim
+#print axioms Fulcrum.GameTheory.exactCompleteDomain_iff_realCompleteDomain
 #print axioms Fulcrum.GameTheory.fulcrum_poa_bounded
 #print axioms Fulcrum.GameTheory.nash_eq_allModerate
 #print axioms Fulcrum.GameTheory.mixed_nash_exists

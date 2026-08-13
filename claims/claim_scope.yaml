@@ -1,5 +1,5 @@
 version: 2
-updated_at: 2026-07-11
+updated_at: 2026-08-12
 policy:
   allow_only_closeable_claims: true
   c005_status: tested
@@ -81,7 +81,8 @@ claims:
       Nash existence (`mixed_nash_exists`) is closed via math-xmum/Brouwer's
       `ExistsNashEq` (Brouwer fixed-point on product simplices via Scarf's Lemma)
       through a PMF ↔ stdSimplex bridge. The previous `kakutani_fixed_point_theorem`
-      axiom has been removed.
+      axiom has been removed. The exact pure-Nash existence and uniqueness
+      cone is structural and covers every positive agent count 1..12.
     owner: formal-systems
   - claim_id: C-019
     statement: Under allocationUtility = -|allocation - trueNeed|, proportional allocation is not dominant-strategy incentive-compatible
@@ -96,20 +97,26 @@ claims:
       two-agent counterexample showing profitable under-reporting under budget sufficiency.
     owner: formal-systems
   - claim_id: C-020
-    statement: Constrained Price of Anarchy is 1.0 under tight-budget optimality
+    statement: Constrained Price of Anarchy is 1.0 under tight-budget optimality for every positive agent count 1..12
     type: hybrid
     status: proven
     closure_criteria:
-      - lean_constrained_poa_theorems_stated
+      - lean_canonical_claim_complete_exact_poa_proven_at_kernel_1
+      - all_six_founder_protected_clauses_explicit
+      - fourteen_named_exact_real_correspondence_obligations_proven
       - constrained_poa_enumeration_n_2_to_12_passes
       - lean_unconstrained_reference_bound_proven
       - tla_coordination_invariants_hold
       - simulation_convergence_rate_above_90pct
-    notes: Constrained PoA = 1.0 is backed by exhaustive count-equivalence enumeration
-      for n=2..12 in `evidence/constrained_poa_results.json`; Lean theorems
-      `constrained_welfare_optimal` and `constrained_poa_exact` are now sorry-free.
-      The unconstrained reference bound PoA ≤ 9/7 remains fully proven by
-      `fulcrum_poa_bounded` via Nash uniqueness (NashUniqueness.lean).
+    notes: The canonical exact-data `constrained_poa_exact` is a six-clause
+      compound theorem at exactly `[propext]` for every positive count 1..12.
+      `constrained_poa_exact_real_compat` preserves the legacy Real result as
+      noncanonical compatibility evidence; fourteen named obligation families
+      prove exact/Real correspondence downstream. Separate exhaustive empirical
+      count-equivalence evidence remains n=2..12 in
+      `evidence/constrained_poa_results.json`. The integer result is an additive
+      welfare-only companion with no Nash quantifier. The unconstrained
+      reference bound PoA ≤ 9/7 remains fully proven by `fulcrum_poa_bounded`.
     owner: formal-systems
   - claim_id: C-021
     statement: Budget enforcement grounds the coordination game model

@@ -17,6 +17,7 @@ surface itself is tracked separately in `proofs/lean/expected_axioms.md`.
 - `Fulcrum.GameTheory.fulcrum_poa_bounded`
 - `Fulcrum.GameTheory.constrained_welfare_optimal`
 - `Fulcrum.GameTheory.constrained_poa_exact`
+- `Fulcrum.GameTheory.constrained_poa_exact_real_compat`
 
 **Why this is a hypothesis instead of an axiom**
 
@@ -35,18 +36,21 @@ current tight-budget equality.
 **Where it appears**
 
 - `Fulcrum.GameTheory.nash_eq_allModerate`
-- `Fulcrum.GameTheory.constrained_welfare_optimal`
+- `Fulcrum.GameTheory.exactNash_eq_allModerate`
 - `Fulcrum.GameTheory.constrained_poa_exact`
+- `Fulcrum.GameTheory.constrained_poa_exact_real_compat`
 
 **Why this is a hypothesis instead of an axiom**
 
-The current closure uses a bounded combinatorial argument aligned with the
-audited deployment regime and the exhaustive `n = 2..12` evidence pack.
+The theorem domain is every existing positive `BudgetParams.agentCount` in
+`1..12`; positivity is already a structure invariant, so there is no added
+`2 ≤ agentCount` hypothesis. The exact proof is structural rather than an
+enumeration. The separate empirical evidence pack remains `n = 2..12`.
 
 **What would relax it**
 
-A proof that removes the bounded elimination step, or a new asymptotic argument
-that replaces the current `n ≤ 12` case structure with a parameter-free proof.
+A structural theorem for `n ≥ 13`, or a parameter-free proof removing the
+current upper bound. Neither result is claimed here.
 
 ## Finite strategy sets and continuous payoffs
 

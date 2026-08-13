@@ -6,6 +6,7 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 LEAN_ROOT="$SCRIPT_DIR/lean"
 EXPECTED_DOC="$LEAN_ROOT/expected_axioms.md"
 PROBE_FILE="probes/check_central_axioms.lean"
+EXACT_POA_PROBE_FILE="probes/check_exact_poa_axioms.lean"
 NO_SORRY_SCRIPT="scripts/check_no_sorry.sh"
 
 extract_expected_axioms() {
@@ -16,7 +17,7 @@ extract_expected_axioms() {
   ' "$EXPECTED_DOC"
 }
 
-echo "==> [1/3] lake build"
+echo "==> [1/4] lake build"
 if ! (
   cd "$LEAN_ROOT" &&
   lake build
@@ -25,7 +26,7 @@ if ! (
   exit 1
 fi
 
-echo "==> [2/3] no-sorry gate"
+echo "==> [2/4] no-sorry gate"
 if ! (
   cd "$LEAN_ROOT" &&
   bash "$NO_SORRY_SCRIPT"
@@ -34,7 +35,7 @@ if ! (
   exit 4
 fi
 
-echo "==> [3/3] axiom-profile gate"
+echo "==> [3/4] central axiom-profile gate"
 live_output="$(mktemp)"
 expected_output="$(mktemp)"
 trap 'rm -f "$live_output" "$expected_output"' EXIT
@@ -56,6 +57,15 @@ fi
 
 if ! diff -u "$expected_output" "$live_output"; then
   echo "ERROR: axiom profile drift detected" >&2
+  exit 3
+fi
+
+echo "==> [4/4] exact PoA cone and correspondence profiles"
+if ! (
+  cd "$LEAN_ROOT" &&
+  lake env lean "$EXACT_POA_PROBE_FILE"
+); then
+  echo "ERROR: exact PoA axiom profile drift detected" >&2
   exit 3
 fi
 
