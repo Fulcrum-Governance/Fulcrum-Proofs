@@ -1,5 +1,5 @@
 version: 3
-updated_at: 2026-08-12
+updated_at: 2026-08-13
 theorems:
   - theorem_id: THM-BUDGET-LOCAL
     assumptions:
@@ -40,6 +40,21 @@ theorems:
     axiom_profile: [propext, Classical.choice, Quot.sound]
     notes: Pure-strategy Nash existence, deviation arithmetic, and all-moderate equilibrium
       proofs are now sorry-free.
+  - theorem_id: THM-NASH-ALL-MODERATE-THRESHOLD
+    assumptions:
+      - A-GAME-001: agents have finite action sets (4 actions)
+      - A-GAME-002: budget = 25 * agentCount (tight budget)
+      - A-GAME-007: agentCount is at least 13
+    lean_module: Proofs/GameTheory/NashExistence.lean
+    dependencies: [THM-NASH-PURE-EXISTENCE]
+    proof_status: proven
+    axiom_profile: [propext, Classical.choice, Quot.sound]
+    sorry_count: 0
+    notes: >
+      `allModerate_not_nash_of_thirteen_le` proves that the all-moderate
+      profile ceases to be Nash for every `agentCount ≥ 13` under the tight
+      budget relation, witnessed by a strictly profitable aggressive
+      unilateral deviation. It does not characterize any other equilibrium.
   - theorem_id: THM-NASH-MIXED-EXISTENCE
     assumptions:
       - A-GAME-004: finite strategy sets (Fintype)

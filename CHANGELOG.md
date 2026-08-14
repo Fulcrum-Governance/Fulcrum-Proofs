@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- A Real-typed threshold theorem proving only that the all-moderate profile
+  ceases to be Nash for `agentCount ≥ 13` under the tight budget relation,
+  witnessed by a strictly profitable aggressive unilateral deviation.
 - Exact signed-Nat coordination-game owner modules with structural roster,
   sum/update, Nash existence/uniqueness, feasibility, exact welfare, and
   relational PoA proofs for every positive agent count `1..12`.

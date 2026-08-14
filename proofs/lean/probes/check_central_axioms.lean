@@ -48,6 +48,9 @@ def expectedProfiles : Array (Name × Array Name) := #[
     #[``propext, ``Classical.choice, ``Quot.sound]),
   (``Fulcrum.GameTheory.nash_eq_allModerate,
     #[``propext, ``Classical.choice, ``Quot.sound]),
+  -- Large-roster threshold for the all-moderate profile only.
+  (``Fulcrum.GameTheory.allModerate_not_nash_of_thirteen_le,
+    #[``propext, ``Classical.choice, ``Quot.sound]),
   (``Fulcrum.GameTheory.mixed_nash_exists,
     #[``propext, ``Classical.choice, ``Quot.sound]),
   (``Fulcrum.budget_safety_guarantee,
@@ -102,6 +105,7 @@ elab "#assert_axiom_profiles" : command => do
 #print axioms Fulcrum.GameTheory.exactCompleteDomain_iff_realCompleteDomain
 #print axioms Fulcrum.GameTheory.fulcrum_poa_bounded
 #print axioms Fulcrum.GameTheory.nash_eq_allModerate
+#print axioms Fulcrum.GameTheory.allModerate_not_nash_of_thirteen_le
 #print axioms Fulcrum.GameTheory.mixed_nash_exists
 #print axioms Fulcrum.budget_safety_guarantee
 #print axioms Fulcrum.RLM.canAccess
