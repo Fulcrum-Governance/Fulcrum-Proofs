@@ -165,8 +165,8 @@ lemma allModerate_payoff_eq_seven (params : BudgetParams)
     The bound n ≤ 12 ensures aggressive deviation is unprofitable:
     aggressive adds 25 tokens of overflow shared among n agents,
     costing 25/n per agent. For n ≤ 12, 25/n > 2 = quality gain from
-    aggressive over moderate. For n ≥ 13, this reverses — see the
-    mixed-strategy theorem for the general case.
+    aggressive over moderate. For n ≥ 13, the all-moderate profile instead
+    ceases to be Nash, as proved by `allModerate_not_nash_of_thirteen_le`.
 
     Mathematical proof per deviation case:
     - moderate→moderate: identity, no change
@@ -305,6 +305,70 @@ theorem moderate_is_nash_equilibrium
       norm_num [Function.update_self, actionQuality, actionViolates, violationPenalty]
     rw [hPayoff]
     nlinarith
+
+/-- Under the tight budget with at least thirteen agents, the all-moderate profile is not a
+    Nash equilibrium: any selected agent strictly improves by deviating to aggressive.
+    This theorem does not characterize any other equilibrium. -/
+theorem allModerate_not_nash_of_thirteen_le
+    (params : BudgetParams)
+    (hBudget : params.totalBudget = 25 * params.agentCount)
+    (hLarge : 13 ≤ params.agentCount) :
+    ¬ IsNashEquilibrium
+      (fulcrumCoordinationGame params)
+      (fun _ => AgentAction.moderate) := by
+  intro hNash
+  let i : Fin params.agentCount := ⟨0, by omega⟩
+  have hBestResponse := hNash i AgentAction.aggressive
+  change fulcrumPayoff params (allModerate params.agentCount) i ≥
+    fulcrumPayoff params
+      (Function.update (allModerate params.agentCount) i AgentAction.aggressive) i at hBestResponse
+  have hBase := allModerate_payoff_eq_seven params hBudget i
+  have hTokens :
+      totalTokens params.agentCount
+        (Function.update
+          (allModerate params.agentCount) i AgentAction.aggressive) =
+          50 + 25 * (params.agentCount - 1) := by
+    simpa [allModerate, actionTokenCost] using
+      totalTokens_update_allModerate params.agentCount i AgentAction.aggressive
+  have hOverflowNat : params.totalBudget < 50 + 25 * (params.agentCount - 1) := by
+    rw [hBudget]
+    omega
+  have hnPos : (0 : ℝ) < params.agentCount := by
+    exact_mod_cast params.hPositive
+  have hDivLtTwo : 25 / (params.agentCount : ℝ) < 2 := by
+    apply (div_lt_iff₀ hnPos).2
+    have hnLarge : (13 : ℝ) ≤ params.agentCount := by
+      exact_mod_cast hLarge
+    nlinarith
+  have hPayoff :
+      fulcrumPayoff params
+        (Function.update (allModerate params.agentCount) i AgentAction.aggressive) i =
+          9 - 25 / (params.agentCount : ℝ) := by
+    unfold fulcrumPayoff
+    rw [hTokens]
+    dsimp
+    have hOverflow :
+        (((50 + 25 * (params.agentCount - 1) : Nat) : ℝ) >
+          (params.totalBudget : ℝ)) := by
+      exact_mod_cast hOverflowNat
+    rw [if_pos hOverflow]
+    have hEqNat :
+        50 + 25 * (params.agentCount - 1) = 25 * params.agentCount + 25 := by
+      omega
+    have hOverflowValue :
+        ((((50 + 25 * (params.agentCount - 1) : Nat) : ℝ) -
+            (params.totalBudget : ℝ)) / (params.agentCount : ℝ)) =
+          25 / (params.agentCount : ℝ) := by
+      rw [show (((50 + 25 * (params.agentCount - 1) : Nat) : ℝ) =
+          ((25 * params.agentCount + 25 : Nat) : ℝ)) by exact_mod_cast hEqNat]
+      rw [hBudget]
+      have hnNe : (params.agentCount : ℝ) ≠ 0 := ne_of_gt hnPos
+      field_simp [hnNe]
+      norm_num
+    rw [hOverflowValue]
+    norm_num [Function.update_self, actionQuality, actionViolates]
+  rw [hBase, hPayoff] at hBestResponse
+  linarith
 
 /-- The Fulcrum coordination game admits at least one pure-strategy
     Nash equilibrium under tight budget with bounded team size. -/

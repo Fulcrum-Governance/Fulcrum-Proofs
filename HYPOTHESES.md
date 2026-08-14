@@ -13,6 +13,7 @@ surface itself is tracked separately in `proofs/lean/expected_axioms.md`.
 
 - `A-GAME-002` in `claims/theorem_inventory.yaml`
 - `Fulcrum.GameTheory.fulcrum_pure_nash_exists`
+- `Fulcrum.GameTheory.allModerate_not_nash_of_thirteen_le`
 - `Fulcrum.GameTheory.nash_eq_allModerate`
 - `Fulcrum.GameTheory.fulcrum_poa_bounded`
 - `Fulcrum.GameTheory.constrained_welfare_optimal`
@@ -49,8 +50,28 @@ enumeration. The separate empirical evidence pack remains `n = 2..12`.
 
 **What would relax it**
 
-A structural theorem for `n ≥ 13`, or a parameter-free proof removing the
-current upper bound. Neither result is claimed here.
+A parameter-free proof removing the current upper bound from the positive
+existence, uniqueness, and constrained-PoA results. The separate large-roster
+theorem below says only that the all-moderate profile ceases to be Nash.
+
+## All-moderate large-roster threshold (`13 ≤ agentCount`)
+
+**Where it appears**
+
+- `A-GAME-007` in `claims/theorem_inventory.yaml`
+- `Fulcrum.GameTheory.allModerate_not_nash_of_thirteen_le`
+
+**Why this is a hypothesis instead of an axiom**
+
+At `agentCount ≥ 13`, an aggressive unilateral deviation from the
+all-moderate profile gains two quality points while its per-agent overflow
+share is strictly below two. The lower bound is an explicit theorem input,
+not an unproved kernel assumption.
+
+**What this establishes**
+
+Only that the all-moderate profile ceases to be Nash under the tight budget
+relation. No other equilibrium is characterized.
 
 ## Finite strategy sets and continuous payoffs
 

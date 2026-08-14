@@ -33,6 +33,7 @@ This document is the human-readable and machine-checked baseline for
 | `Fulcrum.GameTheory.exactCompleteDomain_iff_realCompleteDomain` | `kernel-3` | Complete-domain correspondence for every existing positive `BudgetParams` with only `B = 25*n` and `n ≤ 12`. |
 | `Fulcrum.GameTheory.fulcrum_poa_bounded` | `kernel-3` | Public-facing PoA bound closes through Nash uniqueness and the classical finite-game surface. |
 | `Fulcrum.GameTheory.nash_eq_allModerate` | `kernel-3` | Uniqueness proof uses the same game-theory encoding and classical finite reasoning stack as the bounded PoA theorem. |
+| `Fulcrum.GameTheory.allModerate_not_nash_of_thirteen_le` | `kernel-3` | The Real-typed theorem proves only that the all-moderate profile ceases to be Nash for `agentCount ≥ 13`, witnessed by an aggressive unilateral deviation. |
 | `Fulcrum.GameTheory.mixed_nash_exists` | `kernel-3` | Mixed Nash existence is routed through the vendored `Gametheory` Brouwer/Scarf bridge and therefore stays on the full classical kernel-3 profile. |
 | `Fulcrum.budget_safety_guarantee` | `kernel-1` | Budget safety is the portable constructive exemplar: direct Nat reasoning, no quotient machinery, and no deployment assumptions. |
 | `Fulcrum.RLM.canAccess` | `deployment-axiom` | Abstract sandbox-access predicate supplied by the runtime/container boundary, not proved inside Lean. |
@@ -52,7 +53,7 @@ Spec drift note: the current mixed-Nash theorem exported by the repo is
 ## Normalized probe baseline
 
 ```text
-[check_central_axioms] 26 axiom profiles match inventory
+[check_central_axioms] 27 axiom profiles match inventory
 'Fulcrum.GameTheory.constrained_welfare_optimal' depends on axioms: [propext, Classical.choice, Quot.sound]
 'Fulcrum.GameTheory.constrained_poa_exact' depends on axioms: [propext]
 'Fulcrum.GameTheory.constrained_poa_exact_real_compat' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -62,6 +63,7 @@ Spec drift note: the current mixed-Nash theorem exported by the repo is
  Quot.sound]
 'Fulcrum.GameTheory.fulcrum_poa_bounded' depends on axioms: [propext, Classical.choice, Quot.sound]
 'Fulcrum.GameTheory.nash_eq_allModerate' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Fulcrum.GameTheory.allModerate_not_nash_of_thirteen_le' depends on axioms: [propext, Classical.choice, Quot.sound]
 'Fulcrum.GameTheory.mixed_nash_exists' depends on axioms: [propext, Classical.choice, Quot.sound]
 'Fulcrum.budget_safety_guarantee' depends on axioms: [propext]
 'Fulcrum.RLM.canAccess' depends on axioms: [Fulcrum.RLM.canAccess]
