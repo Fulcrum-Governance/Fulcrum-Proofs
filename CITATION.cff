@@ -8,7 +8,7 @@ identifiers:
   - type: doi
     value: "10.5281/zenodo.21314451"
     description: "All versions"
-date-released: 2026-08-14
+date-released: 2026-08-15
 license: MIT
 repository-code: "https://github.com/Fulcrum-Governance/Fulcrum-Proofs"
 url: "https://github.com/Fulcrum-Governance/Fulcrum-Proofs"
