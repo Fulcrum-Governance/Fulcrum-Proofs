@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-08-14
+
 ### Added
 - A Real-typed threshold theorem proving only that the all-moderate profile
   ceases to be Nash for `agentCount ≥ 13` under the tight budget relation,
