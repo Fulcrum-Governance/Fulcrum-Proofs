@@ -2,16 +2,13 @@ cff-version: 1.2.0
 message: "If you use Fulcrum-Proofs, please cite it using the metadata from this file."
 title: "Fulcrum-Proofs"
 type: software
-version: "0.2.0"
+version: "0.3.0"
 doi: "10.5281/zenodo.21314451"
 identifiers:
   - type: doi
-    value: "10.5281/zenodo.21314452"
-    description: "This version"
-  - type: doi
     value: "10.5281/zenodo.21314451"
     description: "All versions"
-date-released: 2026-07-11
+date-released: 2026-08-15
 license: MIT
 repository-code: "https://github.com/Fulcrum-Governance/Fulcrum-Proofs"
 url: "https://github.com/Fulcrum-Governance/Fulcrum-Proofs"
