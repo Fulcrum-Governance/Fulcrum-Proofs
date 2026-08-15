@@ -1,6 +1,6 @@
 # Fulcrum-Proofs — Agent Context
 
-**Last updated:** 2026-08-12
+**Last updated:** 2026-08-15
 
 ---
 
@@ -73,15 +73,13 @@ Bot review threads (Codex, Qodo) must be resolved before merge. Use GraphQL `res
 
 ## Release Lineage
 
-Latest tag: **`v0.2.0`**. Both tags are lightweight; only `v0.2.0` has a GitHub Release.
+Latest tag: **`v0.3.0`**. `v0.1.0` and `v0.2.0` are lightweight tags; `v0.3.0` is annotated. GitHub Releases exist for `v0.2.0` and `v0.3.0`.
 
 | Tag | Date | What changed |
 |-----|------|--------------|
 | `v0.1.0` | 2026-05-03 | Public-flip readiness: `proofs/reproduce.sh` one-shot verification entrypoint, `probes/check_central_axioms.lean` + `expected_axioms.md` axiom-surface baseline, initial `CITATION.cff`, `HYPOTHESES.md`, README badges, `axiom_profile` metadata across the theorem inventory, portable contract-sync/evidence paths. |
 | `v0.2.0` | 2026-07-11 | Published-supplement parity + kernel-level probe gate: `GovernedKernel.lean` and `KernelVariants.lean` ported from the published D4 Zenodo supplement, `CoordinationEfficiencyInt.lean` integer-audit companion, sorryAx probe wired into `proof-gate.yml` as a required step, claims C-024/C-025 added, C-005 flipped `proven → tested` per the lapsed waiver. Archived at DOI `10.5281/zenodo.21314452`. |
-
-> **Trap:** `v0.3.0` belongs to **`fulcrum-trust`** (PyPI), a different repo. Do not "correct" Proofs
-> upward — Proofs' latest tag is `v0.2.0`.
+| `v0.3.0` | 2026-08-15 | Under the tight-budget relation `totalBudget = 25 * agentCount`, made exact signed-Nat `constrained_poa_exact` canonical for every positive `agentCount` from `1` through `12`, covering all six `ExactFullClaim` clauses at `[propext]`; retained noncanonical `constrained_poa_exact_real_compat` at `[propext, Classical.choice, Quot.sound]`; and added `allModerate_not_nash_of_thirteen_le`, proving only that the all-moderate profile is not Nash for `agentCount ≥ 13` via a strictly profitable aggressive unilateral deviation at `[propext, Classical.choice, Quot.sound]`, without characterizing other equilibria. Archived at DOI `10.5281/zenodo.21959178`. |
 
 Per-release detail lives in [`CHANGELOG.md`](CHANGELOG.md).
 
