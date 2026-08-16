@@ -89,5 +89,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   dependency and self-contained `lake build` flow.
 - Removed tracked workstation-path leaks from public-facing files and scripts.
 
+[0.3.0]: https://github.com/Fulcrum-Governance/Fulcrum-Proofs/releases/tag/v0.3.0
 [0.2.0]: https://github.com/Fulcrum-Governance/Fulcrum-Proofs/releases/tag/v0.2.0
 [0.1.0]: https://github.com/Fulcrum-Governance/Fulcrum-Proofs/releases/tag/v0.1.0

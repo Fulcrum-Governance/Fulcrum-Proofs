@@ -6,6 +6,9 @@ version: "0.3.0"
 doi: "10.5281/zenodo.21314451"
 identifiers:
   - type: doi
+    value: "10.5281/zenodo.21959178"
+    description: "This version"
+  - type: doi
     value: "10.5281/zenodo.21314451"
     description: "All versions"
 date-released: 2026-08-15
