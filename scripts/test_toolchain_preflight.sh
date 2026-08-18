@@ -11,9 +11,6 @@ cleanup() {
     return
   fi
   CLEANUP_DONE=1
-  if [[ -n "${SIGNAL_PROBE_CLEANUP_COUNT_FILE:-}" ]]; then
-    printf 'cleanup\n' >> "$SIGNAL_PROBE_CLEANUP_COUNT_FILE"
-  fi
   if [[ -n "$LISTENER_PID" ]]; then
     kill "$LISTENER_PID" >/dev/null 2>&1 || true
     wait "$LISTENER_PID" >/dev/null 2>&1 || true
@@ -22,6 +19,13 @@ cleanup() {
   if [[ -n "$TMP_DIR" ]]; then
     rm -rf -- "$TMP_DIR"
     TMP_DIR=""
+  fi
+  # Probe instrumentation must not prevent the critical cleanup above.
+  if [[ -n "${SIGNAL_PROBE_CLEANUP_COUNT_FILE:-}" ]]; then
+    printf 'cleanup\n' 2>/dev/null >> "$SIGNAL_PROBE_CLEANUP_COUNT_FILE" || true
+  fi
+  if [[ "${SIGNAL_PROBE_REENTER_CLEANUP:-}" == "1" ]]; then
+    cleanup
   fi
 }
 trap cleanup EXIT
@@ -79,21 +83,42 @@ PY
 assert_direct_signal_cleanup() {
   local signal_name="$1"
   local expected_status="$2"
-  local state_dir="$TMP_DIR/signal-cleanup-$signal_name"
-  local probe_status probe_tmp listener_pid
+  local marker_mode="${3:-valid}"
+  local state_dir="$TMP_DIR/signal-cleanup-$signal_name-$marker_mode"
+  local marker_path="$state_dir/cleanup-count"
+  local probe_status probe_tmp listener_pid probe_output marker_residual
 
   mkdir -p "$state_dir"
+  if [[ "$marker_mode" == "invalid" ]]; then
+    marker_path="$state_dir/invalid-marker"
+    mkdir -p "$marker_path"
+  fi
   set +e
-  SIGNAL_PROBE_STATE_DIR="$state_dir" \
-    SIGNAL_PROBE_CLEANUP_COUNT_FILE="$state_dir/cleanup-count" \
-    bash "$ROOT/scripts/test_toolchain_preflight.sh" --signal-cleanup-probe "$signal_name" >/dev/null 2>&1
+  probe_output="$(
+    SIGNAL_PROBE_STATE_DIR="$state_dir" \
+      SIGNAL_PROBE_CLEANUP_COUNT_FILE="$marker_path" \
+      SIGNAL_PROBE_REENTER_CLEANUP=1 \
+      bash "$ROOT/scripts/test_toolchain_preflight.sh" --signal-cleanup-probe "$signal_name" 2>&1
+  )"
   probe_status=$?
   set -e
   probe_tmp="$(<"$state_dir/tmp-dir")"
   listener_pid="$(<"$state_dir/listener-pid")"
-  if [[ "$probe_status" -ne "$expected_status" || -e "$probe_tmp" || ! -s "$state_dir/listener-stopped" || "$(wc -l < "$state_dir/cleanup-count")" -ne 1 ]] || kill -0 "$listener_pid" >/dev/null 2>&1; then
+  if [[ "$probe_status" -ne "$expected_status" || -e "$probe_tmp" || "$(wc -l < "$state_dir/listener-stopped")" -ne 1 ]] || kill -0 "$listener_pid" >/dev/null 2>&1; then
     echo "Expected direct $signal_name cleanup to remove artifacts and stop its listener" >&2
     exit 1
+  fi
+  if [[ "$marker_mode" == "valid" ]]; then
+    if [[ "$(wc -l < "$marker_path")" -ne 1 || "$(<"$marker_path")" != "cleanup" ]]; then
+      echo "Expected re-entered cleanup to record its marker exactly once" >&2
+      exit 1
+    fi
+  else
+    marker_residual="$(find "$marker_path" -mindepth 1 -maxdepth 1 -print -quit)"
+    if [[ -n "$probe_output" || -n "$marker_residual" ]]; then
+      echo "Expected invalid cleanup marker to stay silent and leave no residual marker" >&2
+      exit 1
+    fi
   fi
 }
 
@@ -114,6 +139,7 @@ fi
 assert_direct_signal_cleanup HUP 129
 assert_direct_signal_cleanup INT 130
 assert_direct_signal_cleanup TERM 143
+assert_direct_signal_cleanup TERM 143 invalid
 
 expect_repeatable_failure() {
   local expected="$1"
