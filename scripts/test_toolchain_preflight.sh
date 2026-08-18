@@ -4,15 +4,116 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TMP_DIR="$(mktemp -d)"
 LISTENER_PID=""
+CLEANUP_DONE=0
 
 cleanup() {
+  if [[ "$CLEANUP_DONE" -ne 0 ]]; then
+    return
+  fi
+  CLEANUP_DONE=1
+  if [[ -n "${SIGNAL_PROBE_CLEANUP_COUNT_FILE:-}" ]]; then
+    printf 'cleanup\n' >> "$SIGNAL_PROBE_CLEANUP_COUNT_FILE"
+  fi
   if [[ -n "$LISTENER_PID" ]]; then
     kill "$LISTENER_PID" >/dev/null 2>&1 || true
     wait "$LISTENER_PID" >/dev/null 2>&1 || true
+    LISTENER_PID=""
   fi
-  rm -rf "$TMP_DIR"
+  if [[ -n "$TMP_DIR" ]]; then
+    rm -rf -- "$TMP_DIR"
+    TMP_DIR=""
+  fi
 }
 trap cleanup EXIT
+trap 'exit 129' HUP
+trap 'exit 130' INT
+trap 'exit 143' TERM
+
+run_signal_cleanup_probe() {
+  local signal_name="$1"
+  local state_dir="${SIGNAL_PROBE_STATE_DIR:?}"
+  local listener_ready="$state_dir/listener-ready"
+  local listener_stopped="$state_dir/listener-stopped"
+
+  mkdir -p "$state_dir"
+  printf '%s\n' "$TMP_DIR" > "$state_dir/tmp-dir"
+  python3 - "$listener_ready" "$listener_stopped" <<'PY' &
+import signal
+import socket
+import sys
+from pathlib import Path
+
+ready = Path(sys.argv[1])
+stopped = Path(sys.argv[2])
+listener = socket.socket()
+listener.bind(("127.0.0.1", 0))
+listener.listen(1)
+ready.write_text("ready\n", encoding="utf-8")
+
+def stop(_signum, _frame):
+    listener.close()
+    stopped.write_text("stopped\n", encoding="utf-8")
+    raise SystemExit(0)
+
+signal.signal(signal.SIGTERM, stop)
+signal.signal(signal.SIGHUP, stop)
+signal.signal(signal.SIGINT, stop)
+while True:
+    signal.pause()
+PY
+  LISTENER_PID=$!
+  printf '%s\n' "$LISTENER_PID" > "$state_dir/listener-pid"
+  for _ in $(seq 1 50); do
+    [[ -s "$listener_ready" ]] && break
+    sleep 0.1
+  done
+  if [[ ! -s "$listener_ready" ]]; then
+    echo "Expected signal cleanup probe listener to become ready" >&2
+    exit 1
+  fi
+  kill -s "$signal_name" "$$"
+  echo "Expected signal cleanup probe to exit for $signal_name" >&2
+  exit 1
+}
+
+assert_direct_signal_cleanup() {
+  local signal_name="$1"
+  local expected_status="$2"
+  local state_dir="$TMP_DIR/signal-cleanup-$signal_name"
+  local probe_status probe_tmp listener_pid
+
+  mkdir -p "$state_dir"
+  set +e
+  SIGNAL_PROBE_STATE_DIR="$state_dir" \
+    SIGNAL_PROBE_CLEANUP_COUNT_FILE="$state_dir/cleanup-count" \
+    bash "$ROOT/scripts/test_toolchain_preflight.sh" --signal-cleanup-probe "$signal_name" >/dev/null 2>&1
+  probe_status=$?
+  set -e
+  probe_tmp="$(<"$state_dir/tmp-dir")"
+  listener_pid="$(<"$state_dir/listener-pid")"
+  if [[ "$probe_status" -ne "$expected_status" || -e "$probe_tmp" || ! -s "$state_dir/listener-stopped" || "$(wc -l < "$state_dir/cleanup-count")" -ne 1 ]] || kill -0 "$listener_pid" >/dev/null 2>&1; then
+    echo "Expected direct $signal_name cleanup to remove artifacts and stop its listener" >&2
+    exit 1
+  fi
+}
+
+if [[ "${1:-}" == "--signal-cleanup-probe" ]]; then
+  if [[ $# -ne 2 ]]; then
+    echo "Usage: $0 --signal-cleanup-probe [HUP|INT|TERM]" >&2
+    exit 2
+  fi
+  case "$2" in
+    HUP|INT|TERM) run_signal_cleanup_probe "$2" ;;
+    *)
+      echo "Unsupported signal cleanup probe: $2" >&2
+      exit 2
+      ;;
+  esac
+fi
+
+assert_direct_signal_cleanup HUP 129
+assert_direct_signal_cleanup INT 130
+assert_direct_signal_cleanup TERM 143
 
 expect_repeatable_failure() {
   local expected="$1"
@@ -40,6 +141,7 @@ write_versioned_java() {
   local path="$1"
   local version="$2"
   mkdir -p "$(dirname "$path")"
+  # shellcheck disable=SC2016 # Writes a literal fake-Java script for the fixture.
   printf '#!/usr/bin/env bash\nif [[ "${1:-}" == "-version" ]]; then\n  echo '\''openjdk version "%s"'\'' >&2\nfi\n' "$version" > "$path"
   chmod +x "$path"
 }
@@ -49,6 +151,7 @@ mkdir -p "$CALLER_DIR"
 JAVA_BIN="$CALLER_DIR/java with spaces"
 CANONICAL_CALLER_DIR="$(cd "$CALLER_DIR" && pwd -P)"
 CANONICAL_JAVA_BIN="$CANONICAL_CALLER_DIR/java with spaces"
+# shellcheck disable=SC2016 # Writes a literal fake-Java script for the fixture.
 printf '#!/usr/bin/env bash\nif [[ "${1:-}" == "-version" ]]; then\n  echo '\''openjdk version "17.0.0"'\'' >&2\n  exit 0\nfi\nprintf '\''java=%%q\\n'\'' "$0" >> "${TLA_EXEC_LOG:?}"\nindex=0\nfor argument in "$@"; do\n  printf '\''arg[%%d]=%%q\\n'\'' "$index" "$argument" >> "${TLA_EXEC_LOG:?}"\n  index=$((index + 1))\ndone\n' > "$JAVA_BIN"
 chmod +x "$JAVA_BIN"
 expect_repeatable_failure "TLA_JAVA_MISSING" "" "" env TLA_JAVA_BIN="$TMP_DIR/no-java" TLA_TOOLS_DIR="$TMP_DIR/tools" bash "$ROOT/scripts/preflight_model_gate.sh"
@@ -123,7 +226,7 @@ kill -HUP "$PPID"
 EOF
 chmod +x "$HUP_CURL_BIN/curl"
 set +e
-hup_output="$(env TLA_TOOLS_DIR="$HUP_TOOLS_DIR" PATH="$HUP_CURL_BIN:$PATH" bash "$ROOT/scripts/tla_toolchain.sh" --install 2>&1)"
+env TLA_TOOLS_DIR="$HUP_TOOLS_DIR" PATH="$HUP_CURL_BIN:$PATH" bash "$ROOT/scripts/tla_toolchain.sh" --install >/dev/null 2>&1
 hup_status=$?
 set -e
 if [[ "$hup_status" -ne 129 || -e "$HUP_TOOLS_DIR/tla2tools.jar" ]] || find "$HUP_TOOLS_DIR" -maxdepth 1 -name '.tla2tools.jar.*' -print -quit | grep -q .; then
