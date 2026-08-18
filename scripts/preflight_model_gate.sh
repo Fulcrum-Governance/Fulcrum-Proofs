@@ -35,7 +35,7 @@ if [[ -z "$JAVA_BIN" || ! -x "$JAVA_BIN" ]]; then
   exit 1
 fi
 
-java_version="$($JAVA_BIN -version 2>&1 | sed -nE 's/.*version "([0-9]+)(\.[0-9]+)?.*/\1/p' | head -n 1 || true)"
+java_version="$("$JAVA_BIN" -version 2>&1 | sed -nE 's/.*version "([0-9]+)(\.[0-9]+)?.*/\1/p' | head -n 1 || true)"
 if [[ -z "$java_version" || "$java_version" -lt 17 ]]; then
   echo "TLA_JAVA_UNSUPPORTED: $JAVA_BIN must report Java 17 or later for TLC." >&2
   exit 1

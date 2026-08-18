@@ -4,14 +4,13 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 SPEC_DIR="$ROOT/models/tla/specs"
 CFG_DIR="$ROOT/models/tla/configs"
-TRACE_DIR="$ROOT/models/tla/traces"
-REPORT_DIR="$ROOT/models/tla/reports"
-TOOLS_DIR="$ROOT/models/tla/tools"
+TRACE_DIR="${TLA_TRACE_DIR:-$ROOT/models/tla/traces}"
+REPORT_DIR="${TLA_REPORT_DIR:-$ROOT/models/tla/reports}"
 
-bash "$ROOT/scripts/preflight_model_gate.sh"
+bash "$ROOT/scripts/preflight_model_gate.sh" --java-only
 mkdir -p "$TRACE_DIR" "$REPORT_DIR"
 
-TLC_JAR="$TOOLS_DIR/tla2tools.jar"
+TLC_JAR="$(bash "$ROOT/scripts/tla_toolchain.sh" --resolve)"
 JAVA_BIN="${TLA_JAVA_BIN:-}"
 if [[ -z "$JAVA_BIN" && -n "${JAVA_HOME:-}" && -x "$JAVA_HOME/bin/java" ]]; then
   JAVA_BIN="$JAVA_HOME/bin/java"

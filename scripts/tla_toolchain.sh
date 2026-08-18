@@ -38,6 +38,11 @@ verify() {
   echo "TLA_TOOLS_OK: v${TLA_TOOLS_VERSION} $TLC_JAR"
 }
 
+resolve() {
+  verify >/dev/null
+  printf '%s\n' "$TLC_JAR"
+}
+
 install() {
   mkdir -p "$TOOLS_DIR"
   if [[ -f "$TLC_JAR" ]] && verify >/dev/null; then
@@ -66,8 +71,9 @@ install() {
 case "${1:---verify}" in
   --verify) verify ;;
   --install) install ;;
+  --resolve) resolve ;;
   *)
-    echo "Usage: $0 [--verify|--install]" >&2
+    echo "Usage: $0 [--verify|--install|--resolve]" >&2
     exit 2
     ;;
 esac

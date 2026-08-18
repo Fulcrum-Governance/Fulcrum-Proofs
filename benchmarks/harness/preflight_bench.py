@@ -76,10 +76,16 @@ def check_credentials(source_repo: Path, creds_file: Path) -> None:
 
 def check_service(host: str) -> None:
     hostname, separator, port_text = host.rpartition(":")
-    if not separator or not hostname or not port_text.isdigit():
+    if not separator or not hostname or not port_text.isascii() or not port_text.isdigit():
         fail("BENCH_SERVICE_ADDRESS_INVALID", f"expected host:port, got {host}")
     try:
-        with socket.create_connection((hostname, int(port_text)), timeout=2):
+        port = int(port_text)
+    except ValueError:
+        fail("BENCH_SERVICE_ADDRESS_INVALID", f"expected host:port, got {host}")
+    if not 1 <= port <= 65535:
+        fail("BENCH_SERVICE_ADDRESS_INVALID", f"expected host:port with port in 1..65535, got {host}")
+    try:
+        with socket.create_connection((hostname, port), timeout=2):
             pass
     except OSError as error:
         fail("BENCH_SERVICE_UNAVAILABLE", f"cannot connect to {host}: {error.__class__.__name__}")
