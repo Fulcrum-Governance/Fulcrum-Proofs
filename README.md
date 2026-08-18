@@ -224,8 +224,8 @@ See `proofs/lean/Proofs/GameTheory/README.md` for a detailed module guide and as
 # 3) Run TLA+ model checks
 ./models/tla/scripts/run_tlc.sh
 
-# 4) Run light benchmark evidence generation
-python3 benchmarks/harness/run_benchmarks.py \
+# 4) Run light benchmark evidence generation (live runs require an explicit clean source checkout)
+FULCRUM_SOURCE_REPO=/absolute/path/to/clean/Fulcrum python3 benchmarks/harness/run_benchmarks.py \
   --manifest benchmarks/manifests/benchmark_manifest.yaml \
   --out benchmarks/reports/latest-benchmark-run.json
 
@@ -242,8 +242,8 @@ python3 scripts/audit_gate.py
 ## Bootstrap and Governance Setup
 
 ```bash
-# Install local toolchain prerequisites
-./scripts/bootstrap_toolchains.sh
+# Install the full local toolchain prerequisites (manual bootstrap)
+./scripts/bootstrap_toolchains.sh --full
 
 # Initialize GitHub environments and branch protections
 ./scripts/github_bootstrap.sh --owner Fulcrum-Governance --repo Fulcrum-Proofs
@@ -265,10 +265,12 @@ Branch protection targets on `main`:
 ### TLA+ and benchmark prerequisites
 
 Conductor runs setup scripts in a non-interactive shell. A new workspace provisions
-the TLC JAR with `scripts/bootstrap_toolchains.sh`; it discovers Java through
+the TLC JAR with `scripts/bootstrap_toolchains.sh --conductor-setup`; it discovers Java through
 `TLA_JAVA_BIN`, `JAVA_HOME`, the Apple Silicon Homebrew path
-`/opt/homebrew/opt/openjdk@17/bin/java` or
-`/opt/homebrew/opt/openjdk/bin/java`, then `PATH`. Java 17 or later is required.
+`/opt/homebrew/opt/openjdk@*/bin/java` or
+`/opt/homebrew/opt/openjdk/bin/java` (and equivalent Intel `/usr/local/opt`
+paths), then `PATH`. Homebrew candidates below Java 17 are skipped; Java 17 or
+later is required.
 The script installs and verifies the official
 [TLA+ v1.7.4 `tla2tools.jar`](https://github.com/tlaplus/tlaplus/releases/download/v1.7.4/tla2tools.jar)
 against SHA-256 `936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88`.
@@ -277,15 +279,16 @@ The JAR remains ignored and is never committed.
 To reproduce the fresh-workspace path locally, run:
 
 ```bash
-bash scripts/bootstrap_toolchains.sh
+bash scripts/bootstrap_toolchains.sh --conductor-setup
 make model-gate
 ```
 
 Conductor runs the bounded `--conductor-setup` bootstrap path: it validates
 Java, installs the checksum-pinned TLC JAR, and best-effort warms the
 project-pinned Lean cache. It does not install an ambient Lean `stable`
-toolchain or Python dependencies. Running `bash scripts/bootstrap_toolchains.sh`
-without that flag retains the full manual bootstrap, including those steps.
+toolchain or Python dependencies. For a full manual bootstrap, run
+`bash scripts/bootstrap_toolchains.sh` (or `--full`), which retains those
+additional installation steps.
 
 To intentionally update TLC, select a tagged official release (never
 `releases/latest`), independently download its `tla2tools.jar`, calculate its

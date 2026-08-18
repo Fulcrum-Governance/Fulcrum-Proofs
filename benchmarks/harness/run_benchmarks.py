@@ -56,6 +56,13 @@ def resolve_source_repo(value: str | None) -> Path:
     return (ROOT / candidate).resolve()
 
 
+def normalize_export_value(value: str) -> str:
+    value = value.strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+        value = value[1:-1]
+    return value.strip()
+
+
 def load_credentials(creds_file: Path) -> dict[str, str]:
     out: dict[str, str] = {}
     if not creds_file.exists():
@@ -69,7 +76,7 @@ def load_credentials(creds_file: Path) -> dict[str, str]:
         if "=" not in keyval:
             continue
         key, val = keyval.split("=", 1)
-        out[key.strip()] = val.strip().strip("'").strip('"')
+        out[key.strip()] = normalize_export_value(val)
     return out
 
 

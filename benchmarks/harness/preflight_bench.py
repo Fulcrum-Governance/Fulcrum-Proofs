@@ -27,6 +27,13 @@ def resolve_source_repo(value: str | None) -> Path:
     return candidate if candidate.is_absolute() else (ROOT / candidate).resolve()
 
 
+def normalize_export_value(value: str) -> str:
+    value = value.strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+        value = value[1:-1]
+    return value.strip()
+
+
 def load_credential_keys(creds_file: Path) -> set[str]:
     if not creds_file.exists():
         return set()
@@ -35,7 +42,7 @@ def load_credential_keys(creds_file: Path) -> set[str]:
         line = line.strip()
         if line.startswith("export ") and "=" in line:
             key, value = line[len("export ") :].split("=", 1)
-            if value.strip().strip("'").strip('"'):
+            if normalize_export_value(value):
                 keys.add(key.strip())
     return keys
 

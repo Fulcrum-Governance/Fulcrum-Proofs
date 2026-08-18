@@ -3,6 +3,31 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
+java_major_version() {
+  "$1" -version 2>&1 | sed -nE 's/.*version "([0-9]+)(\.[0-9]+)?.*/\1/p' | head -n 1
+}
+
+find_homebrew_java() {
+  local roots="${TLA_HOMEBREW_OPT_ROOTS:-/opt/homebrew/opt:/usr/local/opt}"
+  local root candidate version
+  local -a candidates
+  local IFS=:
+  for root in $roots; do
+    shopt -s nullglob
+    candidates=("$root"/openjdk@*/bin/java "$root"/openjdk/bin/java)
+    shopt -u nullglob
+    for candidate in "${candidates[@]}"; do
+      [[ -x "$candidate" ]] || continue
+      version="$(java_major_version "$candidate" || true)"
+      if [[ "$version" =~ ^[0-9]+$ && "$version" -ge 17 ]]; then
+        printf '%s\n' "$candidate"
+        return 0
+      fi
+    done
+  done
+  return 1
+}
+
 find_java() {
   if [[ -n "${TLA_JAVA_BIN:-}" ]]; then
     printf '%s\n' "$TLA_JAVA_BIN"
@@ -12,12 +37,7 @@ find_java() {
     printf '%s\n' "$JAVA_HOME/bin/java"
     return
   fi
-  if [[ -x "/opt/homebrew/opt/openjdk@17/bin/java" ]]; then
-    printf '%s\n' "/opt/homebrew/opt/openjdk@17/bin/java"
-    return
-  fi
-  if [[ -x "/opt/homebrew/opt/openjdk/bin/java" ]]; then
-    printf '%s\n' "/opt/homebrew/opt/openjdk/bin/java"
+  if find_homebrew_java; then
     return
   fi
   if command -v java >/dev/null 2>&1; then
@@ -47,7 +67,7 @@ if [[ -z "$JAVA_BIN" || ! -x "$JAVA_BIN" ]]; then
 fi
 JAVA_BIN="$(canonicalize_executable "$JAVA_BIN")"
 
-java_version="$("$JAVA_BIN" -version 2>&1 | sed -nE 's/.*version "([0-9]+)(\.[0-9]+)?.*/\1/p' | head -n 1 || true)"
+java_version="$(java_major_version "$JAVA_BIN" || true)"
 if [[ -z "$java_version" || "$java_version" -lt 17 ]]; then
   echo "TLA_JAVA_UNSUPPORTED: $JAVA_BIN must report Java 17 or later for TLC." >&2
   exit 1

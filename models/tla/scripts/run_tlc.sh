@@ -9,6 +9,8 @@ REPORT_DIR="${TLA_REPORT_DIR:-$ROOT/models/tla/reports}"
 
 JAVA_BIN="$(bash "$ROOT/scripts/preflight_model_gate.sh" --java-path)"
 mkdir -p "$TRACE_DIR" "$REPORT_DIR"
+TRACE_DIR="$(cd "$TRACE_DIR" && pwd -P)"
+REPORT_DIR="$(cd "$REPORT_DIR" && pwd -P)"
 
 TLC_JAR="$(bash "$ROOT/scripts/tla_toolchain.sh" --resolve)"
 

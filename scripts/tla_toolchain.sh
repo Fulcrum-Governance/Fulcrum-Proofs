@@ -9,6 +9,19 @@ TLA_TOOLS_URL="https://github.com/tlaplus/tlaplus/releases/download/v${TLA_TOOLS
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TOOLS_DIR="${TLA_TOOLS_DIR:-$ROOT/models/tla/tools}"
 TLC_JAR="$TOOLS_DIR/tla2tools.jar"
+temporary=""
+
+cleanup_temporary() {
+  if [[ -n "$temporary" ]]; then
+    rm -f -- "$temporary"
+    temporary=""
+  fi
+}
+
+trap cleanup_temporary EXIT
+trap 'cleanup_temporary; exit 129' HUP
+trap 'cleanup_temporary; exit 130' INT
+trap 'cleanup_temporary; exit 143' TERM
 
 sha256_file() {
   if command -v shasum >/dev/null 2>&1; then
@@ -23,7 +36,7 @@ sha256_file() {
 
 verify() {
   if [[ ! -f "$TLC_JAR" ]]; then
-    echo "TLA_JAR_MISSING: expected $TLC_JAR (TLA+ v${TLA_TOOLS_VERSION}). Run bash scripts/bootstrap_toolchains.sh." >&2
+    echo "TLA_JAR_MISSING: expected $TLC_JAR (TLA+ v${TLA_TOOLS_VERSION}). Run bash scripts/bootstrap_toolchains.sh --conductor-setup." >&2
     return 1
   fi
 
@@ -31,7 +44,7 @@ verify() {
   actual="$(sha256_file "$TLC_JAR")"
   if [[ "$actual" != "$TLA_TOOLS_SHA256" ]]; then
     echo "TLA_JAR_CHECKSUM_MISMATCH: expected $TLA_TOOLS_SHA256, got $actual for $TLC_JAR." >&2
-    echo "Re-run bash scripts/bootstrap_toolchains.sh to install the verified TLA+ v${TLA_TOOLS_VERSION} asset." >&2
+    echo "Re-run bash scripts/bootstrap_toolchains.sh --conductor-setup to install the verified TLA+ v${TLA_TOOLS_VERSION} asset." >&2
     return 1
   fi
 
@@ -52,9 +65,7 @@ install() {
     return 0
   fi
 
-  local temporary
   temporary="$(mktemp "$TOOLS_DIR/.tla2tools.jar.XXXXXX")"
-  trap 'rm -f "$temporary"' RETURN
   echo "Downloading verified TLA+ v${TLA_TOOLS_VERSION} tools"
   curl --fail --location --silent --show-error --retry 3 --output "$temporary" "$TLA_TOOLS_URL"
 
@@ -66,7 +77,7 @@ install() {
   fi
 
   mv "$temporary" "$TLC_JAR"
-  trap - RETURN
+  temporary=""
   echo "TLA_TOOLS_OK: installed verified v${TLA_TOOLS_VERSION} $TLC_JAR"
 }
 
