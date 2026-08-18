@@ -1,10 +1,9 @@
 "$schema" = "https://conductor.build/schemas/settings.repo.schema.json"
 
 [scripts]
-# Warm the Lean build cache best-effort. NOTE: Lean .lake artifacts are NOT
-# shared across worktrees, so a fresh workspace rebuilds. Keep parallel proof
-# lanes few to avoid long rebuilds and CPU thrash.
-setup = "(cd proofs/lean && lake exe cache get) >/dev/null 2>&1 || true"
+# Conductor setup is non-interactive. The bounded path validates Java, installs
+# checksum-pinned TLC, and best-effort warms the project-pinned Lean cache.
+setup = "bash scripts/bootstrap_toolchains.sh --conductor-setup"
 # Run button = the sorry-free proof gate, the verification for this repo.
 run = "make proof-gate"
 run_mode = "nonconcurrent"

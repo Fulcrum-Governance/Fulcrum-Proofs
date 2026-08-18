@@ -25,7 +25,7 @@ As of 2026-04-28 there are **0 remaining sorry holes** (all 16 originally tracke
 ```bash
 make proof-gate       # Lean proof replay
 make model-gate       # TLA+ model checking (requires Java 17+)
-make bench-gate       # Benchmark evidence (requires Python 3.12+)
+FULCRUM_SOURCE_REPO=/absolute/path/to/clean/Fulcrum make bench-gate  # Benchmark evidence (requires Python 3.12+)
 make fault-gate       # Fault injection campaigns
 make evidence-gate    # Full evidence validation
 make audit-gate       # Audit closure check

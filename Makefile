@@ -1,4 +1,4 @@
-.PHONY: sync-contracts contracts-check orchestrator-contract-check orchestrator-run proof-gate model-gate bench-gate bench-nightly fault-gate evidence-gate audit-gate
+.PHONY: sync-contracts contracts-check orchestrator-contract-check orchestrator-run proof-gate model-gate bench-gate bench-nightly fault-gate evidence-gate audit-gate toolchain-preflight-test
 
 SHELL := /bin/bash
 
@@ -45,6 +45,7 @@ bench-gate:
 			$(PYTHON) scripts/schema_check.py --schema "$(BENCH_SCHEMA)" --input "$$out"; \
 		done; \
 	else \
+		$(PYTHON) benchmarks/harness/preflight_bench.py --manifest "$(BENCH_MANIFEST)"; \
 		for w in $(BENCH_WORKLOADS); do \
 			out="$(BENCH_REPORT_DIR)/$${w}.json"; \
 			$(PYTHON) benchmarks/harness/run_benchmarks.py --manifest "$(BENCH_MANIFEST)" --commit "$$(git rev-parse HEAD)" --env "bench-gate" --workload "$$w" --out "$$out"; \
@@ -62,6 +63,7 @@ bench-nightly:
 			$(PYTHON) scripts/schema_check.py --schema "$(BENCH_SCHEMA)" --input "$(BENCH_REPORT_DIR)/$${w}.json"; \
 		done; \
 	else \
+		$(PYTHON) benchmarks/harness/preflight_bench.py --manifest "$(BENCH_MANIFEST)"; \
 		$(PYTHON) benchmarks/harness/run_benchmarks.py --manifest "$(BENCH_MANIFEST)" --commit "$$(git rev-parse HEAD)" --env "bench-nightly" --out "$(BENCH_REPORT_DIR)/nightly-suite.json"; \
 		$(PYTHON) scripts/schema_check.py --schema "$(BENCH_SUITE_SCHEMA)" --input "$(BENCH_REPORT_DIR)/nightly-suite.json"; \
 		for f in "$(BENCH_REPORT_DIR)"/bench-*.json; do \
@@ -94,3 +96,6 @@ evidence-gate:
 audit-gate:
 	$(PYTHON) scripts/audit_gate.py
 	$(PYTHON) scripts/review_gate.py
+
+toolchain-preflight-test:
+	bash ./scripts/test_toolchain_preflight.sh

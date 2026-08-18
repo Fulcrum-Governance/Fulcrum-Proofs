@@ -20,12 +20,19 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Download TLC
-        run: |
-          mkdir -p models/tla/tools
-          curl -fsSL \
-            -o models/tla/tools/tla2tools.jar \
-            https://github.com/tlaplus/tlaplus/releases/latest/download/tla2tools.jar
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pinned Python dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Run toolchain preflight regressions
+        run: make toolchain-preflight-test
+
+      - name: Install checksum-pinned TLC
+        run: bash scripts/tla_toolchain.sh --install
 
       - name: Run TLC checks
         run: make model-gate

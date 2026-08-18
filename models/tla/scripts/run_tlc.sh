@@ -4,24 +4,15 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 SPEC_DIR="$ROOT/models/tla/specs"
 CFG_DIR="$ROOT/models/tla/configs"
-TRACE_DIR="$ROOT/models/tla/traces"
-REPORT_DIR="$ROOT/models/tla/reports"
-TOOLS_DIR="$ROOT/models/tla/tools"
+TRACE_DIR="${TLA_TRACE_DIR:-$ROOT/models/tla/traces}"
+REPORT_DIR="${TLA_REPORT_DIR:-$ROOT/models/tla/reports}"
 
+JAVA_BIN="$(bash "$ROOT/scripts/preflight_model_gate.sh" --java-path)"
 mkdir -p "$TRACE_DIR" "$REPORT_DIR"
+TRACE_DIR="$(cd "$TRACE_DIR" && pwd -P)"
+REPORT_DIR="$(cd "$REPORT_DIR" && pwd -P)"
 
-TLC_JAR="$TOOLS_DIR/tla2tools.jar"
-if [[ ! -f "$TLC_JAR" ]]; then
-  echo "Missing $TLC_JAR" >&2
-  echo "Download from https://github.com/tlaplus/tlaplus/releases and place tla2tools.jar in models/tla/tools/." >&2
-  exit 1
-fi
-
-if [[ -x "/opt/homebrew/opt/openjdk@17/bin/java" ]]; then
-  export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"
-fi
-
-java -version >/dev/null 2>&1 || { echo "java not found" >&2; exit 1; }
+TLC_JAR="$(bash "$ROOT/scripts/tla_toolchain.sh" --resolve)"
 
 pushd "$SPEC_DIR" >/dev/null
 cfgs=(
@@ -39,7 +30,7 @@ for cfg in "${cfgs[@]}"; do
   cfg_name="$(basename "$cfg" .cfg)"
   log_file="$REPORT_DIR/tlc-${cfg_name}.log"
   echo "[model-gate] running TLC with $cfg_name"
-  java -cp "$TLC_JAR" tlc2.TLC -cleanup -deadlock -config "$cfg" GatewaySafety \
+  "$JAVA_BIN" -cp "$TLC_JAR" tlc2.TLC -cleanup -deadlock -config "$cfg" GatewaySafety \
     | tee "$log_file"
 done
 popd >/dev/null

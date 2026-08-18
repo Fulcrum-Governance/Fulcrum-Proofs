@@ -3,7 +3,6 @@ run_id_prefix: bench
 env: ci
 commit: unknown
 mode: real
-source_repo: ../Fulcrum
 credentials_file: /tmp/fulcrum-load-test-credentials.sh
 host: localhost:50051
 repeats: 5
