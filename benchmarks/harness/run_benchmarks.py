@@ -44,7 +44,12 @@ def run(cmd: list[str], cwd: Path | None = None) -> subprocess.CompletedProcess[
 
 
 def resolve_source_repo(value: str | None) -> Path:
-    raw = os.environ.get("FULCRUM_SOURCE_REPO", value or "../Fulcrum")
+    raw = os.environ.get("FULCRUM_SOURCE_REPO") or value
+    if not raw or not raw.strip():
+        raise SystemExit(
+            "BENCH_SOURCE_REPO_UNCONFIGURED: configure FULCRUM_SOURCE_REPO or "
+            "manifest source_repo before a live benchmark run"
+        )
     candidate = Path(raw).expanduser()
     if candidate.is_absolute():
         return candidate

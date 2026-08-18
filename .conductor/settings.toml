@@ -1,9 +1,9 @@
 "$schema" = "https://conductor.build/schemas/settings.repo.schema.json"
 
 [scripts]
-# Conductor setup is non-interactive. Bootstrap validates Java, installs the
-# checksum-pinned TLC JAR, and warms the Lean cache without shell-profile help.
-setup = "bash scripts/bootstrap_toolchains.sh"
+# Conductor setup is non-interactive. The bounded path validates Java, installs
+# checksum-pinned TLC, and best-effort warms the project-pinned Lean cache.
+setup = "bash scripts/bootstrap_toolchains.sh --conductor-setup"
 # Run button = the sorry-free proof gate, the verification for this repo.
 run = "make proof-gate"
 run_mode = "nonconcurrent"

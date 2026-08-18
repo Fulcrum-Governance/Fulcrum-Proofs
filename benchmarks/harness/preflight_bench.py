@@ -17,7 +17,12 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def resolve_source_repo(value: str | None) -> Path:
-    raw = os.environ.get("FULCRUM_SOURCE_REPO", value or "../Fulcrum")
+    raw = os.environ.get("FULCRUM_SOURCE_REPO") or value
+    if not raw or not raw.strip():
+        fail(
+            "BENCH_SOURCE_REPO_UNCONFIGURED",
+            "configure FULCRUM_SOURCE_REPO or manifest source_repo before a live benchmark run",
+        )
     candidate = Path(raw).expanduser()
     return candidate if candidate.is_absolute() else (ROOT / candidate).resolve()
 
@@ -29,7 +34,9 @@ def load_credential_keys(creds_file: Path) -> set[str]:
     for line in creds_file.read_text(encoding="utf-8").splitlines():
         line = line.strip()
         if line.startswith("export ") and "=" in line:
-            keys.add(line[len("export ") :].split("=", 1)[0].strip())
+            key, value = line[len("export ") :].split("=", 1)
+            if value.strip().strip("'").strip('"'):
+                keys.add(key.strip())
     return keys
 
 

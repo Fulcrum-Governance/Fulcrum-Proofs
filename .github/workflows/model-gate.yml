@@ -20,6 +20,9 @@ jobs:
           distribution: temurin
           java-version: "17"
 
+      - name: Run toolchain preflight regressions
+        run: make toolchain-preflight-test
+
       - name: Install checksum-pinned TLC
         run: bash scripts/tla_toolchain.sh --install
 

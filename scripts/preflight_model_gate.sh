@@ -16,6 +16,10 @@ find_java() {
     printf '%s\n' "/opt/homebrew/opt/openjdk@17/bin/java"
     return
   fi
+  if [[ -x "/opt/homebrew/opt/openjdk/bin/java" ]]; then
+    printf '%s\n' "/opt/homebrew/opt/openjdk/bin/java"
+    return
+  fi
   if command -v java >/dev/null 2>&1; then
     command -v java
     return
