@@ -7,18 +7,10 @@ CFG_DIR="$ROOT/models/tla/configs"
 TRACE_DIR="${TLA_TRACE_DIR:-$ROOT/models/tla/traces}"
 REPORT_DIR="${TLA_REPORT_DIR:-$ROOT/models/tla/reports}"
 
-bash "$ROOT/scripts/preflight_model_gate.sh" --java-only
+JAVA_BIN="$(bash "$ROOT/scripts/preflight_model_gate.sh" --java-path)"
 mkdir -p "$TRACE_DIR" "$REPORT_DIR"
 
 TLC_JAR="$(bash "$ROOT/scripts/tla_toolchain.sh" --resolve)"
-JAVA_BIN="${TLA_JAVA_BIN:-}"
-if [[ -z "$JAVA_BIN" && -n "${JAVA_HOME:-}" && -x "$JAVA_HOME/bin/java" ]]; then
-  JAVA_BIN="$JAVA_HOME/bin/java"
-elif [[ -z "$JAVA_BIN" && -x "/opt/homebrew/opt/openjdk@17/bin/java" ]]; then
-  JAVA_BIN="/opt/homebrew/opt/openjdk@17/bin/java"
-elif [[ -z "$JAVA_BIN" ]]; then
-  JAVA_BIN="$(command -v java)"
-fi
 
 pushd "$SPEC_DIR" >/dev/null
 cfgs=(

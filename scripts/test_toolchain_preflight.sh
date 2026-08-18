@@ -19,8 +19,12 @@ expect_failure() {
   fi
 }
 
-JAVA_BIN="$TMP_DIR/java with spaces"
-printf '#!/usr/bin/env bash\nif [[ "${1:-}" == "-version" ]]; then\n  echo '\''openjdk version "17.0.0"'\'' >&2\n  exit 0\nfi\nprintf '\''%%s\\n'\'' "$*" >> "${TLA_EXEC_LOG:?}"\n' > "$JAVA_BIN"
+CALLER_DIR="$TMP_DIR/caller cwd"
+mkdir -p "$CALLER_DIR"
+JAVA_BIN="$CALLER_DIR/java with spaces"
+CANONICAL_CALLER_DIR="$(cd "$CALLER_DIR" && pwd -P)"
+CANONICAL_JAVA_BIN="$CANONICAL_CALLER_DIR/java with spaces"
+printf '#!/usr/bin/env bash\nif [[ "${1:-}" == "-version" ]]; then\n  echo '\''openjdk version "17.0.0"'\'' >&2\n  exit 0\nfi\nprintf '\''java=%%s args=%%s\\n'\'' "$0" "$*" >> "${TLA_EXEC_LOG:?}"\n' > "$JAVA_BIN"
 chmod +x "$JAVA_BIN"
 expect_failure "TLA_JAVA_MISSING" env TLA_JAVA_BIN="$TMP_DIR/no-java" TLA_TOOLS_DIR="$TMP_DIR/tools" bash "$ROOT/scripts/preflight_model_gate.sh"
 expect_failure "TLA_JAR_MISSING" env TLA_JAVA_BIN="$JAVA_BIN" TLA_TOOLS_DIR="$TMP_DIR/tools" bash "$ROOT/scripts/preflight_model_gate.sh"
@@ -29,19 +33,24 @@ printf 'not a jar\n' > "$TMP_DIR/tools/tla2tools.jar"
 expect_failure "TLA_JAR_CHECKSUM_MISMATCH" env TLA_JAVA_BIN="$JAVA_BIN" TLA_TOOLS_DIR="$TMP_DIR/tools" bash "$ROOT/scripts/preflight_model_gate.sh"
 
 bash "$ROOT/scripts/tla_toolchain.sh" --install >/dev/null
-OVERRIDE_TOOLS="$TMP_DIR/override-tools"
+OVERRIDE_TOOLS="$CALLER_DIR/override tools"
+CANONICAL_OVERRIDE_TOOLS="$CANONICAL_CALLER_DIR/override tools"
 mkdir -p "$OVERRIDE_TOOLS"
 cp "$ROOT/models/tla/tools/tla2tools.jar" "$OVERRIDE_TOOLS/tla2tools.jar"
 TLA_EXEC_LOG="$TMP_DIR/tla-executions.log"
-env \
-  TLA_JAVA_BIN="$JAVA_BIN" \
-  TLA_TOOLS_DIR="$OVERRIDE_TOOLS" \
-  TLA_TRACE_DIR="$TMP_DIR/traces" \
-  TLA_REPORT_DIR="$TMP_DIR/reports" \
-  TLA_EXEC_LOG="$TLA_EXEC_LOG" \
-  bash "$ROOT/models/tla/scripts/run_tlc.sh" >/dev/null
-if [[ "$(wc -l < "$TLA_EXEC_LOG")" -ne 3 ]] || ! grep -F -- "-cp $OVERRIDE_TOOLS/tla2tools.jar tlc2.TLC" "$TLA_EXEC_LOG" >/dev/null; then
-  echo "Expected TLC to execute the checksum-verified TLA_TOOLS_DIR override" >&2
+(
+  cd "$CALLER_DIR"
+  env \
+    TLA_JAVA_BIN="./java with spaces" \
+    TLA_TOOLS_DIR="./override tools" \
+    TLA_TRACE_DIR="$TMP_DIR/traces" \
+    TLA_REPORT_DIR="$TMP_DIR/reports" \
+    TLA_EXEC_LOG="$TLA_EXEC_LOG" \
+    bash "$ROOT/models/tla/scripts/run_tlc.sh" >/dev/null
+)
+if [[ "$(wc -l < "$TLA_EXEC_LOG")" -ne 3 ]] \
+  || ! grep -F -- "java=$CANONICAL_JAVA_BIN args=-cp $CANONICAL_OVERRIDE_TOOLS/tla2tools.jar tlc2.TLC" "$TLA_EXEC_LOG" >/dev/null; then
+  echo "Expected TLC to execute the exact verified relative overrides" >&2
   exit 1
 fi
 

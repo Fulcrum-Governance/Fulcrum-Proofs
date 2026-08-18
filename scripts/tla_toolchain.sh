@@ -40,7 +40,9 @@ verify() {
 
 resolve() {
   verify >/dev/null
-  printf '%s\n' "$TLC_JAR"
+  local jar_directory
+  jar_directory="$(cd "$(dirname "$TLC_JAR")" && pwd -P)"
+  printf '%s/%s\n' "$jar_directory" "$(basename "$TLC_JAR")"
 }
 
 install() {
