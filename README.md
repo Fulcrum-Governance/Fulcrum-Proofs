@@ -262,6 +262,38 @@ Branch protection targets on `main`:
 - Java 17+ (for TLC)
 - Lean 4.29.0-rc4 + Mathlib4 via `elan`/`lake`
 
+### TLA+ and benchmark prerequisites
+
+Conductor runs setup scripts in a non-interactive shell. A new workspace provisions
+the TLC JAR with `scripts/bootstrap_toolchains.sh`; it discovers Java through
+`TLA_JAVA_BIN`, `JAVA_HOME`, the Apple Silicon Homebrew path
+`/opt/homebrew/opt/openjdk@17/bin/java`, then `PATH`. Java 17 or later is required.
+The script installs and verifies the official
+[TLA+ v1.7.4 `tla2tools.jar`](https://github.com/tlaplus/tlaplus/releases/download/v1.7.4/tla2tools.jar)
+against SHA-256 `936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88`.
+The JAR remains ignored and is never committed.
+
+To reproduce the fresh-workspace path locally, run:
+
+```bash
+bash scripts/bootstrap_toolchains.sh
+make model-gate
+```
+
+To intentionally update TLC, select a tagged official release (never
+`releases/latest`), independently download its `tla2tools.jar`, calculate its
+SHA-256, then update the version, URL, and hash together in
+`scripts/tla_toolchain.sh` and this section. Run
+`make toolchain-preflight-test` and `make model-gate` before opening the PR.
+
+Live `make bench-gate` and `make bench-nightly` use `FULCRUM_SOURCE_REPO` when
+set, otherwise the manifest's `source_repo`. The preflight requires that source
+to be a clean Git checkout with `scripts/setup-load-test-auth.sh`, verifies only
+credential key names, and checks that the configured service is reachable. It
+reports source, credential setup, and service failures separately; it never
+prints credential values. `BENCH_USE_EXISTING=1` remains an offline schema-only
+validation and therefore does not require a Fulcrum source checkout or service.
+
 ## Status Levels
 
 - `Proven`: artifact-backed formal/empirical closure exists

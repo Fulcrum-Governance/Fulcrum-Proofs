@@ -20,12 +20,8 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Download TLC
-        run: |
-          mkdir -p models/tla/tools
-          curl -fsSL \
-            -o models/tla/tools/tla2tools.jar \
-            https://github.com/tlaplus/tlaplus/releases/latest/download/tla2tools.jar
+      - name: Install checksum-pinned TLC
+        run: bash scripts/tla_toolchain.sh --install
 
       - name: Run TLC checks
         run: make model-gate

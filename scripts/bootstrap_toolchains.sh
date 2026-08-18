@@ -4,19 +4,19 @@ set -euo pipefail
 echo "Bootstrapping toolchains for Fulcrum-Proofs"
 REQUIRED_GO="${REQUIRED_GO_VERSION:-1.24.13}"
 
-echo "[1/4] Lean via elan"
+echo "[1/4] Java and TLA+ tools"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+bash "$SCRIPT_DIR/preflight_model_gate.sh" --java-only
+bash "$SCRIPT_DIR/tla_toolchain.sh" --install
+bash "$SCRIPT_DIR/preflight_model_gate.sh"
+
+echo "[2/4] Lean via elan"
 if ! command -v elan >/dev/null 2>&1; then
   curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
 fi
 
 export PATH="$HOME/.elan/bin:$PATH"
 elan toolchain install stable
-
-echo "[2/4] TLA+ tools"
-mkdir -p models/tla/tools
-if [[ ! -f models/tla/tools/tla2tools.jar ]]; then
-  echo "Download latest tla2tools.jar into models/tla/tools/"
-fi
 
 echo "[3/4] Go version check"
 if command -v go >/dev/null 2>&1; then
