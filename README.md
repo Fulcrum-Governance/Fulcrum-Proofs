@@ -4,7 +4,7 @@
 
 Formal governance proofs for the agent control plane — the proof and evidence repository grounding the Fulcrum governance kernel's invariants.
 
-Fulcrum is a governance kernel inside the agent control plane (Forrester December 2025, Futurum Layer 3 April 2026): a portable, typed, pre-execution control plane that sits between intent and action, enforces bounded invariants (policy, budget, trust, audit), and emits evidence-grade audit artifacts. This repository holds the machine-checkable Lean 4 proofs that ground those invariants. Anchor: ADR-003 — Harness Positioning (`fulcrum-io:.claude/sprint/yc/decisions/ADR-003-HARNESS_POSITIONING.md`).
+Fulcrum is control and evidence infrastructure for autonomous agent actions. Its governance kernel is a portable, typed, pre-execution control plane that sits between intent and action for actions routed through Fulcrum: it enforces bounded invariants (policy, budget, trust, audit) and emits evidence-grade audit artifacts for those routed actions (Forrester December 2025, Futurum Layer 3 April 2026). This repository holds the machine-checkable Lean 4 proofs that ground those invariants. Anchor: ADR-003 — Harness Positioning (`fulcrum-io:.claude/sprint/yc/decisions/ADR-003-HARNESS_POSITIONING.md`).
 
 ## Part of the Fulcrum Architecture
 
